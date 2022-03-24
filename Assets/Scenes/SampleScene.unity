@@ -247,10 +247,6 @@ MonoBehaviour:
     m_ActionId: 690b9304-570e-4e01-a363-cd4e14b7c2d3
     m_ActionName: Player/Move[/Keyboard/w,/Keyboard/upArrow,/Keyboard/s,/Keyboard/downArrow,/Keyboard/a,/Keyboard/leftArrow,/Keyboard/d,/Keyboard/rightArrow]
   - m_PersistentCalls:
-      m_Calls: []
-    m_ActionId: 98821ec3-b005-4bc4-93fe-ac3bcf0a12cf
-    m_ActionName: Player/Look[/Mouse/delta]
-  - m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 641725996}
         m_TargetAssemblyTypeName: PlayerController, Assembly-CSharp
@@ -306,6 +302,10 @@ MonoBehaviour:
       m_Calls: []
     m_ActionId: 77a5780f-6ccd-4991-8187-320159d4f6ee
     m_ActionName: UI/TrackedDeviceOrientation
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 1c14a220-1e80-460d-bbd1-7755ca1991c6
+    m_ActionName: Player/MoveStraight[/Keyboard/space]
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: 
   m_DefaultActionMap: Player

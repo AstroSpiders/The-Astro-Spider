@@ -27,8 +27,8 @@ public class PlayerController : MonoBehaviour
         Vector2 input = _playerInputActions.Player.Move.ReadValue<Vector2>();
         float space = _playerInputActions.Player.MoveStraight.ReadValue<float>();
 
-        if (space != 0)
-            _rocketMovement.ApplyAcceleration(2.0f, RocketMovement.ThrusterTypes.Main);
+        if (Math.Abs(space) >= 0.001f)
+            _rocketMovement.ApplyAcceleration(1.0f, RocketMovement.ThrusterTypes.Main);
 
         RocketMovement.ThrusterTypes thruster;
         
