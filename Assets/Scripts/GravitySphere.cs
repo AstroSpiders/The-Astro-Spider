@@ -32,7 +32,7 @@ public class GravitySphere : GravitySource
         if (distance > _outerRadius)
         {
             // this formula represents a linear interpolation.
-            // when the distance to the object is <= _outerRadis, then the gravity force for this sphere has a maximum value
+            // when the distance to the object is <= _outerRadius, then the gravity force for this sphere has a maximum value
             // when the distance is >= _outerFalloffRadius, the gravity force for this sphere is equal to 0.
             // when the _outerRadis < distance < _outerFalloffRadius, the gravity force is somewhere between the maximum value and 0.
 

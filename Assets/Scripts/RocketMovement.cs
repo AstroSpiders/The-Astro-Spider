@@ -7,13 +7,13 @@ public class RocketMovement : MonoBehaviour
     {
         Main,
 
-        Exhaust00,
-        Exhaust01,
-        Exhaust02,
-        Exhaust03,
+        ExhaustLeft,
+        ExhaustFront,
+        ExhaustBack,
+        ExhaustRight,
 
         Count
-    };
+    }
 
     private class Thruster
     {
@@ -67,9 +67,9 @@ public class RocketMovement : MonoBehaviour
     void Update()
     {
         // for testing purposes only.
-        ApplyAcceleration(1.0f, ThrusterTypes.Main);
+        // ApplyAcceleration(1.0f, ThrusterTypes.Main);
 
-        UpdateOrientation();
+        // UpdateOrientation();
     }
 
     void FixedUpdate()
@@ -84,14 +84,15 @@ public class RocketMovement : MonoBehaviour
         // See how much impact each of the truster have on the overall velocity. 
         for (int i = 0; i < _thrusters.Length; i++)
         {
+            Vector3       forward           = transform.forward;
             ThrusterTypes thruster          = (ThrusterTypes)i;
             float         acceleration      = _thrusters[i].Acceleration;
             Quaternion    thrusterRotation  = GetThrusterRotation(thruster);
-            Vector3       thrusterDirection = thrusterRotation * transform.forward;
+            Vector3       thrusterDirection = thrusterRotation * forward;
 
             // We calculate the dot product between our forward direction and our desired direction
             // for the current trusters, so that the side trusters have less impact on the velocity than the main thruster.
-            float         dot               = Vector3.Dot(thrusterDirection, transform.forward);
+            float         dot               = Vector3.Dot(thrusterDirection, forward);
 
             thrustersAcceleration          += dot * acceleration * Time.deltaTime * _accelerationMultiplier;
         }
@@ -123,25 +124,23 @@ public class RocketMovement : MonoBehaviour
                 case ThrusterTypes.Main:
                     _thrusters[i].GameObject = _mainThruster;
                     break;
-                case ThrusterTypes.Exhaust00:
+                case ThrusterTypes.ExhaustLeft:
                     _thrusters[i].GameObject = _exhaust00;
                     break;
-                case ThrusterTypes.Exhaust01:
+                case ThrusterTypes.ExhaustFront:
                     _thrusters[i].GameObject = _exhaust01;
                     break;
-                case ThrusterTypes.Exhaust02:
+                case ThrusterTypes.ExhaustBack:
                     _thrusters[i].GameObject = _exhaust02;
                     break;
-                case ThrusterTypes.Exhaust03:
+                case ThrusterTypes.ExhaustRight:
                     _thrusters[i].GameObject = _exhaust03;
-                    break;
-                default:
                     break;
             }
         }
     }
 
-    void UpdateOrientation()
+    public void UpdateOrientation()
     {
         // We calculate the desired orientation based on the
         // acceleration of the thrusters.
@@ -175,13 +174,13 @@ public class RocketMovement : MonoBehaviour
         {
             case ThrusterTypes.Main:
                 return Quaternion.identity;
-            case ThrusterTypes.Exhaust00:
+            case ThrusterTypes.ExhaustLeft:
                 return Quaternion.Euler(0.0f, angle, 0.0f);
-            case ThrusterTypes.Exhaust01:
+            case ThrusterTypes.ExhaustFront:
                 return Quaternion.Euler(angle, 0.0f, 0.0f);
-            case ThrusterTypes.Exhaust02:
+            case ThrusterTypes.ExhaustBack:
                 return Quaternion.Euler(-angle, 0.0f, 0.0f);
-            case ThrusterTypes.Exhaust03:
+            case ThrusterTypes.ExhaustRight:
                 return Quaternion.Euler(0.0f, -angle, 0.0f);
         }
 
