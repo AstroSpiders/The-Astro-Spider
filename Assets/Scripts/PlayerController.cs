@@ -8,6 +8,8 @@ public class PlayerController : MonoBehaviour
     private PlayerInputActions _playerInputActions;
     private RocketMovement _rocketMovement;
     
+    private const float _bias = 0.001f;
+    
     private void Awake()
     {
         _playerInputActions = new PlayerInputActions();
@@ -24,18 +26,17 @@ public class PlayerController : MonoBehaviour
 
     private void Move()
     {
-        Vector2 input = _playerInputActions.Player.Move.ReadValue<Vector2>();
-        float space = _playerInputActions.Player.MoveStraight.ReadValue<float>();
+        var input = _playerInputActions.Player.Move.ReadValue<Vector2>();
+        var space = _playerInputActions.Player.MoveStraight.ReadValue<float>();
 
-        if (Math.Abs(space) >= 0.001f)
+        if (Math.Abs(space) >= _bias)
             _rocketMovement.ApplyAcceleration(1.0f, RocketMovement.ThrusterTypes.Main);
 
-        RocketMovement.ThrusterTypes thruster;
+        var thrusterX = input.x > 0 ? RocketMovement.ThrusterTypes.ExhaustLeft : RocketMovement.ThrusterTypes.ExhaustRight;
+        _rocketMovement.ApplyAcceleration(Math.Abs(input.x), thrusterX);
         
-        thruster = input.x > 0 ? RocketMovement.ThrusterTypes.ExhaustLeft : RocketMovement.ThrusterTypes.ExhaustRight;
-        _rocketMovement.ApplyAcceleration(Math.Abs(input.x), thruster);
-        thruster = input.y > 0 ? RocketMovement.ThrusterTypes.ExhaustFront : RocketMovement.ThrusterTypes.ExhaustBack;
-        _rocketMovement.ApplyAcceleration(Math.Abs(input.y), thruster);
+        var thrusterY = input.y > 0 ? RocketMovement.ThrusterTypes.ExhaustFront : RocketMovement.ThrusterTypes.ExhaustBack;
+        _rocketMovement.ApplyAcceleration(Math.Abs(input.y), thrusterY);
         
         _rocketMovement.UpdateOrientation();
     }
