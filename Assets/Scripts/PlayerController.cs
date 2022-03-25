@@ -1,15 +1,15 @@
 using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using Vector2 = UnityEngine.Vector2;
 
+[RequireComponent(typeof(RocketMovement))]
 public class PlayerController : MonoBehaviour
 {
-    private PlayerInputActions _playerInputActions;
-    private RocketMovement _rocketMovement;
-    
-    private const float _bias = 0.001f;
-    
+    private const float              _bias = 0.001f;
+
+    private       PlayerInputActions _playerInputActions;
+    private       RocketMovement     _rocketMovement;
+        
     private void Awake()
     {
         _playerInputActions = new PlayerInputActions();
@@ -21,11 +21,6 @@ public class PlayerController : MonoBehaviour
 
     private void Update()
     {
-        Move();
-    }
-
-    private void Move()
-    {
         var input = _playerInputActions.Player.Move.ReadValue<Vector2>();
         var space = _playerInputActions.Player.MoveStraight.ReadValue<float>();
 
@@ -34,10 +29,10 @@ public class PlayerController : MonoBehaviour
 
         var thrusterX = input.x > 0 ? RocketMovement.ThrusterTypes.ExhaustLeft : RocketMovement.ThrusterTypes.ExhaustRight;
         _rocketMovement.ApplyAcceleration(Math.Abs(input.x), thrusterX);
-        
+
         var thrusterY = input.y > 0 ? RocketMovement.ThrusterTypes.ExhaustFront : RocketMovement.ThrusterTypes.ExhaustBack;
         _rocketMovement.ApplyAcceleration(Math.Abs(input.y), thrusterY);
-        
+
         _rocketMovement.UpdateOrientation();
     }
 
@@ -50,14 +45,7 @@ public class PlayerController : MonoBehaviour
         }
     }
     
-    private void OnEnable()
-    {
-        _playerInputActions.Player.Enable();
-    }
+    private void OnEnable()  => _playerInputActions.Player.Enable();
     
-    private void OnDisable()
-    {
-        _playerInputActions.Player.Disable();
-    }
-
+    private void OnDisable() => _playerInputActions.Player.Disable();
 }

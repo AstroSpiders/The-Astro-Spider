@@ -17,10 +17,12 @@ public class RocketMovement : MonoBehaviour
 
     private class Thruster
     {
-        public float      Acceleration = 0.0f;
+        public float      Acceleration    = 0.0f;
+        public float      FuelConsumption = 1.0f;
+
         // We keep a reference to the GameObject so we can later use it for animation,
         // or improve the GetThrusterRotation method.
-        public GameObject GameObject   = null;
+        public GameObject GameObject      = null;
     }
 
     [SerializeField]
@@ -36,18 +38,29 @@ public class RocketMovement : MonoBehaviour
 
     // The maximum impact an accelerated thruster can have on the desired rotation for that frame
     [SerializeField, Range(0.0f, 45.0f)]
-    private float           _maxThrusterAngle       = 30.0f;
+    private float           _maxThrusterAngle            = 30.0f;
 
     // How fast the rocket can turn, measured in angles per second.
     [SerializeField, Range(0.0f, 90.0f)]
-    private float           _maxAngle               = 45.0f;
+    private float           _maxAngle                    = 45.0f;
     
     [SerializeField, Range(0.0f, 100.0f)]
-    private float           _accelerationMultiplier = 10.0f;
+    private float           _accelerationMultiplier      = 10.0f;
 
-    private Thruster[]      _thrusters              = new Thruster[(int)ThrusterTypes.Count];
+    [SerializeField, Range(0.0f, 100.0f)]
+    private float           _fuelCapacity                = 100.0f;
+
+    [SerializeField, Range(0.0f, 100.0f)]
+    private float           _mainThrusterFuelConsumption = 1.0f;
+
+    [SerializeField, Range(0.0f, 100.0f)]
+    private float           _sideThrusterFuelConsumption = 0.5f;
+
+    private Thruster[]      _thrusters                   = new Thruster[(int)ThrusterTypes.Count];
 
     private Rigidbody       _body;
+
+    private float           _currentFuelLevel;
 
     public void ApplyAcceleration(float         acceleration,
                                   ThrusterTypes thruster)
@@ -62,24 +75,19 @@ public class RocketMovement : MonoBehaviour
     {
         _body = GetComponent<Rigidbody>();
         InitializeThrustersList();
-    }
-
-    void Update()
-    {
-        // for testing purposes only.
-        // ApplyAcceleration(1.0f, ThrusterTypes.Main);
-
-        // UpdateOrientation();
+        _currentFuelLevel = _fuelCapacity;
     }
 
     void FixedUpdate()
     {
-        Vector3 gravity              = CustomGravity.GetGravity(transform.position);
+        Vector3 gravity               = CustomGravity.GetGravity(transform.position);
                                      
-        Vector3 velocity             = _body.velocity;
+        Vector3 velocity              = _body.velocity;
                                      
-        Vector3 thrustersDirection   = transform.forward.normalized;
-        float  thrustersAcceleration = 0.0f;
+        Vector3 thrustersDirection    = transform.forward.normalized;
+        float   thrustersAcceleration = 0.0f;
+
+        float   deltaTime             = Time.deltaTime;
 
         // See how much impact each of the truster have on the overall velocity. 
         for (int i = 0; i < _thrusters.Length; i++)
@@ -89,6 +97,23 @@ public class RocketMovement : MonoBehaviour
             float         acceleration      = _thrusters[i].Acceleration;
             Quaternion    thrusterRotation  = GetThrusterRotation(thruster);
             Vector3       thrusterDirection = thrusterRotation * forward;
+
+            float         fuelConsumed      = acceleration * _thrusters[i].FuelConsumption * deltaTime;
+
+            if (fuelConsumed < _currentFuelLevel)
+            {
+                _currentFuelLevel -= fuelConsumed;
+            }
+            else
+            {
+                // If we don't have enough fuel, then we can't accelerate the thruster with
+                // the desired acceleration, so we have to trim it down, or even make the acceleration
+                // equal to 0 if we have no fuel.
+                fuelConsumed      = Mathf.Min(fuelConsumed, _currentFuelLevel);
+                acceleration      = fuelConsumed / _thrusters[i].FuelConsumption * deltaTime;
+                _currentFuelLevel = 0.0f;
+            }
+
 
             // We calculate the dot product between our forward direction and our desired direction
             // for the current trusters, so that the side trusters have less impact on the velocity than the main thruster.
@@ -115,26 +140,28 @@ public class RocketMovement : MonoBehaviour
         {
             _thrusters[i] = new Thruster()
             {
-                Acceleration = 0.0f,
-                GameObject = null
+                Acceleration    = 0.0f,
+                GameObject      = null,
+                FuelConsumption = _sideThrusterFuelConsumption
             };
 
             switch ((ThrusterTypes)i)
             {
                 case ThrusterTypes.Main:
-                    _thrusters[i].GameObject = _mainThruster;
+                    _thrusters[i].GameObject      = _mainThruster;
+                    _thrusters[i].FuelConsumption = _mainThrusterFuelConsumption;
                     break;
                 case ThrusterTypes.ExhaustLeft:
-                    _thrusters[i].GameObject = _exhaust00;
+                    _thrusters[i].GameObject      = _exhaust00;
                     break;
                 case ThrusterTypes.ExhaustFront:
-                    _thrusters[i].GameObject = _exhaust01;
+                    _thrusters[i].GameObject      = _exhaust01;
                     break;
                 case ThrusterTypes.ExhaustBack:
-                    _thrusters[i].GameObject = _exhaust02;
+                    _thrusters[i].GameObject      = _exhaust02;
                     break;
                 case ThrusterTypes.ExhaustRight:
-                    _thrusters[i].GameObject = _exhaust03;
+                    _thrusters[i].GameObject      = _exhaust03;
                     break;
             }
         }
