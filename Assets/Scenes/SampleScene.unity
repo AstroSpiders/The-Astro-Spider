@@ -314,6 +314,29 @@ MonoBehaviour:
   m_DefaultActionMap: Player
   m_SplitScreenIndex: -1
   m_Camera: {fileID: 0}
+--- !u!114 &641725999
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 641725992}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 480a653de6ab6674e849be8c5169b61b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _sensorLayersCount: 6
+  _sensorsPerLayer: 8
+  _sensorLength: 2.5
+  _planetsLayerMask:
+    serializedVersion: 2
+    m_Bits: 128
+  _obstaclesLayerMask:
+    serializedVersion: 2
+    m_Bits: 256
+  _targetPlanet: {fileID: 1101849501}
+  _debugIntersectionSpheresRadius: 0.05
 --- !u!1 &705507993
 GameObject:
   m_ObjectHideFlags: 0
@@ -474,6 +497,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: rocket
       objectReference: {fileID: 0}
+    - target: {fileID: 6236790930908222091, guid: b4ebfe3d8ab4def429989cd25349eb90, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 6236790930908222091, guid: b4ebfe3d8ab4def429989cd25349eb90, type: 3}
+      propertyPath: m_TagString
+      value: Untagged
+      objectReference: {fileID: 0}
     - target: {fileID: 6292654871757767626, guid: b4ebfe3d8ab4def429989cd25349eb90, type: 3}
       propertyPath: m_LocalPosition.y
       value: 0.1
@@ -490,21 +521,77 @@ PrefabInstance:
       propertyPath: m_LocalRotation.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6292654871758200800, guid: b4ebfe3d8ab4def429989cd25349eb90, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 6292654871758200802, guid: b4ebfe3d8ab4def429989cd25349eb90, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 6292654871758200808, guid: b4ebfe3d8ab4def429989cd25349eb90, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 6292654871758200810, guid: b4ebfe3d8ab4def429989cd25349eb90, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 6292654871758200812, guid: b4ebfe3d8ab4def429989cd25349eb90, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 6292654871758200814, guid: b4ebfe3d8ab4def429989cd25349eb90, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
     - target: {fileID: 6292654871758200816, guid: b4ebfe3d8ab4def429989cd25349eb90, type: 3}
       propertyPath: m_Name
       value: exhaust_back
+      objectReference: {fileID: 0}
+    - target: {fileID: 6292654871758200816, guid: b4ebfe3d8ab4def429989cd25349eb90, type: 3}
+      propertyPath: m_Layer
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 6292654871758200818, guid: b4ebfe3d8ab4def429989cd25349eb90, type: 3}
       propertyPath: m_Name
       value: exhaust_front
       objectReference: {fileID: 0}
+    - target: {fileID: 6292654871758200818, guid: b4ebfe3d8ab4def429989cd25349eb90, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 6292654871758200820, guid: b4ebfe3d8ab4def429989cd25349eb90, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
     - target: {fileID: 6292654871758200822, guid: b4ebfe3d8ab4def429989cd25349eb90, type: 3}
       propertyPath: m_Name
       value: exhaust_right
       objectReference: {fileID: 0}
+    - target: {fileID: 6292654871758200822, guid: b4ebfe3d8ab4def429989cd25349eb90, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 6292654871758200824, guid: b4ebfe3d8ab4def429989cd25349eb90, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 6292654871758200826, guid: b4ebfe3d8ab4def429989cd25349eb90, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
     - target: {fileID: 6292654871758200828, guid: b4ebfe3d8ab4def429989cd25349eb90, type: 3}
       propertyPath: m_Name
       value: exhaust_left
+      objectReference: {fileID: 0}
+    - target: {fileID: 6292654871758200828, guid: b4ebfe3d8ab4def429989cd25349eb90, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 6292654871758200830, guid: b4ebfe3d8ab4def429989cd25349eb90, type: 3}
+      propertyPath: m_Layer
+      value: 6
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: b4ebfe3d8ab4def429989cd25349eb90, type: 3}
@@ -643,7 +730,7 @@ GameObject:
   - component: {fileID: 1101849499}
   - component: {fileID: 1101849498}
   - component: {fileID: 1101849497}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Planet
   m_TagString: Untagged
   m_Icon: {fileID: 0}

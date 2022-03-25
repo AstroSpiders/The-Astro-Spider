@@ -17,12 +17,12 @@ public class RocketMovement : MonoBehaviour
 
     private class Thruster
     {
-        public float      Acceleration    = 0.0f;
-        public float      FuelConsumption = 1.0f;
+        public float      Acceleration    { get; set; } = 0.0f;
+        public float      FuelConsumption { get; set; } = 1.0f;
 
         // We keep a reference to the GameObject so we can later use it for animation,
         // or improve the GetThrusterRotation method.
-        public GameObject GameObject      = null;
+        public GameObject GameObject      { get; set; } = null;
     }
 
     [SerializeField]
@@ -122,12 +122,13 @@ public class RocketMovement : MonoBehaviour
             thrustersAcceleration          += dot * acceleration * Time.deltaTime * _accelerationMultiplier;
         }
 
-        Vector3 newVelocity = velocity;
+        Vector3 newVelocity   = velocity;
+                             
+        newVelocity          += thrustersDirection * thrustersAcceleration;
+        newVelocity          += gravity * Time.deltaTime;
 
-        newVelocity        += thrustersDirection * thrustersAcceleration;
-        newVelocity        += gravity * Time.deltaTime;
-
-        _body.velocity      = newVelocity;
+        _body.velocity        = newVelocity;
+        _body.angularVelocity = Vector3.zero;
 
         // Reset the acceleration to 0 for each thruster.
         for (int i = 0; i < _thrusters.Length; i++)

@@ -25,7 +25,7 @@ public class PlayerController : MonoBehaviour
         var space = _playerInputActions.Player.MoveStraight.ReadValue<float>();
 
         if (Math.Abs(space) >= _bias)
-            _rocketMovement.ApplyAcceleration(1.0f, RocketMovement.ThrusterTypes.Main);
+            _rocketMovement.ApplyAcceleration(space, RocketMovement.ThrusterTypes.Main);
 
         var thrusterX = input.x > 0 ? RocketMovement.ThrusterTypes.ExhaustLeft : RocketMovement.ThrusterTypes.ExhaustRight;
         _rocketMovement.ApplyAcceleration(Math.Abs(input.x), thrusterX);
