@@ -193,6 +193,9 @@ MonoBehaviour:
   _maxThrusterAngle: 30
   _maxAngle: 45
   _accelerationMultiplier: 10
+  _fuelCapacity: 100
+  _mainThrusterFuelConsumption: 1
+  _sideThrusterFuelConsumption: 0.5
 --- !u!114 &641725996
 MonoBehaviour:
   m_ObjectHideFlags: 0
