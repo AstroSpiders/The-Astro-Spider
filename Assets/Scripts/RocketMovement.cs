@@ -159,13 +159,11 @@ public class RocketMovement : MonoBehaviour
         // See how much impact each of the truster have on the overall velocity. 
         for (int i = 0; i < _thrusters.Length; i++)
         {
-            Vector3       forward           = transform.forward;
             ThrusterTypes thruster          = (ThrusterTypes)i;
             float         acceleration      = _thrusters[i].Acceleration;
-            Quaternion    thrusterRotation  = GetThrusterRotation(thruster);
-            Vector3       thrusterDirection = thrusterRotation * forward;
-
-            float fuelConsumed = acceleration * _thrusters[i].FuelConsumption * deltaTime;
+            float         thrusterAngle     = GetThrusterAngle(thruster);
+            
+            float         fuelConsumed      = acceleration * _thrusters[i].FuelConsumption * deltaTime;
 
             if (fuelConsumed < _currentFuelLevel)
             {
@@ -181,10 +179,7 @@ public class RocketMovement : MonoBehaviour
                 _currentFuelLevel = 0.0f;
             }
 
-
-            // We calculate the dot product between our forward direction and our desired direction
-            // for the current trusters, so that the side trusters have less impact on the velocity than the main thruster.
-            float dot = Vector3.Dot(thrusterDirection, forward);
+            float dot = Mathf.Abs(Mathf.Cos(thrusterAngle));
 
             thrustersAcceleration += dot * acceleration * Time.deltaTime * _accelerationMultiplier;
         }
@@ -199,6 +194,17 @@ public class RocketMovement : MonoBehaviour
                 _body.velocity = newVelocity;
     }
 
+    private float GetThrusterAngle(ThrusterTypes thruster)
+    {
+        if (thruster == ThrusterTypes.Count || thruster == ThrusterTypes.Main)
+            return 0.0f;
+
+        float acceleration = _thrusters[(int)thruster].Acceleration;
+        float angle        = acceleration * _maxThrusterAngle;
+
+        return angle;
+    }
+
     // Returns a quaternion which represents how much the rocket must be rotated
     // based on how accelereted the thruster is.
     private Quaternion GetThrusterRotation(ThrusterTypes thruster)
@@ -206,8 +212,7 @@ public class RocketMovement : MonoBehaviour
         if (thruster == ThrusterTypes.Count)
             return Quaternion.identity;
 
-        float acceleration = _thrusters[(int)thruster].Acceleration;
-        float angle        = acceleration * _maxThrusterAngle;
+        float angle = GetThrusterAngle(thruster);
 
         // these rotations are hard-coded
         switch (thruster)

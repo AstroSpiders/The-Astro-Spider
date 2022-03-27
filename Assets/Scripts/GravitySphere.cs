@@ -6,14 +6,14 @@ using UnityEngine;
 public class GravitySphere : GravitySource
 {
     [SerializeField]
-    private float _gravity;
+    private float _gravity = 9.81f;
 
     [SerializeField, Min(0.0f)]
     // The radius in which the gravity has maximum effect.
     // After this radius, the gravity force starts to fade away.
-    private float _outerRadius        = 10.0f, 
+    public float  OuterRadius        = 10.0f, 
     // The radius after the gravity force is completeley faded.
-                  _outerFalloffRadius = 15.0f;
+                  OuterFalloffRadius = 15.0f;
 
     private float _outerFalloffFactor;
 
@@ -23,20 +23,20 @@ public class GravitySphere : GravitySource
 
         float distance = vector.magnitude;
 
-        if (distance > _outerFalloffRadius)
+        if (distance > OuterFalloffRadius)
             return Vector3.zero;
 
         float g = _gravity / distance; // we divide by distance so we don't have to normalize the vector
                                        // in the final calculation (minor optimization).
 
-        if (distance > _outerRadius)
+        if (distance > OuterRadius)
         {
             // this formula represents a linear interpolation.
             // when the distance to the object is <= _outerRadius, then the gravity force for this sphere has a maximum value
             // when the distance is >= _outerFalloffRadius, the gravity force for this sphere is equal to 0.
             // when the _outerRadis < distance < _outerFalloffRadius, the gravity force is somewhere between the maximum value and 0.
 
-            g *= 1.0f - (distance - _outerRadius) * _outerFalloffFactor;
+            g *= 1.0f - (distance - OuterRadius) * _outerFalloffFactor;
         }
 
         return g * vector;
@@ -49,18 +49,18 @@ public class GravitySphere : GravitySource
     {
         Vector3 p = transform.position;
         Gizmos.color = Color.yellow;
-        Gizmos.DrawWireSphere(p, _outerRadius);
+        Gizmos.DrawWireSphere(p, OuterRadius);
 
-        if (_outerFalloffRadius > _outerRadius)
+        if (OuterFalloffRadius > OuterRadius)
         {
             Gizmos.color = Color.cyan;
-            Gizmos.DrawWireSphere(p, _outerFalloffRadius);
+            Gizmos.DrawWireSphere(p, OuterFalloffRadius);
         }
     }
 
     private void OnValidate()
     {
-        _outerFalloffRadius = Mathf.Max(_outerFalloffRadius, _outerRadius);
-        _outerFalloffFactor = 1.0f / (_outerFalloffRadius - _outerRadius);
+        OuterFalloffRadius = Mathf.Max(OuterFalloffRadius, OuterRadius);
+        _outerFalloffFactor = 1.0f / (OuterFalloffRadius - OuterRadius);
     }
 }

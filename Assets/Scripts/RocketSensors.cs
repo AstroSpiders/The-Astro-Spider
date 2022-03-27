@@ -54,6 +54,9 @@ public class RocketSensors : MonoBehaviour
 
     private void OnDrawGizmos()
     {
+        if (!this.enabled)
+            return;
+
         if (_sensorOutputs is null)
             CreateSensorsArray();
 
@@ -115,14 +118,18 @@ public class RocketSensors : MonoBehaviour
                     _sensorOutputs[sensorIndex].ObstacleDistance = hitInfo.distance / _sensorLength;
                 
                 if (Physics.Raycast(transform.position, currentDirection, out hitInfo, _sensorLength, _planetsLayerMask))
-                    _sensorOutputs[sensorIndex].TargetDistance = hitInfo.distance / _sensorLength;
-
-                Vector3 toTargetPlanet = (_targetPlanet.position - transform.position).normalized;
+                    if (hitInfo.transform == _targetPlanet)
+                        _sensorOutputs[sensorIndex].TargetDistance = hitInfo.distance / _sensorLength;
 
                 if (_targetPlanet != null)
+                {
+                    Vector3 toTargetPlanet = (_targetPlanet.position - transform.position).normalized;
                     _sensorOutputs[sensorIndex].TargetDirection = Vector3.Dot(currentDirection, toTargetPlanet);
+                }
                 else
+                {
                     Debug.Log("You must provide a target planet for the rocket to land on.");
+                }
 
                 sensorsRotation *= Quaternion.Euler(0.0f, angleBetweenSensors, 0.0f);
                 sensorIndex++;
