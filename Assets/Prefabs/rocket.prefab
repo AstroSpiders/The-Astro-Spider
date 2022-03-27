@@ -82,9 +82,9 @@ MonoBehaviour:
   _exhaust01: {fileID: 8569461502260009369}
   _exhaust02: {fileID: 8569461502260009371}
   _exhaust03: {fileID: 8569461502260009373}
-  _maxThrusterAngle: 30
-  _maxAngle: 45
-  _accelerationMultiplier: 10
+  _maxThrusterAngle: 90
+  _angularVelocityUpdateSpeed: 10
+  _accelerationMultiplier: 20
   _fuelCapacity: 100
   _mainThrusterFuelConsumption: 1
   _sideThrusterFuelConsumption: 0.5
@@ -102,7 +102,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _sensorLayersCount: 6
   _sensorsPerLayer: 8
-  _sensorLength: 2.5
+  _sensorLength: 20
   _planetsLayerMask:
     serializedVersion: 2
     m_Bits: 128

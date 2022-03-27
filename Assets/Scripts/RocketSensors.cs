@@ -26,13 +26,13 @@ public class RocketSensors : MonoBehaviour
     }
 
     [SerializeField, Range(2, 10)]
-    private int            _sensorLayersCount;
+    private int            _sensorLayersCount = 6;
 
     [SerializeField, Range(4, 20)]
-    private int            _sensorsPerLayer;
+    private int            _sensorsPerLayer   = 8;
 
     [SerializeField, Range(0.0f, 100.0f)]
-    private float          _sensorLength;
+    private float          _sensorLength      = 20;
 
     [SerializeField]
     private LayerMask      _planetsLayerMask;

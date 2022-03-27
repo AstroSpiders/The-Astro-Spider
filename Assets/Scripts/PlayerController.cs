@@ -32,8 +32,6 @@ public class PlayerController : MonoBehaviour
 
         var thrusterY = input.y > 0 ? RocketMovement.ThrusterTypes.ExhaustFront : RocketMovement.ThrusterTypes.ExhaustBack;
         _rocketMovement.ApplyAcceleration(Math.Abs(input.y), thrusterY);
-
-        _rocketMovement.UpdateOrientation();
     }
 
     // TODO: implement the Fire function
