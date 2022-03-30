@@ -118,6 +118,9 @@ public class WorldGenerator : MonoBehaviour
 
             lastPlanetRadius = radius;
             lastOrigin       = newPosition;
+
+            // for debugging purposes only.
+            planet.gameObject.GetComponent<MeshRenderer>().material.color = new Color((float)i / (float)(_planetsGenerateCount - 1), (float)i / (float)(_planetsGenerateCount - 1), (float)i / (float)(_planetsGenerateCount - 1), 1.0f);
  
             i++;
         }

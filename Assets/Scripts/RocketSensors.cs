@@ -25,6 +25,8 @@ public class RocketSensors : MonoBehaviour
         public Vector3 CurrentDirection { get; set; }
     }
 
+    public Transform       TargetPlanet       = null;
+
     [SerializeField, Range(2, 10)]
     private int            _sensorLayersCount = 6;
 
@@ -39,9 +41,6 @@ public class RocketSensors : MonoBehaviour
 
     [SerializeField]
     private LayerMask      _obstaclesLayerMask;
-
-    [SerializeField]
-    private Transform      _targetPlanet;
 
     [SerializeField]
     private float          _debugIntersectionSpheresRadius = 0.05f;
@@ -118,12 +117,12 @@ public class RocketSensors : MonoBehaviour
                     _sensorOutputs[sensorIndex].ObstacleDistance = hitInfo.distance / _sensorLength;
                 
                 if (Physics.Raycast(transform.position, currentDirection, out hitInfo, _sensorLength, _planetsLayerMask))
-                    if (hitInfo.transform == _targetPlanet)
+                    if (hitInfo.transform == TargetPlanet)
                         _sensorOutputs[sensorIndex].TargetDistance = hitInfo.distance / _sensorLength;
 
-                if (_targetPlanet != null)
+                if (TargetPlanet != null)
                 {
-                    Vector3 toTargetPlanet = (_targetPlanet.position - transform.position).normalized;
+                    Vector3 toTargetPlanet = (TargetPlanet.position - transform.position).normalized;
                     _sensorOutputs[sensorIndex].TargetDirection = Vector3.Dot(currentDirection, toTargetPlanet);
                 }
                 else

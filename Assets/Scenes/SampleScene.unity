@@ -499,6 +499,18 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5930579180306032157, guid: 8a436368efd6cb6478540782ca29b9a1, type: 3}
+      propertyPath: _worldGenerator
+      value: 
+      objectReference: {fileID: 235371912}
+    - target: {fileID: 5930579180306032157, guid: 8a436368efd6cb6478540782ca29b9a1, type: 3}
+      propertyPath: _maxLandingImpact
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 5930579180306032157, guid: 8a436368efd6cb6478540782ca29b9a1, type: 3}
+      propertyPath: _landingDotThreshold
+      value: 0.9
+      objectReference: {fileID: 0}
     - target: {fileID: 8589877277892351200, guid: 8a436368efd6cb6478540782ca29b9a1, type: 3}
       propertyPath: m_Name
       value: rocket

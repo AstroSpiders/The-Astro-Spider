@@ -3,9 +3,9 @@ using UnityEngine;
 [RequireComponent(typeof(Rigidbody))]
 public class Asteroid : MonoBehaviour
 {
-    public float      InitialImpulseForce { get;         set; } = 1.0f;
-
-    public bool       HitPlanet           { get; private set; } = false;
+    public  float     InitialImpulseForce { get;         set; } = 1.0f;
+            
+    public  bool      HitPlanet           { get; private set; } = false;
 
     private Rigidbody _body;
 
