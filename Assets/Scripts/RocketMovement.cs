@@ -1,6 +1,7 @@
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody))]
+[RequireComponent(typeof(RocketState))]
 public class RocketMovement : MonoBehaviour
 {
     public enum ThrusterTypes
@@ -58,6 +59,7 @@ public class RocketMovement : MonoBehaviour
     private Thruster[]      _thrusters                   = new Thruster[(int)ThrusterTypes.Count];
 
     private Rigidbody       _body;
+    private RocketState     _state;
 
     private float           _currentFuelLevel;
 
@@ -72,19 +74,23 @@ public class RocketMovement : MonoBehaviour
 
     private void Awake()
     {
-        _body = GetComponent<Rigidbody>();
+        _body  = GetComponent<Rigidbody>();
+        _state = GetComponent<RocketState>();
+
         InitializeThrustersList();
+        
         _currentFuelLevel = _fuelCapacity;
     }
 
     private void FixedUpdate()
     {
+        if (_state.Dead)
+            ResetThrusters();
+
         UpdateVelocity();
         UpdateAngularVelocity();
 
-        // Reset the acceleration to 0 for each thruster.
-        for (int i = 0; i < _thrusters.Length; i++)
-            _thrusters[i].Acceleration = 0.0f;
+        ResetThrusters();
     }
 
     private void InitializeThrustersList()
@@ -240,5 +246,12 @@ public class RocketMovement : MonoBehaviour
             angleInDegrees -= 360f;
 
         return angleInDegrees * rotationAxis.normalized * Mathf.Deg2Rad;
+    }
+
+    private void ResetThrusters()
+    {
+        // Reset the acceleration to 0 for each thruster.
+        for (int i = 0; i < _thrusters.Length; i++)
+            _thrusters[i].Acceleration = 0.0f;
     }
 }
