@@ -3,7 +3,7 @@ using UnityEngine;
 // Based on this tutorial: https://catlikecoding.com/unity/tutorials/movement/custom-gravity/ 
 // section 3.1
 [RequireComponent(typeof(Rigidbody))]
-public class CustomPhysicsRigidbody : MonoBehaviour
+public class CustomGravityRigidbody : MonoBehaviour
 {
     private const float     _bias          = 0.0001f;
     private const float     _maxFloatDelay = 1.0f;
@@ -40,6 +40,5 @@ public class CustomPhysicsRigidbody : MonoBehaviour
         }
 
         _body.AddForce(CustomGravity.GetGravity(_body.position), ForceMode.Acceleration);
-        _body.AddForce(CustomPhysics.GetDrag(_body.velocity),    ForceMode.Acceleration);
     }
 }

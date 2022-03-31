@@ -170,7 +170,7 @@ MonoBehaviour:
   _asteroidPrefab: {fileID: 6454509588066999608, guid: 3e847b4a5d996b649a0ed7f0ff16b55a, type: 3}
   _planetsGenerateCount: 5
   _minAsteroidsPerPlanetCount: 1
-  _maxAsteroidsPerPlanetCount: 1000
+  _maxAsteroidsPerPlanetCount: 100
   _planetMinRadius: 10
   _planetMaxRadius: 40
   _asteroidMinRadius: 0.5
