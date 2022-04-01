@@ -76,6 +76,9 @@ public class AITrainer : MonoBehaviour
 
         _geneticAlgorithm = new GeneticAlgorithm(gaParams);
 
+        // for testing purposes only
+        // the fitness function, and the logic for swaping generations
+        // were not defined yet.
         for (int i = 0; i < 10; i++)
         {
             float fitness = 1.0f;

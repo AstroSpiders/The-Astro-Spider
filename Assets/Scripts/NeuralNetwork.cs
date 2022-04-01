@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine;
 
 public class NeuralNetwork
 {
@@ -109,15 +110,22 @@ public class NeuralNetwork
             }
             else
             {
-                float sum = 0.0f;
-
-                foreach (var connection in _graph.InverseAdj[node.Innov])
+                if (!_graph.InverseAdj.ContainsKey(node.Innov))
                 {
-                    Node otherNode  = _graph.Nodes[connection.Item1];
-                         sum       += otherNode.ActivationValue * connection.Item2;
+                    node.ActivationValue = 1.0f;
                 }
+                else
+                {
+                    float sum = 0.0f;
 
-                node.ActivationValue = Sigmoid(sum);
+                    foreach (var connection in _graph.InverseAdj[node.Innov])
+                    {
+                        Node otherNode = _graph.Nodes[connection.Item1];
+                        sum += otherNode.ActivationValue * connection.Item2;
+                    }
+
+                    node.ActivationValue = Sigmoid(sum);
+                }
 
                 if (node.NodeType == GeneticAlgorithm.NodeType.Output)
                     outputValues[node.Innov - _geneticAlgorithm.FirstOutputInnovNumber] = node.ActivationValue;
