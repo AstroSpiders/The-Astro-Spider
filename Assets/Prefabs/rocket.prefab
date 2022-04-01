@@ -96,11 +96,12 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8589877277892351200}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 480a653de6ab6674e849be8c5169b61b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  TargetPlanet: {fileID: 0}
   _sensorLayersCount: 6
   _sensorsPerLayer: 8
   _sensorLength: 20
@@ -110,7 +111,6 @@ MonoBehaviour:
   _obstaclesLayerMask:
     serializedVersion: 2
     m_Bits: 256
-  _targetPlanet: {fileID: 0}
   _debugIntersectionSpheresRadius: 0.05
 --- !u!114 &5930579180306032157
 MonoBehaviour:
@@ -124,6 +124,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e36fe14d2fb38b34da811bbafcc39aff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _worldGenerator: {fileID: 0}
+  _landingDotThreshold: 0.9
+  _maxLandingImpact: 2
 --- !u!1001 &8569461502259912497
 PrefabInstance:
   m_ObjectHideFlags: 0

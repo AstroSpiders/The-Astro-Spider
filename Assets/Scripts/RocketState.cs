@@ -7,25 +7,23 @@ using UnityEngine;
 // It also keeps track of the planet that rocket needs to land on.
 public class RocketState : MonoBehaviour
 {
-    public  bool           Dead { get; private set; } = false;
-
-    [SerializeField]
-    private WorldGenerator _worldGenerator            = null;
-
-    [SerializeField]
-    private float          _landingDotThreshold       = 0.9f;
-
-    [SerializeField]
-    private float          _maxLandingImpact          = 1.0f;
-
-    private RocketSensors  _sensors                   = null;
-    private Rigidbody      _body                      = null;
+    public WorldGenerator WorldGenerator             = null;
+    public  bool          Dead { get; private set; } = false;
     
-    private int            _currentPlanetIndex        = 0;
+    [SerializeField]
+    private float         _landingDotThreshold       = 0.9f;
+
+    [SerializeField]
+    private float         _maxLandingImpact          = 1.0f;
+
+    private RocketSensors _sensors                   = null;
+    private Rigidbody     _body                      = null;
+    
+    private int           _currentPlanetIndex        = 0;
 
     private void Start()
     {
-        if (_worldGenerator is null)
+        if (WorldGenerator is null)
         {
             Debug.Log("Please provide an WorldGenerator object to the RocketState script.");
             return;
@@ -34,9 +32,9 @@ public class RocketState : MonoBehaviour
         _sensors = GetComponent<RocketSensors>();
         _body    = GetComponent<Rigidbody>();
 
-        if (_currentPlanetIndex < _worldGenerator.Planets.Length)
+        if (_currentPlanetIndex < WorldGenerator.Planets.Length)
         { 
-            _sensors.TargetPlanet = _worldGenerator.Planets[_currentPlanetIndex].transform;
+            _sensors.TargetPlanet = WorldGenerator.Planets[_currentPlanetIndex].transform;
             _sensors.enabled      = true;
         }
     }
@@ -46,7 +44,7 @@ public class RocketState : MonoBehaviour
         var otherObject = collision.gameObject;
         if (otherObject.CompareTag("Planet"))
         {
-            if (_worldGenerator.Planets[_currentPlanetIndex].gameObject != otherObject)
+            if (WorldGenerator.Planets[_currentPlanetIndex].gameObject != otherObject)
                 return;
 
             var planetToObject = (transform.position - otherObject.transform.position).normalized;
@@ -70,11 +68,11 @@ public class RocketState : MonoBehaviour
 
     private void ProcessLanding()
     {
-        if (_currentPlanetIndex + 1 < _worldGenerator.Planets.Length)
+        if (_currentPlanetIndex + 1 < WorldGenerator.Planets.Length)
         {
             Debug.Log("Landed on planet " + _currentPlanetIndex.ToString());
             _currentPlanetIndex++;
-            _sensors.TargetPlanet = _worldGenerator.Planets[_currentPlanetIndex].transform;
+            _sensors.TargetPlanet = WorldGenerator.Planets[_currentPlanetIndex].transform;
         }
         else
         {

@@ -182,15 +182,15 @@ public class GeneticAlgorithm
         public int   GenerationsToStagnate            { get; set; }
     }
 
-    public List<Specie> Population { get; private set; } = new List<Specie>();
+    public List<Specie> Population             { get; private set; } = new List<Specie>();
+    public int          FirstOutputInnovNumber { get; private set; }
 
-    private Parameters   _parameters;
-    private int          _connectionInnovationNummber = 0;
-    private int          _nodeInnovationNumber        = 0;
+    private Parameters  _parameters;
+    private int         _connectionInnovationNummber                 = 0;
+    private int         _nodeInnovationNumber                        = 0;
 
-    private Random       _random;
+    private Random      _random;
 
-    // TODO: Don't forget about the bias node.
     public GeneticAlgorithm(Parameters parameters)
     {
         _random     = new Random();
@@ -211,6 +211,9 @@ public class GeneticAlgorithm
             }
             for (int j = 0; j < _parameters.OutNodes; j++)
             {
+                if (j == 0)
+                    FirstOutputInnovNumber = _nodeInnovationNumber;
+
                 individual.Nodes.Add(new Node() { Innov = _nodeInnovationNumber, NodeType = NodeType.Output });
                 _nodeInnovationNumber++;
             }

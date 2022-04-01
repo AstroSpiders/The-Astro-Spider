@@ -25,27 +25,29 @@ public class RocketSensors : MonoBehaviour
         public Vector3 CurrentDirection { get; set; }
     }
 
-    public Transform       TargetPlanet       = null;
+    public Transform      TargetPlanet       = null;
+
+    public int            TotalSensorsCount { get => (_sensorLayersCount - 2) * _sensorsPerLayer + 2; }
+
+    public SensorOutput[] SensorOutputs { get; private set; }
 
     [SerializeField, Range(2, 10)]
-    private int            _sensorLayersCount = 6;
-
-    [SerializeField, Range(4, 20)]
-    private int            _sensorsPerLayer   = 8;
+    private int           _sensorLayersCount              = 6;
+                                                          
+    [SerializeField, Range(4, 20)]                        
+    private int           _sensorsPerLayer                = 8;
 
     [SerializeField, Range(0.0f, 100.0f)]
-    private float          _sensorLength      = 20;
+    private float         _sensorLength                   = 20;
 
     [SerializeField]
-    private LayerMask      _planetsLayerMask;
+    private LayerMask     _planetsLayerMask;
 
     [SerializeField]
-    private LayerMask      _obstaclesLayerMask;
+    private LayerMask     _obstaclesLayerMask;
 
     [SerializeField]
-    private float          _debugIntersectionSpheresRadius = 0.05f;
-
-    private SensorOutput[] _sensorOutputs;
+    private float         _debugIntersectionSpheresRadius = 0.05f;
 
     private void Awake()  => CreateSensorsArray();
 
@@ -56,12 +58,12 @@ public class RocketSensors : MonoBehaviour
         if (!this.enabled)
             return;
 
-        if (_sensorOutputs is null)
+        if (SensorOutputs is null)
             CreateSensorsArray();
 
         UpdateSensors();
 
-        foreach (var sensor in _sensorOutputs)
+        foreach (var sensor in SensorOutputs)
         {
             Gizmos.color = Color.yellow;
             Gizmos.DrawLine(transform.position, transform.position + sensor.CurrentDirection * _sensorLength);
@@ -82,9 +84,9 @@ public class RocketSensors : MonoBehaviour
 
     private void CreateSensorsArray()
     {
-        _sensorOutputs = new SensorOutput[(_sensorLayersCount - 2) * _sensorsPerLayer + 2];
-        for (int i = 0; i < _sensorOutputs.Length; i++)
-            _sensorOutputs[i] = new SensorOutput();
+        SensorOutputs = new SensorOutput[TotalSensorsCount];
+        for (int i = 0; i < SensorOutputs.Length; i++)
+            SensorOutputs[i] = new SensorOutput();
     }
 
     private void UpdateSensors()
@@ -108,22 +110,22 @@ public class RocketSensors : MonoBehaviour
             {
                 Vector3 currentDirection = sensorsRotation * Vector3.forward;
 
-                _sensorOutputs[sensorIndex].CurrentDirection = currentDirection;
-                _sensorOutputs[sensorIndex].ObstacleDistance = -1.0f;
-                _sensorOutputs[sensorIndex].TargetDistance   = -1.0f;
-                _sensorOutputs[sensorIndex].TargetDirection  = 0.0f;
+                SensorOutputs[sensorIndex].CurrentDirection = currentDirection;
+                SensorOutputs[sensorIndex].ObstacleDistance = -1.0f;
+                SensorOutputs[sensorIndex].TargetDistance   = -1.0f;
+                SensorOutputs[sensorIndex].TargetDirection  = 0.0f;
 
                 if (Physics.Raycast(transform.position, currentDirection, out RaycastHit hitInfo, _sensorLength, _obstaclesLayerMask))
-                    _sensorOutputs[sensorIndex].ObstacleDistance = hitInfo.distance / _sensorLength;
+                    SensorOutputs[sensorIndex].ObstacleDistance = hitInfo.distance / _sensorLength;
                 
                 if (Physics.Raycast(transform.position, currentDirection, out hitInfo, _sensorLength, _planetsLayerMask))
                     if (hitInfo.transform == TargetPlanet)
-                        _sensorOutputs[sensorIndex].TargetDistance = hitInfo.distance / _sensorLength;
+                        SensorOutputs[sensorIndex].TargetDistance = hitInfo.distance / _sensorLength;
 
                 if (TargetPlanet != null)
                 {
                     Vector3 toTargetPlanet = (TargetPlanet.position - transform.position).normalized;
-                    _sensorOutputs[sensorIndex].TargetDirection = Vector3.Dot(currentDirection, toTargetPlanet);
+                    SensorOutputs[sensorIndex].TargetDirection = Vector3.Dot(currentDirection, toTargetPlanet);
                 }
                 else
                 {
