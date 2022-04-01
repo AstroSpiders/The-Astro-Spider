@@ -34,7 +34,10 @@ public class OrbitCamera : MonoBehaviour
     private Vector2            _orbitAngles        = new Vector2(0.0f, 0.0f);
     private float              _lastManualRotationTime;
 
-    private const float        _verticalTranslate  = 2.0f;
+    private Quaternion         _focusAlignment    = Quaternion.identity;
+    private Quaternion         _orbitRotation;
+
+    private const float        _verticalTranslate  = 0.0f;
     private const float        _bigEpsilon         = 0.01f;
     private const float        _epsilon            = 0.001f;
     private const float        _smallEpsilon       = 0.000001f;
@@ -43,22 +46,20 @@ public class OrbitCamera : MonoBehaviour
     {
         _playerInputActions = new PlayerInputActions();
         _focusPoint = _focus.position;
-        transform.localRotation = Quaternion.Euler(_orbitAngles);
+        transform.localRotation = _orbitRotation = Quaternion.Euler(_orbitAngles);
     }
 
     private void LateUpdate()
     {
+        _focusAlignment = Quaternion.FromToRotation(_focusAlignment * Vector3.up, _focus.forward) * _focusAlignment;
+
         UpdateFocusPoint();
-        Quaternion lookRotation;
         if (ManualRotation() || AutomaticRotation())
         {
             ConstraintAngles();
-            lookRotation = Quaternion.Euler(_orbitAngles);
+            _orbitRotation = Quaternion.Euler(_orbitAngles);
         }
-        else
-        {
-            lookRotation = transform.localRotation;
-        }
+        Quaternion lookRotation = _focusAlignment * _orbitRotation;
         var lookDirection = lookRotation * Vector3.forward;
         var translate = new Vector3(0f, _verticalTranslate, 0f);
         var lookPosition = _focusPoint - lookDirection * _distance + translate;
@@ -98,7 +99,7 @@ public class OrbitCamera : MonoBehaviour
         input = new Vector2(input.y * Time.unscaledDeltaTime, input.x * Time.unscaledDeltaTime);
         if (Mathf.Abs(input.x) > _epsilon || Mathf.Abs(input.y) > _epsilon)
         {
-            _orbitAngles += _rotationSpeed * input;
+            _orbitAngles += _rotationSpeed * new Vector2(input.x, -input.y);
             _lastManualRotationTime = Time.unscaledTime;
             return true;
         }
@@ -111,10 +112,10 @@ public class OrbitCamera : MonoBehaviour
         if (Time.unscaledTime - _lastManualRotationTime < _alignDelay)
             return false;
 
-        var movement = new Vector2(
-            _focusPoint.x - _previousFocusPoint.x,
-            _focusPoint.z - _previousFocusPoint.z
-        );
+        Vector3 alignedDelta = Quaternion.Inverse(_focusAlignment) *
+            (_focusPoint - _previousFocusPoint);
+
+        var movement = new Vector2(alignedDelta.x, alignedDelta.z);
         var movementDeltaSqr = movement.sqrMagnitude;
 
         if (movementDeltaSqr < _smallEpsilon)

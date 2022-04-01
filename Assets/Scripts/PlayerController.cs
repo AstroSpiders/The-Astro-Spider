@@ -7,6 +7,9 @@ public class PlayerController : MonoBehaviour
 {
     private const float              _bias = 0.001f;
 
+    [SerializeField]
+    private       Transform          _playerInputSpace = default;
+
     private       PlayerInputActions _playerInputActions;
     private       RocketMovement     _rocketMovement;
         
@@ -22,6 +25,13 @@ public class PlayerController : MonoBehaviour
     private void Update()
     {
         var input = _playerInputActions.Player.Move.ReadValue<Vector2>();
+
+        if (_playerInputSpace)
+        {
+            Vector3 transformedInput = _playerInputSpace.TransformDirection(input.x, 0.0f, input.y);
+            input = new Vector2(transformedInput.x, transformedInput.z);
+        }
+
         var space = _playerInputActions.Player.MoveStraight.ReadValue<float>();
 
         if (Math.Abs(space) >= _bias)
