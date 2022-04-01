@@ -1,5 +1,6 @@
 using UnityEngine;
 
+// Based on https://catlikecoding.com/unity/tutorials/movement/orbit-camera/
 [RequireComponent(typeof(Camera))]
 public class OrbitCamera : MonoBehaviour
 {
@@ -9,25 +10,19 @@ public class OrbitCamera : MonoBehaviour
     private float                _distance          = 5.0f;
     
     [SerializeField, Range(1.0f, 360.0f)] 
-    private float               _rotationSpeed      = 10.0f;
+    private float               _rotationSpeed      = 15.0f;
 
     [SerializeField] 
     private Transform            _focus;
     [SerializeField, Min(0.0f)] 
-    private float                _focusRadius;
+    private float                _focusRadius       = 1.0f;
     [SerializeField, Range(0.0f, 1.0f)] 
     private float               _focusCentering     = 0.5f;
 
     [SerializeField, Range(-89.0f, 89.0f)] 
-    private float               _minVerticalAngle   = -60.0f;
+    private float               _minVerticalAngle   = -89.0f;
     [SerializeField, Range(-89.0f, 89.0f)] 
-    private float               _maxVerticalAngle   = 60.0f;
-
-    [SerializeField, Min(0.0f)] 
-    private float               _alignDelay         = 5.0f;
-
-    [SerializeField, Range(0.0f, 90.0f)] 
-    private float               _alignSmoothRange   = 45.0f;
+    private float               _maxVerticalAngle   = 89.0f;
 
     [SerializeField]
     private LayerMask           _obstructionMask    = -1;
@@ -82,7 +77,7 @@ public class OrbitCamera : MonoBehaviour
         Vector3 rectPosition  = lookPosition + rectOffset;
         Vector3 castFrom      = _focus.position;
         Vector3 castLine      = rectPosition - castFrom;
-        float castDistance    = castLine.magnitude;
+        float   castDistance  = castLine.magnitude;
         Vector3 castDirection = castLine / castDistance;
 
         if (Physics.BoxCast(
