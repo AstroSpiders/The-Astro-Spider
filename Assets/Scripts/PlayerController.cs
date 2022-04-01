@@ -26,22 +26,28 @@ public class PlayerController : MonoBehaviour
     {
         var input = _playerInputActions.Player.Move.ReadValue<Vector2>();
 
+        Vector3 desiredDirection;
         if (_playerInputSpace)
-        {
-            Vector3 transformedInput = _playerInputSpace.TransformDirection(input.x, 0.0f, input.y);
-            input = new Vector2(transformedInput.x, transformedInput.z);
-        }
+            desiredDirection = _playerInputSpace.TransformDirection(input.x, 0.0f, input.y);
+        else
+            desiredDirection = new Vector3(input.x, 0.0f, input.y);
+        
 
         var space = _playerInputActions.Player.MoveStraight.ReadValue<float>();
 
         if (Math.Abs(space) >= _bias)
             _rocketMovement.ApplyAcceleration(space, RocketMovement.ThrusterTypes.Main);
 
-        var thrusterX = input.x > 0 ? RocketMovement.ThrusterTypes.ExhaustLeft : RocketMovement.ThrusterTypes.ExhaustRight;
-        _rocketMovement.ApplyAcceleration(Math.Abs(input.x), thrusterX);
+        float horizontalDot = Vector3.Dot(desiredDirection, transform.right);
 
-        var thrusterY = input.y > 0 ? RocketMovement.ThrusterTypes.ExhaustFront : RocketMovement.ThrusterTypes.ExhaustBack;
-        _rocketMovement.ApplyAcceleration(Math.Abs(input.y), thrusterY);
+        var thrusterX = horizontalDot > 0 ? RocketMovement.ThrusterTypes.ExhaustLeft : RocketMovement.ThrusterTypes.ExhaustRight;
+        _rocketMovement.ApplyAcceleration(Math.Abs(horizontalDot), thrusterX);
+
+        float verticalDot = Vector3.Dot(desiredDirection, transform.up);
+        
+        var thrusterY = verticalDot > 0 ? RocketMovement.ThrusterTypes.ExhaustBack : RocketMovement.ThrusterTypes.ExhaustFront;
+        _rocketMovement.ApplyAcceleration(Math.Abs(verticalDot), thrusterY);
+        
     }
 
     // TODO: implement the Fire function
