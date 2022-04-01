@@ -16,10 +16,12 @@ public class PlayerController : MonoBehaviour
     private void Awake()
     {
         _playerInputActions = new PlayerInputActions();
-        _rocketMovement = GetComponent<RocketMovement>();
+        _rocketMovement     = GetComponent<RocketMovement>();
         
         _playerInputActions.Player.Enable();
         _playerInputActions.Player.Fire.performed += Fire;
+
+        Cursor.lockState = CursorLockMode.Locked;
     }
 
     private void Update()
@@ -28,10 +30,13 @@ public class PlayerController : MonoBehaviour
 
         Vector3 desiredDirection;
         if (_playerInputSpace)
-            desiredDirection = _playerInputSpace.TransformDirection(input.x, 0.0f, input.y);
+        {
+            desiredDirection = _playerInputSpace.TransformDirection(input.x, 0.0f, input.y).normalized;
+        }
         else
+        {
             desiredDirection = new Vector3(input.x, 0.0f, input.y);
-        
+        }
 
         var space = _playerInputActions.Player.MoveStraight.ReadValue<float>();
 
@@ -39,14 +44,15 @@ public class PlayerController : MonoBehaviour
             _rocketMovement.ApplyAcceleration(space, RocketMovement.ThrusterTypes.Main);
 
         float horizontalDot = Vector3.Dot(desiredDirection, transform.right);
+        float verticalDot = Vector3.Dot(desiredDirection, -transform.up);
 
-        var thrusterX = horizontalDot > 0 ? RocketMovement.ThrusterTypes.ExhaustLeft : RocketMovement.ThrusterTypes.ExhaustRight;
-        _rocketMovement.ApplyAcceleration(Math.Abs(horizontalDot), thrusterX);
+        Vector2 dotDirection = new Vector2(horizontalDot, verticalDot).normalized * input.magnitude;
 
-        float verticalDot = Vector3.Dot(desiredDirection, transform.up);
-        
-        var thrusterY = verticalDot > 0 ? RocketMovement.ThrusterTypes.ExhaustBack : RocketMovement.ThrusterTypes.ExhaustFront;
-        _rocketMovement.ApplyAcceleration(Math.Abs(verticalDot), thrusterY);
+        var thrusterX = dotDirection.x > 0 ? RocketMovement.ThrusterTypes.ExhaustLeft : RocketMovement.ThrusterTypes.ExhaustRight;
+        _rocketMovement.ApplyAcceleration(Math.Abs(dotDirection.x), thrusterX);
+
+        var thrusterY = dotDirection.y > 0 ? RocketMovement.ThrusterTypes.ExhaustFront : RocketMovement.ThrusterTypes.ExhaustBack;
+        _rocketMovement.ApplyAcceleration(Math.Abs(dotDirection.y), thrusterY);
         
     }
 

@@ -398,12 +398,15 @@ MonoBehaviour:
   _distance: 5
   _rotationSpeed: 15
   _focus: {fileID: 6236790931704263612}
-  _focusRadius: 0
+  _focusRadius: 1
   _focusCentering: 0.75
-  _minVerticalAngle: -60
-  _maxVerticalAngle: 60
+  _minVerticalAngle: -89
+  _maxVerticalAngle: 89
   _alignDelay: 5
   _alignSmoothRange: 60
+  _obstructionMask:
+    serializedVersion: 2
+    m_Bits: 439
 --- !u!1001 &2429929018655844181
 PrefabInstance:
   m_ObjectHideFlags: 0
