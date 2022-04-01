@@ -398,7 +398,7 @@ MonoBehaviour:
   _distance: 5
   _rotationSpeed: 15
   _focus: {fileID: 6236790931704263612}
-  _focusRadius: 1
+  _focusRadius: 0
   _focusCentering: 0.75
   _minVerticalAngle: -60
   _maxVerticalAngle: 60
@@ -552,6 +552,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1778d596110b90348b5411221169c095, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _playerInputSpace: {fileID: 963194228}
 --- !u!4 &6236790931704263612 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4265081006869203808, guid: 8a436368efd6cb6478540782ca29b9a1, type: 3}
