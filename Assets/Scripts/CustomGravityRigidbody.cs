@@ -39,6 +39,22 @@ public class CustomGravityRigidbody : MonoBehaviour
             }
         }
 
-        _body.AddForce(CustomGravity.GetGravity(_body.position), ForceMode.Acceleration);
+        Vector3 velocity      = _body.velocity;
+
+        // Runge-Kutta Order 4: https://www.youtube.com/watch?v=hGCP6I2WisM&list=PLW3Zl3wyJwWOpdhYedlD-yCB7WQoHf-My&index=111
+        Vector3 k1            = VelocityField(transform.position,                              velocity, Time.deltaTime);
+        Vector3 k2            = VelocityField(transform.position + Time.deltaTime / 2.0f * k1, velocity, Time.deltaTime);
+        Vector3 k3            = VelocityField(transform.position + Time.deltaTime / 2.0f * k2, velocity, Time.deltaTime);
+        Vector3 k4            = VelocityField(transform.position + Time.deltaTime        * k3, velocity, Time.deltaTime);
+
+               _body.velocity = (k1 + 2.0f * k2 + 2.0f * k3 + k4) / 6.0f;
+    }
+
+    private Vector3 VelocityField(Vector3 position, Vector3 initialVelocity, float deltaTime)
+    {
+        Vector3 newVelocity  = initialVelocity;
+                newVelocity += CustomGravity.GetGravity(position) * deltaTime;
+
+        return newVelocity;
     }
 }

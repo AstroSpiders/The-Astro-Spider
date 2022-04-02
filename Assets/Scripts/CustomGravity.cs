@@ -10,8 +10,6 @@ public static class CustomGravity
     private static List<GravitySource> _sources = new List<GravitySource>();
 
     // Returns the gravity force at a given point in space.
-    // TODO: Improve the calculation by using Runge-Kutta Order 4: https://www.youtube.com/watch?v=hGCP6I2WisM&list=PLW3Zl3wyJwWOpdhYedlD-yCB7WQoHf-My&index=111
-    // This integration method was presented at the course.
     public static Vector3 GetGravity(Vector3 position)
     {
         Vector3 result = Vector3.zero;

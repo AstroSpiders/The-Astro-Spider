@@ -153,15 +153,11 @@ public class RocketMovement : MonoBehaviour
 
     private void UpdateVelocity()
     {
-        Vector3 gravity               = CustomGravity.GetGravity(transform.position);
-                                      
         Vector3 velocity              = _body.velocity;
                                       
         Vector3 thrustersDirection    = transform.forward.normalized;
         float   thrustersAcceleration = 0.0f;
-                
-        float   deltaTime             = Time.deltaTime;
-
+        
         // See how much impact each of the truster have on the overall velocity. 
         for (int i = 0; i < _thrusters.Length; i++)
         {
@@ -169,7 +165,7 @@ public class RocketMovement : MonoBehaviour
             float         acceleration      = _thrusters[i].Acceleration;
             float         thrusterAngle     = GetThrusterAngle(thruster);
             
-            float         fuelConsumed      = acceleration * _thrusters[i].FuelConsumption * deltaTime;
+            float         fuelConsumed      = acceleration * _thrusters[i].FuelConsumption * Time.deltaTime;
 
             if (fuelConsumed < _currentFuelLevel)
             {
@@ -181,23 +177,22 @@ public class RocketMovement : MonoBehaviour
                 // the desired acceleration, so we have to trim it down, or even make the acceleration
                 // equal to 0 if we have no fuel.
                 fuelConsumed = Mathf.Min(fuelConsumed, _currentFuelLevel);
-                acceleration = fuelConsumed / _thrusters[i].FuelConsumption * deltaTime;
+                acceleration = fuelConsumed / _thrusters[i].FuelConsumption * Time.deltaTime;
                 _currentFuelLevel = 0.0f;
             }
 
             float dot = Mathf.Abs(Mathf.Cos(thrusterAngle));
 
-            thrustersAcceleration += dot * acceleration * Time.deltaTime * _accelerationMultiplier;
+            thrustersAcceleration += dot * acceleration * _accelerationMultiplier;
         }
 
-        Vector3 newVelocity    = velocity;
-                newVelocity   += thrustersDirection * thrustersAcceleration;
-                newVelocity   += gravity * Time.deltaTime;
-        
-        // It's easier to control the rcoket when Drag force is apllied.
-                newVelocity   += CustomPhysics.GetDrag(newVelocity) * Time.deltaTime;
-                
-                _body.velocity = newVelocity;
+        //Runge - Kutta Order 4: https://www.youtube.com/watch?v=hGCP6I2WisM&list=PLW3Zl3wyJwWOpdhYedlD-yCB7WQoHf-My&index=111
+        Vector3 k1             = VelocityField(transform.position,                              velocity, thrustersDirection, thrustersAcceleration, Time.deltaTime);
+        Vector3 k2             = VelocityField(transform.position + Time.deltaTime / 2.0f * k1, velocity, thrustersDirection, thrustersAcceleration, Time.deltaTime);
+        Vector3 k3             = VelocityField(transform.position + Time.deltaTime / 2.0f * k2, velocity, thrustersDirection, thrustersAcceleration, Time.deltaTime);
+        Vector3 k4             = VelocityField(transform.position + Time.deltaTime        * k3, velocity, thrustersDirection, thrustersAcceleration, Time.deltaTime);
+
+                _body.velocity = (k1 + 2.0f * k2 + 2.0f * k3 + k4) / 6.0f;
     }
 
     private float GetThrusterAngle(ThrusterTypes thruster)
@@ -253,5 +248,19 @@ public class RocketMovement : MonoBehaviour
         // Reset the acceleration to 0 for each thruster.
         for (int i = 0; i < _thrusters.Length; i++)
             _thrusters[i].Acceleration = 0.0f;
+    }
+
+    private Vector3 VelocityField(Vector3 position, Vector3 initialVelocity, Vector3 thrustersDirection, float thrustersAcceleration, float deltaTime)
+    {
+        Vector3 newVelocity  = initialVelocity;
+                newVelocity += thrustersDirection * thrustersAcceleration * deltaTime;
+
+        Vector3 gravity      = CustomGravity.GetGravity(position);
+
+                newVelocity += gravity * deltaTime;
+
+                newVelocity += CustomPhysics.GetDrag(newVelocity) * deltaTime;
+
+        return newVelocity;
     }
 }
