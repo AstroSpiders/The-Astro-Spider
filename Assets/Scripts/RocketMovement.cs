@@ -86,7 +86,7 @@ public class RocketMovement : MonoBehaviour
 
         UpdateVelocity();
         UpdateAngularVelocity();
-        // UpdateParticles();
+        UpdateParticles();
 
         ResetThrusters();
     }
@@ -133,6 +133,8 @@ public class RocketMovement : MonoBehaviour
     {
         foreach (var thruster in _thrusters)
         {
+            if(thruster==null)
+                continue;
             if (thruster.Acceleration > 0)
             {
                 thruster.ParticleGameObject.SetActive(true);
@@ -169,6 +171,7 @@ public class RocketMovement : MonoBehaviour
 
         // We update the angular velocity of the rigidbody.
         _body.angularVelocity = angularVelocity;
+        
     }
 
     private void UpdateVelocity()
@@ -276,10 +279,11 @@ public class RocketMovement : MonoBehaviour
 
     public List<float> GetThrustersAccelerations()
     {
-        List<float> _accelerations = new List<float>();
-        for (int i = 0; i < _thrusters.Length; i++)
-            _accelerations.Add(_thrusters[i].Acceleration);
-        return _accelerations;
+        List<float> accelerations = new List<float>();
+        foreach (var thruster in _thrusters)
+            accelerations.Add(thruster.Acceleration);
+
+        return accelerations;
     }
 
     private Vector3 VelocityField(Vector3 position, Vector3 initialVelocity, Vector3 thrustersDirection,

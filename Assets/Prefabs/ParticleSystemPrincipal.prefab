@@ -4827,7 +4827,7 @@ GameObject:
   - component: {fileID: 5214967295235039126}
   - component: {fileID: 8836176584392687391}
   m_Layer: 0
-  m_Name: ParticleSystem_Fire_RateOverTime_Small
+  m_Name: ParticleSystemPrincipal
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

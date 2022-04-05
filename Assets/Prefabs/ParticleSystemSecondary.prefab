@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 3617979389234507284}
   - component: {fileID: 57011617121685149}
   m_Layer: 0
-  m_Name: ParticleSystem_Fire_RateOverTime_Torch
+  m_Name: ParticleSystemSecondary
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

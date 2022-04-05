@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-[RequireComponent(typeof(PlayerController))]
 public class ThrustersSound : MonoBehaviour
 {
     private float _desiredThrusterVolume = 0;
@@ -20,14 +19,33 @@ public class ThrustersSound : MonoBehaviour
         }
     }
 
-    public void UpdateThrusterSound(List<float> _accelerations)
+    public void UpdateThrusterSound(List<float> accelerations = null)
     {
         float maximum = 0;
-        for (int i = 0; i < _accelerations.Count; i++)
+        bool mainThruster = accelerations[0]>0;
+        if (accelerations != null)
         {
-            if (_accelerations[i] > maximum)
-                maximum = _accelerations[i];
+            for (int i = 0; i < accelerations.Count; i++)
+            {
+                if (i == 0)
+                {
+                    maximum = accelerations[i];
+                }
+                else if (accelerations[i] / 2 > maximum)
+                {
+                    maximum = accelerations[i] / 2;
+                }
+            }
         }
+
         _desiredThrusterVolume = maximum;
-    } 
+        if (mainThruster)
+        {
+            _thrustersSound.pitch = (float)1.5;
+        }
+        else
+        {
+            _thrustersSound.pitch = (float)0.5;
+        }
+    }
 }

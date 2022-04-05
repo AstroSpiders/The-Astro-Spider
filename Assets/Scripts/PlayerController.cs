@@ -1,8 +1,10 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 [RequireComponent(typeof(RocketMovement))]
+[RequireComponent(typeof(ThrustersSound))]
 public class PlayerController : MonoBehaviour
 {
     private const float              _bias = 0.001f;
@@ -26,6 +28,7 @@ public class PlayerController : MonoBehaviour
 
         Cursor.lockState = CursorLockMode.Locked;
     }
+    
 
     private void Update()
     {
@@ -57,7 +60,7 @@ public class PlayerController : MonoBehaviour
         if (Math.Abs(space) >= _bias)
             _rocketMovement.ApplyAcceleration(space, RocketMovement.ThrusterTypes.Main);
         
-        _thrustersSound.UpdateThrusterSound(_rocketMovement.GetThrustersAccelerations());
+        _thrustersSound.UpdateThrusterSound(_rocketMovement.GetThrustersAccelerations()); 
     }
 
     // TODO: implement the Fire function
