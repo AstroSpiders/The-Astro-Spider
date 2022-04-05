@@ -12,11 +12,14 @@ public class PlayerController : MonoBehaviour
 
     private       PlayerInputActions _playerInputActions;
     private       RocketMovement     _rocketMovement;
+
+    private ThrustersSound _thrustersSound;
         
     private void Awake()
     {
         _playerInputActions = new PlayerInputActions();
         _rocketMovement     = GetComponent<RocketMovement>();
+        _thrustersSound     = GetComponent<ThrustersSound>();
         
         _playerInputActions.Player.Enable();
         _playerInputActions.Player.Fire.performed += Fire;
@@ -53,6 +56,8 @@ public class PlayerController : MonoBehaviour
 
         if (Math.Abs(space) >= _bias)
             _rocketMovement.ApplyAcceleration(space, RocketMovement.ThrusterTypes.Main);
+        
+        _thrustersSound.UpdateThrusterSound(_rocketMovement.GetThrustersAccelerations());
     }
 
     // TODO: implement the Fire function

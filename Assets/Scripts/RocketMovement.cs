@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody))]
@@ -24,6 +25,7 @@ public class RocketMovement : MonoBehaviour
         // We keep a reference to the GameObject so we can later use it for animation,
         // or improve the GetThrusterRotation method.
         public GameObject GameObject { get; set; } = null;
+        public GameObject ParticleGameObject { get; set; } = null;
     }
 
     [SerializeField] private GameObject _mainThruster;
@@ -31,6 +33,12 @@ public class RocketMovement : MonoBehaviour
     [SerializeField] private GameObject _exhaust01;
     [SerializeField] private GameObject _exhaust02;
     [SerializeField] private GameObject _exhaust03;
+
+    [SerializeField] private GameObject _mainThrusterParticle;
+    [SerializeField] private GameObject _exhaust00Particle;
+    [SerializeField] private GameObject _exhaust01Particle;
+    [SerializeField] private GameObject _exhaust02Particle;
+    [SerializeField] private GameObject _exhaust03Particle;
 
     // The maximum impact an accelerated thruster can have on the desired rotation for that frame
     [SerializeField, Range(0.0f, 90.0f)] private float _maxThrusterAngle = 90.0f;
@@ -52,15 +60,11 @@ public class RocketMovement : MonoBehaviour
 
     private float _currentFuelLevel;
 
-    public AudioSource thrustersSound;
-    private float desiredThrusterVolume = 0;
-
     public void ApplyAcceleration(float acceleration,
         ThrusterTypes thruster)
     {
         if (thruster == ThrusterTypes.Count)
             return;
-        desiredThrusterVolume = acceleration;
 
         _thrusters[(int) thruster].Acceleration = acceleration;
     }
@@ -82,24 +86,9 @@ public class RocketMovement : MonoBehaviour
 
         UpdateVelocity();
         UpdateAngularVelocity();
-        
-        UpdateToDesiredThrusterVolume();
-        
-        ResetThrusters();
-        
-    }
+        // UpdateParticles();
 
-    private void UpdateToDesiredThrusterVolume()
-    {
-        print(desiredThrusterVolume);
-        if (thrustersSound.volume > desiredThrusterVolume)
-        {
-            thrustersSound.volume -= (float) 0.08;
-        }
-        else if (thrustersSound.volume < desiredThrusterVolume)
-        {
-            thrustersSound.volume += (float) 0.04;
-        }
+        ResetThrusters();
     }
 
     private void InitializeThrustersList()
@@ -117,20 +106,41 @@ public class RocketMovement : MonoBehaviour
             {
                 case ThrusterTypes.Main:
                     _thrusters[i].GameObject = _mainThruster;
+                    _thrusters[i].ParticleGameObject = _mainThrusterParticle;
                     _thrusters[i].FuelConsumption = _mainThrusterFuelConsumption;
                     break;
                 case ThrusterTypes.ExhaustLeft:
                     _thrusters[i].GameObject = _exhaust00;
+                    _thrusters[i].ParticleGameObject = _exhaust00Particle;
                     break;
                 case ThrusterTypes.ExhaustFront:
                     _thrusters[i].GameObject = _exhaust01;
+                    _thrusters[i].ParticleGameObject = _exhaust01Particle;
                     break;
                 case ThrusterTypes.ExhaustBack:
                     _thrusters[i].GameObject = _exhaust02;
+                    _thrusters[i].ParticleGameObject = _exhaust02Particle;
                     break;
                 case ThrusterTypes.ExhaustRight:
                     _thrusters[i].GameObject = _exhaust03;
+                    _thrusters[i].ParticleGameObject = _exhaust03Particle;
                     break;
+            }
+        }
+    }
+
+    private void UpdateParticles()
+    {
+        foreach (var thruster in _thrusters)
+        {
+            if (thruster.Acceleration > 0)
+            {
+                thruster.ParticleGameObject.SetActive(true);
+                thruster.ParticleGameObject.transform.localScale = new Vector3(1,thruster.Acceleration,(float)0.5);
+            }
+            else
+            {
+                thruster.ParticleGameObject.SetActive(false);
             }
         }
     }
@@ -262,7 +272,14 @@ public class RocketMovement : MonoBehaviour
         // Reset the acceleration to 0 for each thruster.
         for (int i = 0; i < _thrusters.Length; i++)
             _thrusters[i].Acceleration = 0.0f;
-        desiredThrusterVolume = 0;
+    }
+
+    public List<float> GetThrustersAccelerations()
+    {
+        List<float> _accelerations = new List<float>();
+        for (int i = 0; i < _thrusters.Length; i++)
+            _accelerations.Add(_thrusters[i].Acceleration);
+        return _accelerations;
     }
 
     private Vector3 VelocityField(Vector3 position, Vector3 initialVelocity, Vector3 thrustersDirection,

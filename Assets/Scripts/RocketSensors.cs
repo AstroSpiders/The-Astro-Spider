@@ -129,7 +129,7 @@ public class RocketSensors : MonoBehaviour
                 }
                 else
                 {
-                    Debug.Log("You must provide a target planet for the rocket to land on.");
+                    // Debug.Log("You must provide a target planet for the rocket to land on.");
                 }
 
                 sensorsRotation *= Quaternion.Euler(0.0f, angleBetweenSensors, 0.0f);
