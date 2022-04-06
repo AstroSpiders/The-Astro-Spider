@@ -669,7 +669,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!82 &2015072415
 AudioSource:
   m_ObjectHideFlags: 0
@@ -680,7 +680,7 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 8300000, guid: 83db10109c0f77a4e814227d11c737c5, type: 3}
+  m_audioClip: {fileID: 8300000, guid: 4699c8325cf1a5140bd352b90139556b, type: 3}
   m_PlayOnAwake: 1
   m_Volume: 0
   m_Pitch: 1
@@ -1409,3 +1409,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _thrustersSound: {fileID: 2015072415}
+  _mainThrusterPitch: 1.5
+  _secondaryThrusterPitch: 0.5
+  _decreaseVolumeBy: 0.6
+  _increaseVolumeBy: 0.4

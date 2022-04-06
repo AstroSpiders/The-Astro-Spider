@@ -54,6 +54,8 @@ public class RocketMovement : MonoBehaviour
     [SerializeField, Range(0.0f, 100.0f)] private float _sideThrusterFuelConsumption = 0.5f;
 
     private Thruster[] _thrusters = new Thruster[(int) ThrusterTypes.Count];
+    
+    private const float _bias = 0.001f;
 
     private Rigidbody _body;
     private RocketState _state;
@@ -69,6 +71,11 @@ public class RocketMovement : MonoBehaviour
         _thrusters[(int) thruster].Acceleration = acceleration;
     }
 
+    public int GetThrustersCount()
+    {
+        return _thrusters.Length;
+    }
+    
     private void Awake()
     {
         _body = GetComponent<Rigidbody>();
@@ -135,10 +142,10 @@ public class RocketMovement : MonoBehaviour
         {
             if(thruster==null)
                 continue;
-            if (thruster.Acceleration > 0)
+            if (thruster.Acceleration > _bias)
             {
                 thruster.ParticleGameObject.SetActive(true);
-                thruster.ParticleGameObject.transform.localScale = new Vector3(1,thruster.Acceleration,(float)0.5);
+                thruster.ParticleGameObject.transform.localScale = new Vector3(1,thruster.Acceleration,0.5f);
             }
             else
             {

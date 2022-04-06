@@ -7,28 +7,23 @@ using UnityEngine.InputSystem;
 [RequireComponent(typeof(ThrustersSound))]
 public class PlayerController : MonoBehaviour
 {
-    private const float              _bias = 0.001f;
+    private const float _bias = 0.001f;
 
-    [SerializeField]
-    private       Transform          _playerInputSpace = default;
+    [SerializeField] private Transform _playerInputSpace = default;
 
-    private       PlayerInputActions _playerInputActions;
-    private       RocketMovement     _rocketMovement;
+    private PlayerInputActions _playerInputActions;
+    private RocketMovement _rocketMovement;
 
-    private ThrustersSound _thrustersSound;
-        
     private void Awake()
     {
         _playerInputActions = new PlayerInputActions();
-        _rocketMovement     = GetComponent<RocketMovement>();
-        _thrustersSound     = GetComponent<ThrustersSound>();
-        
+        _rocketMovement = GetComponent<RocketMovement>();
+
         _playerInputActions.Player.Enable();
         _playerInputActions.Player.Fire.performed += Fire;
 
         Cursor.lockState = CursorLockMode.Locked;
     }
-    
 
     private void Update()
     {
@@ -41,17 +36,21 @@ public class PlayerController : MonoBehaviour
             desiredDirection = new Vector3(input.x, 0.0f, input.y);
 
         float horizontalDot = Vector3.Dot(desiredDirection, transform.right);
-        float verticalDot   = Vector3.Dot(desiredDirection, -transform.up);
+        float verticalDot = Vector3.Dot(desiredDirection, -transform.up);
 
-        if (Math.Abs(horizontalDot) >= _bias || 
-            Math.Abs(verticalDot)   >= _bias)
+        if (Math.Abs(horizontalDot) >= _bias ||
+            Math.Abs(verticalDot) >= _bias)
         {
             Vector2 dotDirection = new Vector2(horizontalDot, verticalDot).normalized * input.magnitude;
 
-            var thrusterX = dotDirection.x > 0.0f ? RocketMovement.ThrusterTypes.ExhaustLeft : RocketMovement.ThrusterTypes.ExhaustRight;
+            var thrusterX = dotDirection.x > 0.0f
+                ? RocketMovement.ThrusterTypes.ExhaustLeft
+                : RocketMovement.ThrusterTypes.ExhaustRight;
             _rocketMovement.ApplyAcceleration(Math.Abs(dotDirection.x), thrusterX);
 
-            var thrusterY = dotDirection.y > 0.0f ? RocketMovement.ThrusterTypes.ExhaustFront : RocketMovement.ThrusterTypes.ExhaustBack;
+            var thrusterY = dotDirection.y > 0.0f
+                ? RocketMovement.ThrusterTypes.ExhaustFront
+                : RocketMovement.ThrusterTypes.ExhaustBack;
             _rocketMovement.ApplyAcceleration(Math.Abs(dotDirection.y), thrusterY);
         }
 
@@ -59,8 +58,6 @@ public class PlayerController : MonoBehaviour
 
         if (Math.Abs(space) >= _bias)
             _rocketMovement.ApplyAcceleration(space, RocketMovement.ThrusterTypes.Main);
-        
-        _thrustersSound.UpdateThrusterSound(_rocketMovement.GetThrustersAccelerations()); 
     }
 
     // TODO: implement the Fire function
@@ -71,8 +68,8 @@ public class PlayerController : MonoBehaviour
             Debug.Log("FIRE!!");
         }
     }
-    
-    private void OnEnable()  => _playerInputActions.Player.Enable();
-    
+
+    private void OnEnable() => _playerInputActions.Player.Enable();
+
     private void OnDisable() => _playerInputActions.Player.Disable();
 }
