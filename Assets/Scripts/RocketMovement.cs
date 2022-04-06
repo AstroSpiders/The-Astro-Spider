@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody))]
@@ -17,7 +18,7 @@ public class RocketMovement : MonoBehaviour
         Count
     }
 
-    private class Thruster
+    public class Thruster
     {
         public float Acceleration { get; set; } = 0.0f;
         public float FuelConsumption { get; set; } = 1.0f;
@@ -70,12 +71,12 @@ public class RocketMovement : MonoBehaviour
 
         _thrusters[(int) thruster].Acceleration = acceleration;
     }
-
-    public int GetThrustersCount()
-    {
-        return _thrusters.Length;
-    }
     
+    public List<Thruster> GetThrusters()
+    {
+        return _thrusters.ToList();
+    }
+
     private void Awake()
     {
         _body = GetComponent<Rigidbody>();
@@ -282,15 +283,6 @@ public class RocketMovement : MonoBehaviour
         // Reset the acceleration to 0 for each thruster.
         for (int i = 0; i < _thrusters.Length; i++)
             _thrusters[i].Acceleration = 0.0f;
-    }
-
-    public List<float> GetThrustersAccelerations()
-    {
-        List<float> accelerations = new List<float>();
-        foreach (var thruster in _thrusters)
-            accelerations.Add(thruster.Acceleration);
-
-        return accelerations;
     }
 
     private Vector3 VelocityField(Vector3 position, Vector3 initialVelocity, Vector3 thrustersDirection,

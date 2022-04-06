@@ -1411,5 +1411,5 @@ MonoBehaviour:
   _thrustersSound: {fileID: 2015072415}
   _mainThrusterPitch: 1.5
   _secondaryThrusterPitch: 0.5
-  _decreaseVolumeBy: 0.6
-  _increaseVolumeBy: 0.4
+  _decreaseVolumeBy: 6
+  _increaseVolumeBy: 4
