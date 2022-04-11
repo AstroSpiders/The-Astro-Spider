@@ -56,7 +56,7 @@ public class RocketMovement : MonoBehaviour
 
     private Thruster[] _thrusters = new Thruster[(int) ThrusterTypes.Count];
     
-    private const float _bias = 0.001f;
+    private const float _bias = 0.00001f;
 
     private Rigidbody _body;
     private RocketState _state;

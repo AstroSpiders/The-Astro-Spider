@@ -30,10 +30,7 @@ public class ThrustersSound : MonoBehaviour
         {
             var audioSource = Instantiate(_thrustersSound);
             audioSource.gameObject.SetActive(true);
-            if (i == (int) RocketMovement.ThrusterTypes.Main)
-                audioSource.pitch = _mainThrusterPitch;
-            else
-                audioSource.pitch = _secondaryThrusterPitch;
+            audioSource.pitch = i == (int) RocketMovement.ThrusterTypes.Main ? _mainThrusterPitch : _secondaryThrusterPitch;
             _thrusterAudioSources.Add(audioSource);
             _desiredVolumes.Add(0);
         }
