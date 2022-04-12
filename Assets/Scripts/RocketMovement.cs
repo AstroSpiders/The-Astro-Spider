@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody))]
@@ -20,14 +18,15 @@ public class RocketMovement : MonoBehaviour
 
     public class Thruster
     {
-        public float Acceleration { get; set; } = 0.0f;
-        public float FuelConsumption { get; set; } = 1.0f;
+        public float      Acceleration    { get; set; } = 0.0f;
+        public float      FuelConsumption { get; set; } = 1.0f;
 
         // We keep a reference to the GameObject so we can later use it for animation,
         // or improve the GetThrusterRotation method.
-        public GameObject GameObject { get; set; } = null;
-        public GameObject ParticleGameObject { get; set; } = null;
+        public GameObject GameObject      { get; set; } = null;
     }
+
+    public Thruster[] Thrusters { get; private set; } = new Thruster[(int)ThrusterTypes.Count];
 
     [SerializeField] private GameObject _mainThruster;
     [SerializeField] private GameObject _exhaust00;
@@ -53,15 +52,12 @@ public class RocketMovement : MonoBehaviour
     [SerializeField, Range(0.0f, 100.0f)] private float _mainThrusterFuelConsumption = 1.0f;
 
     [SerializeField, Range(0.0f, 100.0f)] private float _sideThrusterFuelConsumption = 0.5f;
-
-    private Thruster[] _thrusters = new Thruster[(int) ThrusterTypes.Count];
     
-    private const float _bias = 0.00001f;
-
-    private Rigidbody _body;
+    
+    private Rigidbody   _body;
     private RocketState _state;
 
-    private float _currentFuelLevel;
+    private float       _currentFuelLevel;
 
     public void ApplyAcceleration(float acceleration,
         ThrusterTypes thruster)
@@ -69,12 +65,7 @@ public class RocketMovement : MonoBehaviour
         if (thruster == ThrusterTypes.Count)
             return;
 
-        _thrusters[(int) thruster].Acceleration = acceleration;
-    }
-    
-    public List<Thruster> GetThrusters()
-    {
-        return _thrusters.ToList();
+        Thrusters[(int) thruster].Acceleration = acceleration;
     }
 
     private void Awake()
@@ -94,16 +85,15 @@ public class RocketMovement : MonoBehaviour
 
         UpdateVelocity();
         UpdateAngularVelocity();
-        UpdateParticles();
 
         ResetThrusters();
     }
 
     private void InitializeThrustersList()
     {
-        for (int i = 0; i < _thrusters.Length; i++)
+        for (int i = 0; i < Thrusters.Length; i++)
         {
-            _thrusters[i] = new Thruster()
+            Thrusters[i] = new Thruster()
             {
                 Acceleration = 0.0f,
                 GameObject = null,
@@ -113,44 +103,21 @@ public class RocketMovement : MonoBehaviour
             switch ((ThrusterTypes) i)
             {
                 case ThrusterTypes.Main:
-                    _thrusters[i].GameObject = _mainThruster;
-                    _thrusters[i].ParticleGameObject = _mainThrusterParticle;
-                    _thrusters[i].FuelConsumption = _mainThrusterFuelConsumption;
+                    Thrusters[i].GameObject = _mainThruster;
+                    Thrusters[i].FuelConsumption = _mainThrusterFuelConsumption;
                     break;
                 case ThrusterTypes.ExhaustLeft:
-                    _thrusters[i].GameObject = _exhaust00;
-                    _thrusters[i].ParticleGameObject = _exhaust00Particle;
+                    Thrusters[i].GameObject = _exhaust00;
                     break;
                 case ThrusterTypes.ExhaustFront:
-                    _thrusters[i].GameObject = _exhaust01;
-                    _thrusters[i].ParticleGameObject = _exhaust01Particle;
+                    Thrusters[i].GameObject = _exhaust01;
                     break;
                 case ThrusterTypes.ExhaustBack:
-                    _thrusters[i].GameObject = _exhaust02;
-                    _thrusters[i].ParticleGameObject = _exhaust02Particle;
+                    Thrusters[i].GameObject = _exhaust02;
                     break;
                 case ThrusterTypes.ExhaustRight:
-                    _thrusters[i].GameObject = _exhaust03;
-                    _thrusters[i].ParticleGameObject = _exhaust03Particle;
+                    Thrusters[i].GameObject = _exhaust03;
                     break;
-            }
-        }
-    }
-
-    private void UpdateParticles()
-    {
-        foreach (var thruster in _thrusters)
-        {
-            if(thruster==null)
-                continue;
-            if (thruster.Acceleration > _bias)
-            {
-                thruster.ParticleGameObject.SetActive(true);
-                thruster.ParticleGameObject.transform.localScale = new Vector3(1,thruster.Acceleration,0.5f);
-            }
-            else
-            {
-                thruster.ParticleGameObject.SetActive(false);
             }
         }
     }
@@ -161,11 +128,11 @@ public class RocketMovement : MonoBehaviour
         // acceleration of the thrusters.
         Quaternion desiredRotation = transform.rotation;
 
-        for (int i = 0; i < _thrusters.Length; i++)
+        for (int i = 0; i < Thrusters.Length; i++)
         {
             ThrusterTypes thruster = (ThrusterTypes) i;
             Quaternion thrusterRotation = GetThrusterRotation(thruster);
-            desiredRotation *= Quaternion.Slerp(Quaternion.identity, thrusterRotation, _thrusters[i].Acceleration);
+            desiredRotation *= Quaternion.Slerp(Quaternion.identity, thrusterRotation, Thrusters[i].Acceleration);
         }
 
         Quaternion toDesiredRotation = desiredRotation * Quaternion.Inverse(transform.rotation);
@@ -190,13 +157,13 @@ public class RocketMovement : MonoBehaviour
         float thrustersAcceleration = 0.0f;
 
         // See how much impact each of the truster have on the overall velocity. 
-        for (int i = 0; i < _thrusters.Length; i++)
+        for (int i = 0; i < Thrusters.Length; i++)
         {
             ThrusterTypes thruster = (ThrusterTypes) i;
-            float acceleration = _thrusters[i].Acceleration;
+            float acceleration = Thrusters[i].Acceleration;
             float thrusterAngle = GetThrusterAngle(thruster);
 
-            float fuelConsumed = acceleration * _thrusters[i].FuelConsumption * Time.deltaTime;
+            float fuelConsumed = acceleration * Thrusters[i].FuelConsumption * Time.deltaTime;
 
             if (fuelConsumed < _currentFuelLevel)
             {
@@ -208,7 +175,7 @@ public class RocketMovement : MonoBehaviour
                 // the desired acceleration, so we have to trim it down, or even make the acceleration
                 // equal to 0 if we have no fuel.
                 fuelConsumed = Mathf.Min(fuelConsumed, _currentFuelLevel);
-                acceleration = fuelConsumed / _thrusters[i].FuelConsumption * Time.deltaTime;
+                acceleration = fuelConsumed / Thrusters[i].FuelConsumption * Time.deltaTime;
                 _currentFuelLevel = 0.0f;
             }
 
@@ -235,7 +202,7 @@ public class RocketMovement : MonoBehaviour
         if (thruster == ThrusterTypes.Count || thruster == ThrusterTypes.Main)
             return 0.0f;
 
-        float acceleration = _thrusters[(int) thruster].Acceleration;
+        float acceleration = Thrusters[(int) thruster].Acceleration;
         float angle = acceleration * _maxThrusterAngle;
 
         return angle;
@@ -281,8 +248,8 @@ public class RocketMovement : MonoBehaviour
     private void ResetThrusters()
     {
         // Reset the acceleration to 0 for each thruster.
-        for (int i = 0; i < _thrusters.Length; i++)
-            _thrusters[i].Acceleration = 0.0f;
+        for (int i = 0; i < Thrusters.Length; i++)
+            Thrusters[i].Acceleration = 0.0f;
     }
 
     private Vector3 VelocityField(Vector3 position, Vector3 initialVelocity, Vector3 thrustersDirection,

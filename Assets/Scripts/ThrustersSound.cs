@@ -1,60 +1,61 @@
-using System;
-using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(RocketMovement))]
 public class ThrustersSound : MonoBehaviour
 {
-    [SerializeField] private AudioSource _thrustersSound;
-
-    [SerializeField, Range(0.0f, 3.0f)] private float _mainThrusterPitch;
-    [SerializeField, Range(0.0f, 3.0f)] private float _secondaryThrusterPitch;
-
-    [SerializeField, Range(0.0f, 10.0f)] private float _decreaseVolumeBy;
-    [SerializeField, Range(0.0f, 10.0f)] private float _increaseVolumeBy;
-
-    private List<AudioSource> _thrusterAudioSources = new List<AudioSource>();
-    private List<float> _desiredVolumes = new List<float>();
+    [SerializeField]
+    private AudioClip      _thrusterSound;
+    [SerializeField, Range(-3.0f, 3.0f)] 
+    private float          _mainThrusterPitch       = 1.0f;
+    [SerializeField, Range(-3.0f, 3.0f)] 
+    private float          _secondaryThrusterPitch  = 1.0f;
+    [SerializeField, Range(0.0f, 1.0f)]
+    private float          _mainThrusterVolume      = 1.0f;
+    [SerializeField, Range(0.0f, 1.0f)]
+    private float          _secondaryThrusterVolume = 0.5f;
+    [SerializeField, Range(0.0f, 100.0f)] 
+    private float          _decreaseVolumeBy        = 10.0f;
+    [SerializeField, Range(0.0f, 100.0f)]           
+    private float          _increaseVolumeBy        = 10.0f;
 
     private RocketMovement _rocketMovement;
 
-    private void Awake()
+    private AudioSource[]  _audioSources;
+    
+    private void Start()
     {
         _rocketMovement = GetComponent<RocketMovement>();
-        InitializeThrustersList(_rocketMovement.GetThrusters().Count);
-    }
+        
+        for (int i = 0; i < _rocketMovement.Thrusters.Length; i++)
+            gameObject.AddComponent(typeof(AudioSource));
 
-    private void InitializeThrustersList(int length)
-    {
-        for (int i = 0; i < length; ++i)
-        {
-            var audioSource = Instantiate(_thrustersSound);
-            audioSource.gameObject.SetActive(true);
-            audioSource.pitch = i == (int) RocketMovement.ThrusterTypes.Main ? _mainThrusterPitch : _secondaryThrusterPitch;
-            _thrusterAudioSources.Add(audioSource);
-            _desiredVolumes.Add(0);
-        }
-    }
+        _audioSources = gameObject.GetComponents<AudioSource>();
 
-    private void Update()
-    {
-        for (int i = 0; i < _desiredVolumes.Count; i++)
+        for (int i = 0; i < _rocketMovement.Thrusters.Length; i++)
         {
-            if (_thrusterAudioSources[i].volume > _desiredVolumes[i])
-                _thrusterAudioSources[i].volume -= Time.deltaTime * _decreaseVolumeBy;
-            else if (_thrusterAudioSources[i].volume < _desiredVolumes[i])
-                _thrusterAudioSources[i].volume += Time.deltaTime * _increaseVolumeBy;
+            var audioSource        = _audioSources[i];
+                audioSource.clip   = _thrusterSound;
+                audioSource.loop   = true;
+                audioSource.pitch  = i == (int)RocketMovement.ThrusterTypes.Main ? _mainThrusterPitch : _secondaryThrusterPitch;
+                audioSource.volume = 0.0f;
+
+            audioSource.Play();
         }
     }
 
     private void LateUpdate()
     {
-        UpdateThrusterSound(_rocketMovement.GetThrusters());
-    }
+        for (int i = 0; i < _rocketMovement.Thrusters.Length; i++)
+        {
+            var   thruster           = _rocketMovement.Thrusters[i];
+            var   audioSource        = _audioSources[i];
+            float acceleration       = thruster.Acceleration;
 
-    private void UpdateThrusterSound(List<RocketMovement.Thruster> thrusters)
-    {
-        for (int i = 0; i < thrusters.Count; i++)
-            _desiredVolumes[i] = i == (int) RocketMovement.ThrusterTypes.Main ? thrusters[i].Acceleration : thrusters[i].Acceleration / 2;
+            float targetVolume       = ((i == (int)RocketMovement.ThrusterTypes.Main) ? _mainThrusterVolume : _secondaryThrusterVolume) * acceleration;
+
+                  audioSource.volume = Mathf.MoveTowards(audioSource.volume,
+                                                         targetVolume,
+                                                         (audioSource.volume < targetVolume) ? _increaseVolumeBy : _decreaseVolumeBy * Time.deltaTime);
+        }
     }
 }
