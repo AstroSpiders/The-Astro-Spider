@@ -117,11 +117,20 @@ public class RocketSensors : MonoBehaviour
 
                 if (Physics.Raycast(transform.position, currentDirection, out RaycastHit hitInfo, _sensorLength, _obstaclesLayerMask))
                     SensorOutputs[sensorIndex].ObstacleDistance = hitInfo.distance / _sensorLength;
-                
-                if (Physics.Raycast(transform.position, currentDirection, out hitInfo, _sensorLength, _planetsLayerMask))
-                    if (hitInfo.transform == TargetPlanet)
-                        SensorOutputs[sensorIndex].TargetDistance = hitInfo.distance / _sensorLength;
 
+                if (Physics.Raycast(transform.position, currentDirection, out hitInfo, _sensorLength, _planetsLayerMask))
+                {
+                    if (hitInfo.transform == TargetPlanet)
+                    {
+                        SensorOutputs[sensorIndex].TargetDistance = hitInfo.distance / _sensorLength;
+                    }
+                    else
+                    {
+                        SensorOutputs[sensorIndex].ObstacleDistance = SensorOutputs[sensorIndex].ObstacleDistance > 0.0f ?
+                                                                      Mathf.Min(SensorOutputs[sensorIndex].ObstacleDistance, hitInfo.distance / _sensorLength) :
+                                                                      hitInfo.distance / _sensorLength;
+                    }
+                }
                 if (TargetPlanet != null)
                 {
                     Vector3 toTargetPlanet = (TargetPlanet.position - transform.position).normalized;

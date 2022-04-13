@@ -2,7 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using Random = UnityEngine.Random;
+
+using Random = System.Random;
 
 public class WorldGenerator : MonoBehaviour
 {
@@ -15,6 +16,9 @@ public class WorldGenerator : MonoBehaviour
     private GravitySphere  _planetPrefab;
     [SerializeField]
     private Asteroid       _asteroidPrefab;
+
+    [SerializeField]
+    private int            _randomSeed                             = 0;
 
     [SerializeField, Range(1, 10)]
     private int            _planetsGenerateCount                   = 5;
@@ -46,6 +50,8 @@ public class WorldGenerator : MonoBehaviour
                            _maxAsteroidInitialImpulse              = 1000.0f;
 
     private List<Asteroid> _asteroids                              = new List<Asteroid>();
+
+    private Random         _random;
 
     // Just some checks to make sure that the minimum values are smaller than the maximum values.
     private void OnValidate()
@@ -91,16 +97,17 @@ public class WorldGenerator : MonoBehaviour
     // TODO: Generate asteroids, check how close the current planet is to the previous ones.
     private void Awake()
     {
+                _random               = new Random(_randomSeed);
                 Planets               = new GravitySphere[_planetsGenerateCount];
                                       
         Vector3 lastOrigin            = Vector3.zero;
-        float   lastPlanetRadius      = Random.Range(_planetMinRadius, _planetMaxRadius);
+        float   lastPlanetRadius      = RandomRange(_planetMinRadius, _planetMaxRadius);
 
         for (int i = 0; i < _planetsGenerateCount;)
         {
-            Vector3 direction                 = Random.insideUnitSphere.normalized;
-            float   radius                    = Random.Range(_planetMinRadius,           _planetMaxRadius);
-            float   distanceBetween           = Random.Range(_minDistanceBetweenPlanets, _maxDistanceBetweenPlanets);
+            Vector3 direction                 = RandomOnUnitSphere();
+            float   radius                    = RandomRange(_planetMinRadius,           _planetMaxRadius);
+            float   distanceBetween           = RandomRange(_minDistanceBetweenPlanets, _maxDistanceBetweenPlanets);
 
             float   lastOuterGravityRadius    = lastPlanetRadius * _planetsGravityOuterRadiusMultip;
             float   currentOuterGravityRadius = radius           * _planetsGravityOuterRadiusMultip;
@@ -162,14 +169,14 @@ public class WorldGenerator : MonoBehaviour
 
     private void SpawnAsteroids(GravitySphere planet)
     {
-        int asteroidsCount = Random.Range(_minAsteroidsPerPlanetCount, _maxAsteroidsPerPlanetCount + 1);
+        int asteroidsCount = _random.Next(_minAsteroidsPerPlanetCount, _maxAsteroidsPerPlanetCount + 1);
         for (int i = 0; i < asteroidsCount; i++)
         {
-            Vector3 direction                               = Random.insideUnitSphere.normalized;
-            float   positionRadius                          = Random.Range((planet.OuterRadius + planet.OuterFalloffRadius) * 0.5f, 
-                                                                           planet.OuterFalloffRadius);
-            float   radius                                  = Random.Range(_asteroidMinRadius, _asteroidMaxRadus);
-            float   impulse                                 = Random.Range(_minAsteroidInitialImpulse, _maxAsteroidInitialImpulse);
+            Vector3 direction                               = RandomOnUnitSphere();
+            float   positionRadius                          = RandomRange((planet.OuterRadius + planet.OuterFalloffRadius) * 0.5f, 
+                                                                          planet.OuterFalloffRadius);
+            float   radius                                  = RandomRange(_asteroidMinRadius,         _asteroidMaxRadus);
+            float   impulse                                 = RandomRange(_minAsteroidInitialImpulse, _maxAsteroidInitialImpulse);
                                                             
             Vector3 newPosition                             = planet.transform.position + direction * positionRadius;
                                                             
@@ -184,5 +191,20 @@ public class WorldGenerator : MonoBehaviour
 
             _asteroids.Add(asteroid);
         }
+    }
+
+    private float RandomRange(float minValue, float maxValue) => minValue + (float)_random.NextDouble() * maxValue;
+    // https://datagenetics.com/blog/january32020/index.html
+    private Vector3 RandomOnUnitSphere()
+    {
+        float theta = RandomRange(0.0f, Mathf.PI * 2.0f);
+        float v     = (float)_random.NextDouble();
+        float phi   = Mathf.Acos((2 * v) - 1);
+        float r     = Mathf.Pow((float)_random.NextDouble(), 1.0f / 3.0f);
+        float x     = r * Mathf.Sin(phi) * Mathf.Cos(theta);
+        float y     = r * Mathf.Sin(phi) * Mathf.Sin(theta);
+        float z     = r * Mathf.Cos(phi);
+
+        return new Vector3(x, y, z);
     }
 }

@@ -93,7 +93,7 @@ public class AITrainer : MonoBehaviour
             _geneticAlgorithm.Epoch();
         }
 
-        _rockets          = new RocketState[_populationSize];
+        _rockets = new RocketState[_populationSize];
 
         for (int i = 0; i < _populationSize; i++)
             _rockets[i] = null;

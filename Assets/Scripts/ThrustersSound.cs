@@ -1,5 +1,6 @@
 using UnityEngine;
 
+[RequireComponent(typeof(RocketState))]
 [RequireComponent(typeof(RocketMovement))]
 public class ThrustersSound : MonoBehaviour
 {
@@ -18,12 +19,14 @@ public class ThrustersSound : MonoBehaviour
     [SerializeField, Range(0.0f, 100.0f)]           
     private float          _increaseVolumeBy        = 10.0f;
 
+    private RocketState    _state;
     private RocketMovement _rocketMovement;
 
     private AudioSource[]  _audioSources;
     
     private void Start()
     {
+        _state          = GetComponent<RocketState>();
         _rocketMovement = GetComponent<RocketMovement>();
         
         for (int i = 0; i < _rocketMovement.Thrusters.Length; i++)
@@ -53,9 +56,12 @@ public class ThrustersSound : MonoBehaviour
 
             float targetVolume       = ((i == (int)RocketMovement.ThrusterTypes.Main) ? _mainThrusterVolume : _secondaryThrusterVolume) * acceleration;
 
-                  audioSource.volume = Mathf.MoveTowards(audioSource.volume,
-                                                         targetVolume,
-                                                         (audioSource.volume < targetVolume) ? _increaseVolumeBy : _decreaseVolumeBy * Time.deltaTime);
+            if (_state.Dead || !_state.HasFuel)
+                targetVolume = 0.0f;
+
+            audioSource.volume = Mathf.MoveTowards(audioSource.volume,
+                                                   targetVolume,
+                                                   (audioSource.volume < targetVolume) ? _increaseVolumeBy : _decreaseVolumeBy * Time.deltaTime);
         }
     }
 }

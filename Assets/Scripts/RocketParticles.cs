@@ -1,5 +1,6 @@
 using UnityEngine;
 
+[RequireComponent(typeof(RocketState))]
 [RequireComponent(typeof(RocketMovement))]
 public class RocketParticles : MonoBehaviour
 {
@@ -25,11 +26,13 @@ public class RocketParticles : MonoBehaviour
     [SerializeField]                                               
     private       float            _secondaryParticlesScale        = 1.0f;
 
+    private       RocketState      _state;
     private       RocketMovement   _rocketMovement;
     private       ParticleSystem[] _particleSystems;
 
     void Start()
     {
+        _state           = GetComponent<RocketState>();
         _rocketMovement  = GetComponent<RocketMovement>();
         _particleSystems = new ParticleSystem[_rocketMovement.Thrusters.Length];
 
@@ -80,7 +83,9 @@ public class RocketParticles : MonoBehaviour
             var thruster       = _rocketMovement.Thrusters[i];
             var particleSystem = _particleSystems[i];
 
-            if (thruster.Acceleration >= _bias)
+            if (thruster.Acceleration >= _bias && 
+                _state.HasFuel                 && 
+                !_state.Dead)
             {
                 particleSystem.gameObject.SetActive(true);
                 particleSystem.transform.localScale = Vector3.one           * 

@@ -26,38 +26,37 @@ public class RocketMovement : MonoBehaviour
         public GameObject GameObject      { get; set; } = null;
     }
 
-    public Thruster[] Thrusters { get; private set; } = new Thruster[(int)ThrusterTypes.Count];
+    public        Thruster[]  Thrusters        { get; private set; } = new Thruster[(int)ThrusterTypes.Count];
 
-    [SerializeField] private GameObject _mainThruster;
-    [SerializeField] private GameObject _exhaust00;
-    [SerializeField] private GameObject _exhaust01;
-    [SerializeField] private GameObject _exhaust02;
-    [SerializeField] private GameObject _exhaust03;
-
-    [SerializeField] private GameObject _mainThrusterParticle;
-    [SerializeField] private GameObject _exhaust00Particle;
-    [SerializeField] private GameObject _exhaust01Particle;
-    [SerializeField] private GameObject _exhaust02Particle;
-    [SerializeField] private GameObject _exhaust03Particle;
+    [SerializeField] 
+    private       GameObject  _mainThruster;
+    [SerializeField] 
+    private       GameObject  _exhaust00;
+    [SerializeField]
+    private       GameObject  _exhaust01;
+    [SerializeField] 
+    private       GameObject  _exhaust02;
+    [SerializeField] 
+    private       GameObject  _exhaust03;
 
     // The maximum impact an accelerated thruster can have on the desired rotation for that frame
-    [SerializeField, Range(0.0f, 90.0f)] private float _maxThrusterAngle = 90.0f;
-
-    [SerializeField, Range(1.0f, 10.0f)] private float _angularVelocityUpdateSpeed = 10.0f;
-
-    [SerializeField, Range(0.0f, 100.0f)] private float _accelerationMultiplier = 20.0f;
-
-    [SerializeField, Range(0.0f, 100.0f)] private float _fuelCapacity = 100.0f;
-
-    [SerializeField, Range(0.0f, 100.0f)] private float _mainThrusterFuelConsumption = 1.0f;
-
-    [SerializeField, Range(0.0f, 100.0f)] private float _sideThrusterFuelConsumption = 0.5f;
+    [SerializeField, Range(0.0f, 90.0f)] 
+    private       float       _maxThrusterAngle            = 40.0f;
+                                                           
+    [SerializeField, Range(1.0f, 10.0f)]                   
+    private       float       _angularVelocityUpdateSpeed  = 10.0f;
+                                                           
+    [SerializeField, Range(0.0f, 100.0f)]                  
+    private       float       _accelerationMultiplier      = 20.0f;
     
-    
-    private Rigidbody   _body;
-    private RocketState _state;
+    [SerializeField, Range(0.0f, 100.0f)]
+    private       float       _mainThrusterFuelConsumption = 1.0f;
 
-    private float       _currentFuelLevel;
+    [SerializeField, Range(0.0f, 100.0f)] 
+    private       float       _sideThrusterFuelConsumption = 0.5f;
+    
+    private       Rigidbody   _body;
+    private       RocketState _state;
 
     public void ApplyAcceleration(float acceleration,
         ThrusterTypes thruster)
@@ -74,8 +73,6 @@ public class RocketMovement : MonoBehaviour
         _state = GetComponent<RocketState>();
 
         InitializeThrustersList();
-
-        _currentFuelLevel = _fuelCapacity;
     }
 
     private void FixedUpdate()
@@ -145,8 +142,8 @@ public class RocketMovement : MonoBehaviour
             Time.deltaTime * _angularVelocityUpdateSpeed);
 
         // We update the angular velocity of the rigidbody.
-        _body.angularVelocity = angularVelocity;
-        
+        if (_state.HasFuel)
+            _body.angularVelocity = angularVelocity;
     }
 
     private void UpdateVelocity()
@@ -165,18 +162,18 @@ public class RocketMovement : MonoBehaviour
 
             float fuelConsumed = acceleration * Thrusters[i].FuelConsumption * Time.deltaTime;
 
-            if (fuelConsumed < _currentFuelLevel)
+            if (fuelConsumed < _state.CurrentFuelLevel)
             {
-                _currentFuelLevel -= fuelConsumed;
+                _state.CurrentFuelLevel -= fuelConsumed;
             }
             else
             {
                 // If we don't have enough fuel, then we can't accelerate the thruster with
                 // the desired acceleration, so we have to trim it down, or even make the acceleration
                 // equal to 0 if we have no fuel.
-                fuelConsumed = Mathf.Min(fuelConsumed, _currentFuelLevel);
+                fuelConsumed = Mathf.Min(fuelConsumed, _state.CurrentFuelLevel);
                 acceleration = fuelConsumed / Thrusters[i].FuelConsumption * Time.deltaTime;
-                _currentFuelLevel = 0.0f;
+                _state.CurrentFuelLevel = 0.0f;
             }
 
             float dot = Mathf.Abs(Mathf.Cos(thrusterAngle));

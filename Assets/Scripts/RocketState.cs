@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(RocketSensors))]
@@ -7,19 +8,44 @@ using UnityEngine;
 // It also keeps track of the planet that rocket needs to land on.
 public class RocketState : MonoBehaviour
 {
-    public WorldGenerator WorldGenerator             = null;
-    public  bool          Dead { get; private set; } = false;
-    
-    [SerializeField]
-    private float         _landingDotThreshold       = 0.9f;
+    public class StatsPerPlanet
+    {
+        public float   DistanceNavigated { get; set; } = 0.0f;
+        public Vector3 StartingPosition  { get; set; }
+        public Vector3 TargetPosition    { get; set; }
+        public bool    Landed            { get; set; } = false;
+        public float   FuelConsumed      { get; set; } = 0.0f;
+        public float   InitialFuelLevel  { get; set; }
+        public float   LandingDot        { get; set; }
+        public float   LandingImpact     { get; set; }
+    }
 
-    [SerializeField]
-    private float         _maxLandingImpact          = 1.0f;
+    public WorldGenerator       WorldGenerator             = null;
+    public List<StatsPerPlanet> PlanetsStats               = new List<StatsPerPlanet>();
 
-    private RocketSensors _sensors                   = null;
-    private Rigidbody     _body                      = null;
-    
-    private int           _currentPlanetIndex        = 0;
+    public        float         CurrentFuelLevel { get; set; }
+    public        bool          HasFuel          { get => CurrentFuelLevel > _bias; }
+    public        bool          Dead             { get; private set; } = false;
+    public        bool          Won                                    = false;
+                                
+    private const float         _bias                      = 0.01f;
+
+    [SerializeField]            
+    private       float         _landingDotThreshold       = 0.9f;
+                                
+    [SerializeField]            
+    private       float         _deadDotThreshold          = 0.5f;
+                                
+    [SerializeField]            
+    private       float         _maxLandingImpact          = 1.0f;
+
+    [SerializeField, Range(0.0f, 100.0f)]
+    private       float         _fuelCapacity              = 100.0f;
+
+    private       RocketSensors _sensors                   = null;
+    private       Rigidbody     _body                      = null;
+                                
+    private       int           _currentPlanetIndex        = 0;
 
     private void Start()
     {
@@ -29,14 +55,25 @@ public class RocketState : MonoBehaviour
             return;
         }
 
-        _sensors = GetComponent<RocketSensors>();
-        _body    = GetComponent<Rigidbody>();
+
+        CurrentFuelLevel = _fuelCapacity;
+
+        _sensors         = GetComponent<RocketSensors>();
+        _body            = GetComponent<Rigidbody>();
 
         if (_currentPlanetIndex < WorldGenerator.Planets.Length)
         { 
             _sensors.TargetPlanet = WorldGenerator.Planets[_currentPlanetIndex].transform;
             _sensors.enabled      = true;
         }
+
+        AddNewPlanetStats();
+    }
+
+    private void Update()
+    {
+        if (!Won)
+            UpdateLatestStats();
     }
 
     private void OnCollisionEnter(Collision collision)
@@ -44,19 +81,27 @@ public class RocketState : MonoBehaviour
         var otherObject = collision.gameObject;
         if (otherObject.CompareTag("Planet"))
         {
-            if (WorldGenerator.Planets[_currentPlanetIndex].gameObject != otherObject)
-                return;
-
             var planetToObject = (transform.position - otherObject.transform.position).normalized;
             var forward        = transform.forward.normalized;
             var dot            = Vector3.Dot(planetToObject, forward);
 
-
-            if (dot > _landingDotThreshold)
+            if (dot >= _landingDotThreshold)
             {
                 float impact = _body.velocity.magnitude;
+
                 if (impact <= _maxLandingImpact)
-                    ProcessLanding();
+                {
+                    if (WorldGenerator.Planets[_currentPlanetIndex].gameObject == otherObject)
+                        ProcessLanding(dot, impact);
+                }
+                else
+                {
+                    Dead = true;
+                }
+            }
+            else if (dot < _deadDotThreshold)
+            {
+                Dead = true;
             }
         }
         else
@@ -66,17 +111,56 @@ public class RocketState : MonoBehaviour
         }
     }
 
-    private void ProcessLanding()
+    private void ProcessLanding(float landingDot, float landingImpact)
     {
+        if (!Won)
+        {
+            UpdateLatestStats();
+            FinalizeLandingStats(landingDot, landingImpact);
+        }
+
         if (_currentPlanetIndex + 1 < WorldGenerator.Planets.Length)
         {
             Debug.Log("Landed on planet " + _currentPlanetIndex.ToString());
             _currentPlanetIndex++;
             _sensors.TargetPlanet = WorldGenerator.Planets[_currentPlanetIndex].transform;
+            AddNewPlanetStats();
         }
         else
         {
+            Won = true;
             Debug.Log("You won!!!");
         }
+    }
+
+    private void AddNewPlanetStats()
+    {
+        var stats = new StatsPerPlanet()
+        {
+            StartingPosition = transform.position,
+            TargetPosition   = WorldGenerator.Planets[_currentPlanetIndex].transform.position,
+            Landed           = false,
+            InitialFuelLevel = CurrentFuelLevel,
+            FuelConsumed     = 0.0f
+        };
+
+        PlanetsStats.Add(stats);
+    }
+
+    private void UpdateLatestStats()
+    {
+        var stats                   = PlanetsStats[PlanetsStats.Count - 1];
+        var distanceToTarget        = (transform.position - stats.TargetPosition).magnitude;
+
+            stats.DistanceNavigated = Mathf.Clamp(1.0f - (distanceToTarget / (stats.TargetPosition - stats.StartingPosition).magnitude), 0.0f, 1.0f);
+            stats.FuelConsumed      = (CurrentFuelLevel - stats.InitialFuelLevel) / _fuelCapacity;
+    }
+
+    private void FinalizeLandingStats(float landingDot, float landingImpact)
+    {
+        var stats               = PlanetsStats[PlanetsStats.Count - 1];
+            stats.Landed        = true;
+            stats.LandingDot    = landingDot;
+            stats.LandingImpact = landingImpact;
     }
 }
