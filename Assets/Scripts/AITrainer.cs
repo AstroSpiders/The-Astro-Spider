@@ -37,15 +37,21 @@ public class AITrainer : MonoBehaviour
     [SerializeField]
     private int              _generationsToStagnate            = 15;
 
-    [SerializeField]
-    private RocketState      _rocketPrefab                     = null;
+    [SerializeField, Range(0.0f, 600.0f)]
+    private float            _secondsPerEpoch                  = 60.0f;
 
     [SerializeField]
+    private RocketState      _rocketPrefab                     = null;
+    [SerializeField]
     private WorldGenerator   _worldGenerator                   = null;
+    [SerializeField]
+    private FocusCamera      _focusCamera                      = null;
                                                                
     private GeneticAlgorithm _geneticAlgorithm                 = null;
 
     private RocketState[]    _rockets                          = null;
+
+    private float            _epochElapsedSeconds              = 0.0f;
 
     private void Start()
     {
@@ -75,25 +81,7 @@ public class AITrainer : MonoBehaviour
         };
 
         _geneticAlgorithm = new GeneticAlgorithm(gaParams);
-
-        // for testing purposes only
-        // the fitness function, and the logic for swaping generations
-        // were not defined yet.
-        for (int i = 0; i < 10; i++)
-        {
-            float fitness = 1.0f;
-            foreach (var specie in _geneticAlgorithm.Population)
-            {
-                foreach (var individual in specie.Individuals)
-                {
-                    individual.Fitness = fitness;
-                    fitness += 1.0f;
-                }
-            }
-            _geneticAlgorithm.Epoch();
-        }
-
-        _rockets = new RocketState[_populationSize];
+        _rockets          = new RocketState[_populationSize];
 
         for (int i = 0; i < _populationSize; i++)
             _rockets[i] = null;
@@ -103,19 +91,75 @@ public class AITrainer : MonoBehaviour
 
     private void Update()
     {
-        
+        Vector3 averagePosition = Vector3.zero;
+        foreach (var rocket in _rockets)
+            averagePosition += rocket.transform.position / _rockets.Length;
+
+        _focusCamera.SetFocusPoint(averagePosition);
+
+        _epochElapsedSeconds += Time.deltaTime;
+        if (_epochElapsedSeconds > _secondsPerEpoch)
+        {
+            Epoch();
+            _epochElapsedSeconds -= _secondsPerEpoch;
+        }
     }
 
-    private void SpawnRockets()
+    private void Epoch()
+    {
+        int index = 0;
+        foreach (var specie in _geneticAlgorithm.Population)
+        {
+            foreach (var individual in specie.Individuals)
+            {
+                individual.Fitness = CalculateFitness(_rockets[index]);
+                index++;
+            }
+        }
+        _geneticAlgorithm.Epoch();
+
+        DestroyOldRockets();
+        _worldGenerator.ResetWorld();
+        SpawnRockets();
+    }
+
+    private void DestroyOldRockets()
     {
         for (int i = 0; i < _populationSize; i++)
         {
             if (_rockets[i] != null)
             {
-                Destroy(_rockets[i]);
+                Destroy(_rockets[i].gameObject);
                 _rockets[i] = null;
             }
         }
+    }
+
+    private float CalculateFitness(RocketState rocket)
+    {
+        float sum      = 1.0f;
+        float exponent = 1.0f;
+
+        foreach (var planetStats in rocket.PlanetsStats)
+        {
+            // TODO: take into account the speed, and punish the rocket for not going in the right direction.
+            sum      += (planetStats.DistanceNavigated + planetStats.MaxDistanceNavigated) * 0.5f - planetStats.FuelConsumed;
+            exponent += (planetStats.LandingDot + (1.0f - planetStats.LandingImpact)) * 0.5f;
+        }
+
+        Debug.Log(sum + " " + exponent);
+
+        float fitness = Mathf.Pow(sum, exponent);
+
+        if (rocket.Dead || !rocket.HasFuel)
+            fitness /= 2.0f;
+
+        return fitness;
+    }
+
+    private void SpawnRockets()
+    {
+        DestroyOldRockets();
 
         int index = 0;
         foreach (var specie in _geneticAlgorithm.Population)

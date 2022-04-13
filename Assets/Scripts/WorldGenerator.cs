@@ -53,6 +53,21 @@ public class WorldGenerator : MonoBehaviour
 
     private Random         _random;
 
+    public void ResetWorld()
+    {
+        foreach (var planet in Planets)
+            Destroy(planet.gameObject);
+
+        Planets = null;
+
+        foreach (var asteroid in _asteroids)
+            Destroy(asteroid.gameObject);
+
+        _asteroids = new List<Asteroid>();
+
+        CreateWorld();
+    }
+
     // Just some checks to make sure that the minimum values are smaller than the maximum values.
     private void OnValidate()
     {
@@ -97,6 +112,20 @@ public class WorldGenerator : MonoBehaviour
     // TODO: Generate asteroids, check how close the current planet is to the previous ones.
     private void Awake()
     {
+        CreateWorld();
+    }
+
+    private void Update()
+    {
+        var toDesotry = _asteroids.Where(asteroid => asteroid.HitPlanet).ToArray();
+        _asteroids.RemoveAll(asteroid => asteroid.HitPlanet);
+
+        foreach (var asteroid in toDesotry)
+            Destroy(asteroid.gameObject);
+    }
+
+    private void CreateWorld()
+    {
                 _random               = new Random(_randomSeed);
                 Planets               = new GravitySphere[_planetsGenerateCount];
                                       
@@ -131,15 +160,6 @@ public class WorldGenerator : MonoBehaviour
  
             i++;
         }
-    }
-
-    private void Update()
-    {
-        var toDesotry = _asteroids.Where(asteroid => asteroid.HitPlanet).ToArray();
-        _asteroids.RemoveAll(asteroid => asteroid.HitPlanet);
-
-        foreach (var asteroid in toDesotry)
-            Destroy(asteroid.gameObject);
     }
 
     private bool ValidNewPlanetPosition(Vector3 newPosition, float newRadius, int lastPlanetIndex)

@@ -1,3 +1,4 @@
-a = (sum_i(1 + inverted_final_dist_to_planet_i) - sum_i(fuel_comsumed_i/max_fuel_capacity)) ^ (1 + (sum_i(landing_dot_i) + sum_i(1 - (impact_i / max_impact))) / 2)
+a = (1 + sum_i(inverted_final_dist_to_planet_i) - sum_i(fuel_comsumed_i/max_fuel_capacity)) ^ (1 + (sum_i(landing_dot_i) + sum_i(1 - (impact_i / max_impact))) / 2)
 if (dead)
 	a /= 2
+	

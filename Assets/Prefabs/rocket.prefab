@@ -86,7 +86,6 @@ MonoBehaviour:
   _maxThrusterAngle: 40
   _angularVelocityUpdateSpeed: 10
   _accelerationMultiplier: 20
-  _fuelCapacity: 100
   _mainThrusterFuelConsumption: 1
   _sideThrusterFuelConsumption: 0.5
 --- !u!114 &2429929018151850362
@@ -104,7 +103,7 @@ MonoBehaviour:
   TargetPlanet: {fileID: 0}
   _sensorLayersCount: 6
   _sensorsPerLayer: 8
-  _sensorLength: 20
+  _sensorLength: 40
   _planetsLayerMask:
     serializedVersion: 2
     m_Bits: 128
@@ -125,9 +124,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   WorldGenerator: {fileID: 0}
+  Won: 0
   _landingDotThreshold: 0.9
   _deadDotThreshold: 0.5
   _maxLandingImpact: 1
+  _fuelCapacity: 100
 --- !u!1001 &8569461502259912497
 PrefabInstance:
   m_ObjectHideFlags: 0
