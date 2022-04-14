@@ -86,8 +86,8 @@ MonoBehaviour:
   _maxThrusterAngle: 40
   _angularVelocityUpdateSpeed: 10
   _accelerationMultiplier: 20
-  _mainThrusterFuelConsumption: 1
-  _sideThrusterFuelConsumption: 0.5
+  _mainThrusterFuelConsumption: 0.5
+  _sideThrusterFuelConsumption: 0.25
 --- !u!114 &2429929018151850362
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -128,6 +128,7 @@ MonoBehaviour:
   _landingDotThreshold: 0.9
   _deadDotThreshold: 0.5
   _maxLandingImpact: 1
+  _maxLandingImpactTraining: 10
   _fuelCapacity: 100
 --- !u!1001 &8569461502259912497
 PrefabInstance:

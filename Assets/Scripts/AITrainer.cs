@@ -253,8 +253,9 @@ public class AITrainer : MonoBehaviour
         foreach (var planetStats in rocket.PlanetsStats)
         {
             // TODO: take into account the speed, and punish the rocket for not going in the right direction.
-            sum      += (planetStats.DistanceNavigated + planetStats.MaxDistanceNavigated) * 2.0f - (planetStats.DistanceFarFromPlanet + planetStats.MaxDistanceFarFromPlanet);
-            exponent += (planetStats.LandingDot + (1.0f - planetStats.LandingImpact)) * 0.5f;
+            // Take into the time to get to the planet?
+            sum      += (planetStats.DistanceNavigated + planetStats.MaxDistanceNavigated) * 0.5f - (planetStats.FuelConsumed + planetStats.DistanceFarFromPlanet + planetStats.MaxDistanceFarFromPlanet) / 3.0f;
+            exponent += (planetStats.LandingDot + (1.0f - planetStats.LandingImpact)) * 0.5f + (planetStats.Landed ? 1 : 0);
         }
 
         //Debug.Log(sum + " " + exponent);
