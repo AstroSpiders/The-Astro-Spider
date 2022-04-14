@@ -1,4 +1,8 @@
+using Newtonsoft.Json;
+using System.IO;
+using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class AITrainer : MonoBehaviour
 {
@@ -46,12 +50,18 @@ public class AITrainer : MonoBehaviour
     private WorldGenerator   _worldGenerator                   = null;
     [SerializeField]
     private FocusCamera      _focusCamera                      = null;
-                                                               
+    [SerializeField]
+    private Button           _savePopulationButton             = null;
+
     private GeneticAlgorithm _geneticAlgorithm                 = null;
 
     private RocketState[]    _rockets                          = null;
 
     private float            _epochElapsedSeconds              = 0.0f;
+
+    private bool             _toSavePopulation                 = false;
+
+    private int              _epoch                            = 0;
 
     private void Start()
     {
@@ -87,6 +97,8 @@ public class AITrainer : MonoBehaviour
             _rockets[i] = null;
 
         SpawnRockets();
+
+        _savePopulationButton.onClick.AddListener(SavePopulationCallback);
     }
 
     private void Update()
@@ -116,11 +128,20 @@ public class AITrainer : MonoBehaviour
                 index++;
             }
         }
+
+        if (_toSavePopulation)
+        {
+            SavePopulation();
+            _toSavePopulation = false;
+        }
+
         _geneticAlgorithm.Epoch();
 
         DestroyOldRockets();
         _worldGenerator.ResetWorld();
         SpawnRockets();
+
+        _epoch++;
     }
 
     private void DestroyOldRockets()
@@ -179,5 +200,21 @@ public class AITrainer : MonoBehaviour
                 index++;
             }
         }
+    }
+    private void SavePopulationCallback()
+    {
+        _savePopulationButton.GetComponentInChildren<TMP_Text>().text = "Saving Population...";
+        _savePopulationButton.interactable                            = false;
+        _toSavePopulation                                             = true;
+    }
+
+    private void SavePopulation()
+    {
+        string json = JsonConvert.SerializeObject(_geneticAlgorithm.Population);
+
+        File.WriteAllText(Application.persistentDataPath + "_population_epoch_" + _epoch + ".json", json);
+
+        _savePopulationButton.GetComponentInChildren<TMP_Text>().text = "Save Population";
+        _savePopulationButton.interactable                            = true;
     }
 }

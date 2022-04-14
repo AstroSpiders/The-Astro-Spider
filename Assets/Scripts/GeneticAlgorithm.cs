@@ -4,6 +4,7 @@ using System.Linq;
 
 public class GeneticAlgorithm
 {
+    [Serializable]
     public enum NodeType
     {
         Sensor,
@@ -11,6 +12,7 @@ public class GeneticAlgorithm
         Hidden
     }
 
+    [Serializable]
     public class Node
     {
         public NodeType NodeType { get; set; } = NodeType.Hidden;
@@ -27,6 +29,7 @@ public class GeneticAlgorithm
         }
     }
 
+    [Serializable]
     public class Connect
     {
         public int   In      { get; set; } = 0;
@@ -48,7 +51,7 @@ public class GeneticAlgorithm
             Innov   = other.Innov;
         }
     }
-
+    [Serializable]
     public class Genome
     {
         public List<Node>    Nodes       { get; set; } = new List<Node>();
@@ -132,7 +135,7 @@ public class GeneticAlgorithm
             return (c1 * excess / n) + (c2 * disjoint / n) + (c3 * weightDiffAverage);
         }
     }
-
+    [Serializable]
     public class Specie
     {
         public List<Genome> Individuals                { get; set; } = new List<Genome>();
