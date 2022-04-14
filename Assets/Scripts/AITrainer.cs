@@ -1,11 +1,29 @@
 using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
 using System.IO;
 using TMPro;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class AITrainer : MonoBehaviour
 {
+    [Serializable]
+    private class EpochStats
+    {
+        public int   Epoch          { get; set; }
+        public float MaxFitness     { get; set; }
+        public float AverageFitness { get; set; }
+    }
+
+    [Serializable]
+    private class TrainingState
+    {
+        public GeneticAlgorithm GeneticAlgorithm { get; set; }
+        public List<EpochStats> EpochStats       { get; set; }
+
+    }
     [SerializeField]
     private int              _populationSize                   = 150;
     [SerializeField]                                           
@@ -51,7 +69,13 @@ public class AITrainer : MonoBehaviour
     [SerializeField]
     private FocusCamera      _focusCamera                      = null;
     [SerializeField]
-    private Button           _savePopulationButton             = null;
+    private Button           _saveTrainingStateButton          = null,
+                             _loadTrainingStateButton          = null;
+
+    [SerializeField]
+    private TMP_Text         _epochTextLabel                   = null,
+                             _maxFitnessTextLabel              = null,
+                             _averageFitnessLabel              = null;
 
     private GeneticAlgorithm _geneticAlgorithm                 = null;
 
@@ -59,9 +83,10 @@ public class AITrainer : MonoBehaviour
 
     private float            _epochElapsedSeconds              = 0.0f;
 
-    private bool             _toSavePopulation                 = false;
+    private List<EpochStats> _epochStats                       = new List<EpochStats>();
 
-    private int              _epoch                            = 0;
+    private string           _saveStatePath                    = string.Empty;
+    private string           _loadStatePath                    = string.Empty;
 
     private void Start()
     {
@@ -98,50 +123,114 @@ public class AITrainer : MonoBehaviour
 
         SpawnRockets();
 
-        _savePopulationButton.onClick.AddListener(SavePopulationCallback);
+        _saveTrainingStateButton.onClick.AddListener(SaveTrainingStateCallback);
+        _loadTrainingStateButton.onClick.AddListener(LoadTrainingStateCallback);
+
+        float fixedDeltaTime = Time.fixedDeltaTime;
+
+        Time.timeScale = 10.0f;
+        Time.fixedDeltaTime = fixedDeltaTime * Time.timeScale;
     }
 
     private void Update()
     {
         Vector3 averagePosition = Vector3.zero;
+
+        int maxLanding = 0;
         foreach (var rocket in _rockets)
+        {
             averagePosition += rocket.transform.position / _rockets.Length;
+            int index = 1;
+            foreach (var stats in rocket.PlanetsStats)
+            {
+                if (stats.Landed)
+                    maxLanding = Mathf.Max(index, maxLanding);
+                index++;
+            }
+        }
 
         _focusCamera.SetFocusPoint(averagePosition);
 
         _epochElapsedSeconds += Time.deltaTime;
-        if (_epochElapsedSeconds > _secondsPerEpoch)
+        float adjustedSecondsPerEpoch = _secondsPerEpoch + maxLanding * _secondsPerEpoch;
+
+        if (_epochElapsedSeconds > adjustedSecondsPerEpoch)
         {
             Epoch();
-            _epochElapsedSeconds -= _secondsPerEpoch;
+            _epochElapsedSeconds -= adjustedSecondsPerEpoch;
+        }
+
+        UpdateUI();
+    }
+
+    private void UpdateUI()
+    {
+        if (_saveStatePath != string.Empty)
+        {
+            _saveTrainingStateButton.GetComponentInChildren<TMP_Text>().text = "Saving training state...";
+            _saveTrainingStateButton.interactable                            = false;
+        }
+
+        if (_loadStatePath != string.Empty)
+        {
+            _loadTrainingStateButton.GetComponentInChildren<TMP_Text>().text = "Loading training state...";
+            _loadTrainingStateButton.interactable                            = false;
+        }
+
+        if (_epochStats.Count >= 1)
+        {
+            _epochTextLabel.text      = "Epoch: " + _epochStats.Count;
+            _maxFitnessTextLabel.text = "Max Fitness: " + _epochStats[_epochStats.Count - 1].MaxFitness;
+            _averageFitnessLabel.text = "Average Fitness: " + _epochStats[_epochStats.Count - 1].AverageFitness;
+        }
+        else
+        {
+            _epochTextLabel.text      = string.Empty;
+            _maxFitnessTextLabel.text = string.Empty;
+            _averageFitnessLabel.text = string.Empty;
         }
     }
 
     private void Epoch()
     {
-        int index = 0;
+        int index      = 0;
+        var epochStats = new EpochStats
+        {
+            Epoch          = _epochStats.Count,
+            MaxFitness     = 0.0f,
+            AverageFitness = 0.0f
+        };
+
         foreach (var specie in _geneticAlgorithm.Population)
         {
             foreach (var individual in specie.Individuals)
             {
-                individual.Fitness = CalculateFitness(_rockets[index]);
+                individual.Fitness         = CalculateFitness(_rockets[index]);
+                epochStats.AverageFitness += individual.Fitness / _populationSize;
+                epochStats.MaxFitness      = Mathf.Max(epochStats.MaxFitness, individual.Fitness);
                 index++;
             }
         }
 
-        if (_toSavePopulation)
+        _epochStats.Add(epochStats);
+
+        if (_saveStatePath != string.Empty)
         {
-            SavePopulation();
-            _toSavePopulation = false;
+            SaveTrainingState();
+            _saveStatePath = string.Empty;
         }
 
         _geneticAlgorithm.Epoch();
 
+        if (_loadStatePath != string.Empty)
+        {
+            LoadTrainingState();
+            _loadStatePath = string.Empty;
+        }
+
         DestroyOldRockets();
         _worldGenerator.ResetWorld();
         SpawnRockets();
-
-        _epoch++;
     }
 
     private void DestroyOldRockets()
@@ -164,11 +253,11 @@ public class AITrainer : MonoBehaviour
         foreach (var planetStats in rocket.PlanetsStats)
         {
             // TODO: take into account the speed, and punish the rocket for not going in the right direction.
-            sum      += (planetStats.DistanceNavigated + planetStats.MaxDistanceNavigated) * 0.5f - planetStats.FuelConsumed;
+            sum      += (planetStats.DistanceNavigated + planetStats.MaxDistanceNavigated) * 2.0f - (planetStats.DistanceFarFromPlanet + planetStats.MaxDistanceFarFromPlanet);
             exponent += (planetStats.LandingDot + (1.0f - planetStats.LandingImpact)) * 0.5f;
         }
 
-        Debug.Log(sum + " " + exponent);
+        //Debug.Log(sum + " " + exponent);
 
         float fitness = Mathf.Pow(sum, exponent);
 
@@ -201,20 +290,44 @@ public class AITrainer : MonoBehaviour
             }
         }
     }
-    private void SavePopulationCallback()
+    private void SaveTrainingStateCallback()
     {
-        _savePopulationButton.GetComponentInChildren<TMP_Text>().text = "Saving Population...";
-        _savePopulationButton.interactable                            = false;
-        _toSavePopulation                                             = true;
+        _saveStatePath = EditorUtility.SaveFilePanel("Save training state as JSON",
+                                                     "",
+                                                     "training_state.json",
+                                                     "json");
     }
 
-    private void SavePopulation()
+    private void SaveTrainingState()
     {
-        string json = JsonConvert.SerializeObject(_geneticAlgorithm.Population);
+        var currentState = new TrainingState 
+        {
+            GeneticAlgorithm = _geneticAlgorithm, 
+            EpochStats       = _epochStats 
+        };
 
-        File.WriteAllText(Application.persistentDataPath + "_population_epoch_" + _epoch + ".json", json);
+        string json = JsonConvert.SerializeObject(currentState);
 
-        _savePopulationButton.GetComponentInChildren<TMP_Text>().text = "Save Population";
-        _savePopulationButton.interactable                            = true;
+        File.WriteAllText(_saveStatePath, json);
+
+        _saveTrainingStateButton.GetComponentInChildren<TMP_Text>().text = "Save training state";
+        _saveTrainingStateButton.interactable                            = true;
+    }
+
+    private void LoadTrainingStateCallback()
+    {
+        _loadStatePath = EditorUtility.OpenFilePanel("Load trading state", "", "json");
+    }
+
+    private void LoadTrainingState()
+    {
+        var json                                                         = File.ReadAllText(_loadStatePath);
+        var currentState                                                 = JsonConvert.DeserializeObject<TrainingState>(json);
+
+            _geneticAlgorithm                                            = currentState.GeneticAlgorithm;
+            _epochStats                                                  = currentState.EpochStats;
+
+           _loadTrainingStateButton.GetComponentInChildren<TMP_Text>().text = "Load training state";
+           _loadTrainingStateButton.interactable                            = true;
     }
 }

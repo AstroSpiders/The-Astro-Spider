@@ -1,7 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine;
 
+using Random = System.Random;
+
+[Serializable]
 public class GeneticAlgorithm
 {
     [Serializable]
@@ -162,6 +166,7 @@ public class GeneticAlgorithm
         }
     }
 
+    [Serializable]
     public struct Parameters
     {
         public int   PopulationSize                   { get; set; }
@@ -185,46 +190,46 @@ public class GeneticAlgorithm
         public int   GenerationsToStagnate            { get; set; }
     }
 
-    public List<Specie> Population             { get; private set; } = new List<Specie>();
-    public int          FirstOutputInnovNumber { get; private set; }
+    public List<Specie> Population                 { get; set; } = new List<Specie>();
+    public int          FirstOutputInnovNumber     { get; set; }
 
-    private Parameters  _parameters;
-    private int         _connectionInnovationNummber                 = 0;
-    private int         _nodeInnovationNumber                        = 0;
-
-    private Random      _random;
+    public Parameters  AlgorithmParameters         { get; set; }
+    public int         ConnectionInnovationNummber { get; set; } = 0;
+    public int         NodeInnovationNumber        { get; set; } = 0;
+    
+    public Random      Random                      { get; set; }
 
     public GeneticAlgorithm(Parameters parameters)
     {
-        _random     = new Random();
-        _parameters = parameters;
+        Random     = new Random();
+        AlgorithmParameters = parameters;
 
         Specie initialSpecie      = new Specie();
         initialSpecie.Individuals = new List<Genome>();
 
-        for (int i = 0; i < _parameters.PopulationSize; i++)
+        for (int i = 0; i < AlgorithmParameters.PopulationSize; i++)
         {
-                _nodeInnovationNumber = 0;
+                NodeInnovationNumber = 0;
             var individual            = new Genome();
 
-            for (int j = 0; j < _parameters.InNodes; j++)
+            for (int j = 0; j < AlgorithmParameters.InNodes; j++)
             {
-                individual.Nodes.Add(new Node() { Innov = _nodeInnovationNumber, NodeType = NodeType.Sensor });
-                _nodeInnovationNumber++;
+                individual.Nodes.Add(new Node() { Innov = NodeInnovationNumber, NodeType = NodeType.Sensor });
+                NodeInnovationNumber++;
             }
-            for (int j = 0; j < _parameters.OutNodes; j++)
+            for (int j = 0; j < AlgorithmParameters.OutNodes; j++)
             {
                 if (j == 0)
-                    FirstOutputInnovNumber = _nodeInnovationNumber;
+                    FirstOutputInnovNumber = NodeInnovationNumber;
 
-                individual.Nodes.Add(new Node() { Innov = _nodeInnovationNumber, NodeType = NodeType.Output });
-                _nodeInnovationNumber++;
+                individual.Nodes.Add(new Node() { Innov = NodeInnovationNumber, NodeType = NodeType.Output });
+                NodeInnovationNumber++;
             }
 
             initialSpecie.Individuals.Add(individual);
         }
 
-        initialSpecie.UpdateRepresentative(_random);
+        initialSpecie.UpdateRepresentative(Random);
         Population.Add(initialSpecie);
     }
 
@@ -245,11 +250,11 @@ public class GeneticAlgorithm
 
         int addedCount = 0;
 
-        for (int i = 0; i < _parameters.EliteCopies; i++)
+        for (int i = 0; i < AlgorithmParameters.EliteCopies; i++)
         {
-            for (int j = 0; j < _parameters.EliteCount; j++)
+            for (int j = 0; j < AlgorithmParameters.EliteCount; j++)
             {
-                if (addedCount < _parameters.PopulationSize)
+                if (addedCount < AlgorithmParameters.PopulationSize)
                 {
                     AddToPopulation(new Genome(oldGenByFitness[j]), true, oldGenByFitness[j].Fitness);
                     addedCount++;
@@ -257,12 +262,16 @@ public class GeneticAlgorithm
             }
         }
 
-        int remaining = _parameters.PopulationSize - addedCount;
+        //foreach (var specie in Population)
+        //    foreach (var individual in specie.Individuals)
+        //        Debug.Log(individual.Fitness);
 
-        int prevGenCount = (int)(remaining * _parameters.PreviousGenMutatePercentage);
+        int remaining = AlgorithmParameters.PopulationSize - addedCount;
+
+        int prevGenCount = (int)(remaining * AlgorithmParameters.PreviousGenMutatePercentage);
         for (int i = 0; i < prevGenCount; i++)
         {
-            if (addedCount < _parameters.PopulationSize)
+            if (addedCount < AlgorithmParameters.PopulationSize)
             {
                 Genome oldGenome = RouletteWheelSelection(Population);
                 Genome newGenome = new Genome(oldGenome);
@@ -274,7 +283,7 @@ public class GeneticAlgorithm
             }
         }
 
-        remaining = _parameters.PopulationSize - addedCount;
+        remaining = AlgorithmParameters.PopulationSize - addedCount;
 
         AdjustFitness();
         AdjustTargetOffsprings(remaining);
@@ -283,10 +292,10 @@ public class GeneticAlgorithm
         {
             for (int j = 0; j < Population[i].TargetOffspring; j++)
             {
-                if (addedCount < _parameters.PopulationSize)
+                if (addedCount < AlgorithmParameters.PopulationSize)
                 {
                     Genome mom = RouletteWheelSelection(new[] { Population[i] });
-                    Genome dad = RouletteWheelSelection(_random.NextDouble() < _parameters.InterspeciesMatingRate ? Population : new List<Specie> { Population[i] });
+                    Genome dad = RouletteWheelSelection(Random.NextDouble() < AlgorithmParameters.InterspeciesMatingRate ? Population : new List<Specie> { Population[i] });
 
                     Crossover(mom, dad, out Genome child);
 
@@ -298,7 +307,7 @@ public class GeneticAlgorithm
             }
         }
         
-        while (addedCount < _parameters.PopulationSize)
+        while (addedCount < AlgorithmParameters.PopulationSize)
         {
             Genome mom = RouletteWheelSelection(Population);
             Genome dad = RouletteWheelSelection(Population);
@@ -312,7 +321,7 @@ public class GeneticAlgorithm
         }
 
         foreach (var specie in Population)
-            specie.SwapGeneration(_random);
+            specie.SwapGeneration(Random);
 
         Population.RemoveAll(specie => specie.Representative is null);
     }
@@ -335,7 +344,7 @@ public class GeneticAlgorithm
                 specie.GenerationsSinceMaxFitness++;
         }
 
-        Population.RemoveAll(specie => specie.GenerationsSinceMaxFitness >= _parameters.GenerationsToStagnate);
+        Population.RemoveAll(specie => specie.GenerationsSinceMaxFitness >= AlgorithmParameters.GenerationsToStagnate);
     }
 
     private void AdjustFitness()
@@ -366,7 +375,7 @@ public class GeneticAlgorithm
             foreach (var individual in specie.Individuals)
                 totalFitness += individual.Fitness;
 
-        float slice       = (float)_random.NextDouble() * totalFitness;
+        float slice       = (float)Random.NextDouble() * totalFitness;
         float accumulated = 0.0f;
 
         foreach (var specie in selectionSpecies)
@@ -407,14 +416,14 @@ public class GeneticAlgorithm
                 if (momConnect.Innov == dadConnect.Innov)
                 {
                     Connect childConnect;
-                    if (_random.NextDouble() <= 0.5f)
+                    if (Random.NextDouble() <= 0.5f)
                         childConnect = new Connect(momConnect);
                     else
                         childConnect = new Connect(dadConnect);
 
                     if (childConnect.Enabled)
                         if (!momConnect.Enabled || !dadConnect.Enabled)
-                            if (_random.NextDouble() < _parameters.CrossoverDisableConnectionChance)
+                            if (Random.NextDouble() < AlgorithmParameters.CrossoverDisableConnectionChance)
                                 childConnect.Enabled = false;
                     
                     child.Connections.Add(childConnect);
@@ -479,13 +488,13 @@ public class GeneticAlgorithm
                         Dictionary<Tuple<int, int>, int> nodesInnovationNumbers)
     {
 
-        if (_random.NextDouble() <= _parameters.AddConnectionChance)
+        if (Random.NextDouble() <= AlgorithmParameters.AddConnectionChance)
             AddConnection(individual, connectionsInnovationNumbers);
 
-        if (_random.NextDouble() <= _parameters.AddNodeChance)
+        if (Random.NextDouble() <= AlgorithmParameters.AddNodeChance)
             AddNode(individual, connectionsInnovationNumbers, nodesInnovationNumbers);
 
-        if (_random.NextDouble() <= _parameters.MutateWeightsChance)
+        if (Random.NextDouble() <= AlgorithmParameters.MutateWeightsChance)
             MutateWeights(individual);
 
         individual.Nodes       = individual.Nodes.OrderBy(node => node.Innov).ToList();
@@ -498,7 +507,7 @@ public class GeneticAlgorithm
         
         foreach (var specie in Population)
         {
-            if (specie.Representative.CompatibilityDistance(_parameters.C1, _parameters.C2, _parameters.C3, _parameters.N, individual) < _parameters.CompatibilityThreshold)
+            if (specie.Representative.CompatibilityDistance(AlgorithmParameters.C1, AlgorithmParameters.C2, AlgorithmParameters.C3, AlgorithmParameters.N, individual) < AlgorithmParameters.CompatibilityThreshold)
             {
                 specie.NewIndividuals.Add(individual);
                 added = true;
@@ -534,8 +543,8 @@ public class GeneticAlgorithm
         {
             foreach (var other in specie.Individuals)
             {
-                float distance = individual.CompatibilityDistance(_parameters.C1, _parameters.C2, _parameters.C3, _parameters.N, other);
-                if (distance < _parameters.CompatibilityThreshold)
+                float distance = individual.CompatibilityDistance(AlgorithmParameters.C1, AlgorithmParameters.C2, AlgorithmParameters.C3, AlgorithmParameters.N, other);
+                if (distance < AlgorithmParameters.CompatibilityThreshold)
                     sharing++;
             }
         }
@@ -548,7 +557,7 @@ public class GeneticAlgorithm
         int index;
         do
         {
-            index = _random.Next(individual.Nodes.Count);
+            index = Random.Next(individual.Nodes.Count);
         } while (individual.Nodes[index].NodeType == NodeType.Output);
         int inNode = individual.Nodes[index].Innov;
 
@@ -558,7 +567,7 @@ public class GeneticAlgorithm
             return;
 
         int innovationNumber;
-        int outNode = potentialOutNodes[_random.Next(potentialOutNodes.Length)];
+        int outNode = potentialOutNodes[Random.Next(potentialOutNodes.Length)];
         Tuple<int, int> key = new Tuple<int, int>(inNode, outNode);
 
         if (connectionsInnovationNumbers.ContainsKey(key))
@@ -567,16 +576,16 @@ public class GeneticAlgorithm
         }
         else
         {
-            innovationNumber = _connectionInnovationNummber;
+            innovationNumber = ConnectionInnovationNummber;
             connectionsInnovationNumbers[key] = innovationNumber;
-            _connectionInnovationNummber++;
+            ConnectionInnovationNummber++;
         }
 
         Connect connection = new Connect()
         {
             In      = inNode,
             Out     = outNode,
-            Weight  = (float)_random.NextDouble(),
+            Weight  = (float)Random.NextDouble(),
             Enabled = true,
             Innov   = innovationNumber
         };
@@ -593,7 +602,7 @@ public class GeneticAlgorithm
         if (enabledConnections.Length == 0)
             return;
 
-        int pickedIndex              = _random.Next(enabledConnections.Length);
+        int pickedIndex              = Random.Next(enabledConnections.Length);
         var pickedConnection         = enabledConnections[pickedIndex];
             pickedConnection.Enabled = false;
 
@@ -606,9 +615,9 @@ public class GeneticAlgorithm
         }
         else
         {
-            node                                     = _nodeInnovationNumber;
+            node                                     = NodeInnovationNumber;
             nodesInnovationNumbers[oldConnectionKey] = node;
-            _nodeInnovationNumber++;
+            NodeInnovationNumber++;
         }
 
         individual.Nodes.Add(new Node
@@ -627,9 +636,9 @@ public class GeneticAlgorithm
         }
         else
         {
-            innov1                             = _connectionInnovationNummber;
+            innov1                             = ConnectionInnovationNummber;
             connectionsInnovationNumbers[key1] = innov1;
-            _connectionInnovationNummber++;
+            ConnectionInnovationNummber++;
         }
 
         int innov2;
@@ -639,9 +648,9 @@ public class GeneticAlgorithm
         }
         else
         {
-            innov2                             = _connectionInnovationNummber;
+            innov2                             = ConnectionInnovationNummber;
             connectionsInnovationNumbers[key2] = innov2;
-            _connectionInnovationNummber++;
+            ConnectionInnovationNummber++;
         }
 
         Connect connection1 = new Connect()
@@ -669,10 +678,10 @@ public class GeneticAlgorithm
     private void MutateWeights(Genome individual)
     {
         foreach (var connect in individual.Connections)
-            if ((float)_random.NextDouble() < _parameters.PerturbWeightChance)
-                connect.Weight += RandomClamped() * _parameters.MaxWeightPerturbation;
+            if ((float)Random.NextDouble() < AlgorithmParameters.PerturbWeightChance)
+                connect.Weight += RandomClamped() * AlgorithmParameters.MaxWeightPerturbation;
             else
-                connect.Weight = (float)_random.NextDouble();
+                connect.Weight = (float)Random.NextDouble();
     }
 
     private int[] PotentialOutNodes(Genome individual, int inNode)
@@ -737,5 +746,5 @@ public class GeneticAlgorithm
         return false;
     }
 
-    private float RandomClamped() => (float)_random.NextDouble() * 2.0f - 1.0f;
+    private float RandomClamped() => (float)Random.NextDouble() * 2.0f - 1.0f;
 }

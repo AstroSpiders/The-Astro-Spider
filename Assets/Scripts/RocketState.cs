@@ -10,15 +10,17 @@ public class RocketState : MonoBehaviour
 {
     public class StatsPerPlanet
     {
-        public float   DistanceNavigated    { get; set; } = 0.0f;
-        public float   MaxDistanceNavigated { get; set; } = 0.0f;
-        public Vector3 StartingPosition     { get; set; }
-        public Vector3 TargetPosition       { get; set; }
-        public bool    Landed               { get; set; } = false;
-        public float   FuelConsumed         { get; set; } = 0.0f;
-        public float   InitialFuelLevel     { get; set; }
-        public float   LandingDot           { get; set; } = 0.0f;
-        public float   LandingImpact        { get; set; } = 1.0f;
+        public float   DistanceNavigated        { get; set; } = 0.0f;
+        public float   MaxDistanceNavigated     { get; set; } = 0.0f;
+        public float   DistanceFarFromPlanet    { get; set; } = 0.0f;
+        public float   MaxDistanceFarFromPlanet { get; set; } = 0.0f;
+        public Vector3 StartingPosition         { get; set; }
+        public Vector3 TargetPosition           { get; set; }
+        public bool    Landed                   { get; set; } = false;
+        public float   FuelConsumed             { get; set; } = 0.0f;
+        public float   InitialFuelLevel         { get; set; }
+        public float   LandingDot               { get; set; } = 0.0f;
+        public float   LandingImpact            { get; set; } = 1.0f;
     }
 
     public WorldGenerator       WorldGenerator             = null;
@@ -146,15 +148,17 @@ public class RocketState : MonoBehaviour
     {
         var stats = new StatsPerPlanet()
         {
-            StartingPosition     = transform.position,
-            TargetPosition       = WorldGenerator.Planets[_currentPlanetIndex].transform.position,
-            Landed               = false,
-            InitialFuelLevel     = CurrentFuelLevel,
-            FuelConsumed         = 0.0f,
-            LandingDot           = 0.0f,
-            LandingImpact        = 1.0f,
-            DistanceNavigated    = 0.0f,
-            MaxDistanceNavigated = 0.0f
+            StartingPosition         = transform.position,
+            TargetPosition           = WorldGenerator.Planets[_currentPlanetIndex].transform.position,
+            Landed                   = false,
+            InitialFuelLevel         = CurrentFuelLevel,
+            FuelConsumed             = 0.0f,
+            LandingDot               = 0.0f,
+            LandingImpact            = 1.0f,
+            DistanceNavigated        = 0.0f,
+            MaxDistanceNavigated     = 0.0f,
+            DistanceFarFromPlanet    = 0.0f,
+            MaxDistanceFarFromPlanet = 0.0f
         };
 
         PlanetsStats.Add(stats);
@@ -162,12 +166,16 @@ public class RocketState : MonoBehaviour
 
     private void UpdateLatestStats()
     {
-        var stats                      = PlanetsStats[PlanetsStats.Count - 1];
-        var distanceToTarget           = (transform.position - stats.TargetPosition).magnitude;
+        var stats                          = PlanetsStats[PlanetsStats.Count - 1];
+        var distanceToTarget               = (transform.position - stats.TargetPosition).magnitude;
+                                           
+            stats.DistanceNavigated        = Mathf.Clamp(1.0f - (distanceToTarget / (stats.TargetPosition - stats.StartingPosition).magnitude), 0.0f, 1.0f);
+            stats.MaxDistanceNavigated     = Mathf.Max(stats.MaxDistanceNavigated, stats.DistanceNavigated);
 
-            stats.DistanceNavigated    = Mathf.Clamp(1.0f - (distanceToTarget / (stats.TargetPosition - stats.StartingPosition).magnitude), 0.0f, 1.0f);
-            stats.MaxDistanceNavigated = Mathf.Max(stats.MaxDistanceNavigated, stats.DistanceNavigated);
-            stats.FuelConsumed         = (stats.InitialFuelLevel - CurrentFuelLevel) / _fuelCapacity;
+            stats.DistanceFarFromPlanet    = Mathf.Clamp((distanceToTarget / (stats.TargetPosition - stats.StartingPosition).magnitude) - 1.0f, 0.0f, 1.0f);
+            stats.MaxDistanceFarFromPlanet = Mathf.Max(stats.MaxDistanceFarFromPlanet, stats.DistanceFarFromPlanet);
+
+            stats.FuelConsumed             = (stats.InitialFuelLevel - CurrentFuelLevel) / _fuelCapacity;
     }
 
     private void FinalizeLandingStats(float landingDot, float landingImpact, bool landed)
