@@ -290,17 +290,17 @@ MonoBehaviour:
   _planetPrefab: {fileID: 7180014405413669744, guid: 0b2b96b55251014498569294bf1fb136, type: 3}
   _asteroidPrefab: {fileID: 6454509588066999608, guid: 3e847b4a5d996b649a0ed7f0ff16b55a, type: 3}
   _randomSeed: 0
-  _planetsGenerateCount: 5
+  _planetsGenerateCount: 1
   _minAsteroidsPerPlanetCount: 1
   _maxAsteroidsPerPlanetCount: 50
-  _planetMinRadius: 25
+  _planetMinRadius: 40
   _planetMaxRadius: 50
   _asteroidMinRadius: 2.5
   _asteroidMaxRadus: 5
   _minDistanceBetweenPlanets: 10
   _maxDistanceBetweenPlanets: 20
-  _planetsGravityOuterRadiusMultip: 3
-  _planetsGravityOuterFalloutRadiusMultip: 4
+  _planetsGravityOuterRadiusMultip: 2
+  _planetsGravityOuterFalloutRadiusMultip: 3
   _minAsteroidInitialImpulse: 0
   _maxAsteroidInitialImpulse: 100
 --- !u!1 &705507993
@@ -845,8 +845,8 @@ MonoBehaviour:
   _eliteCount: 3
   _eliteCopies: 2
   _crossoverDisableConnectionChance: 0.75
-  _addConnectionChance: 0.05
-  _addNodeChance: 0.03
+  _addConnectionChance: 0.2
+  _addNodeChance: 0.12
   _mutateWeightsChance: 0.8
   _perturbWeightChance: 0.9
   _maxWeightPerturbation: 0.1
@@ -855,9 +855,9 @@ MonoBehaviour:
   _c2: 1
   _c3: 3
   _n: 1
-  _compatibilityThreshold: 4
-  _interspeciesMatingRate: 0.001
-  _generationsToStagnate: 15
+  _compatibilityThreshold: 10
+  _interspeciesMatingRate: 0.1
+  _generationsToStagnate: 30
   _secondsPerEpoch: 120
   _rocketPrefab: {fileID: 5930579180306032157, guid: 8a436368efd6cb6478540782ca29b9a1, type: 3}
   _worldGenerator: {fileID: 235371912}

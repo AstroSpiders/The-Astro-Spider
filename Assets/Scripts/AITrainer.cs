@@ -2,8 +2,11 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using TMPro;
+#if UNITY_EDITOR
 using UnityEditor;
+#endif
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -128,8 +131,8 @@ public class AITrainer : MonoBehaviour
 
         float fixedDeltaTime = Time.fixedDeltaTime;
 
-        Time.timeScale = 10.0f;
-        Time.fixedDeltaTime = fixedDeltaTime * Time.timeScale;
+        //Time.timeScale = 2.0f;
+        //Time.fixedDeltaTime = fixedDeltaTime * Time.timeScale;
     }
 
     private void Update()
@@ -143,7 +146,7 @@ public class AITrainer : MonoBehaviour
             int index = 1;
             foreach (var stats in rocket.PlanetsStats)
             {
-                if (stats.Landed)
+                if (stats.Landed && index < _worldGenerator.Planets.Length - 1)
                     maxLanding = Mathf.Max(index, maxLanding);
                 index++;
             }
@@ -208,10 +211,11 @@ public class AITrainer : MonoBehaviour
                 individual.Fitness         = CalculateFitness(_rockets[index]);
                 epochStats.AverageFitness += individual.Fitness / _populationSize;
                 epochStats.MaxFitness      = Mathf.Max(epochStats.MaxFitness, individual.Fitness);
+
                 index++;
             }
         }
-
+        
         _epochStats.Add(epochStats);
 
         if (_saveStatePath != string.Empty)
@@ -254,7 +258,7 @@ public class AITrainer : MonoBehaviour
         {
             // TODO: take into account the speed, and punish the rocket for not going in the right direction.
             // Take into the time to get to the planet?
-            sum      += (planetStats.DistanceNavigated + planetStats.MaxDistanceNavigated) * 0.5f - (planetStats.FuelConsumed + planetStats.DistanceFarFromPlanet + planetStats.MaxDistanceFarFromPlanet) / 3.0f;
+            sum      += (planetStats.DistanceNavigated + planetStats.MaxDistanceNavigated) * (3.0f/2.0f) - (planetStats.FuelConsumed + planetStats.DistanceFarFromPlanet + planetStats.MaxDistanceFarFromPlanet) * 1.0f;
             exponent += (planetStats.LandingDot + (1.0f - planetStats.LandingImpact)) * 0.5f + (planetStats.Landed ? 1 : 0);
         }
 
@@ -293,10 +297,14 @@ public class AITrainer : MonoBehaviour
     }
     private void SaveTrainingStateCallback()
     {
+#if UNITY_EDITOR
         _saveStatePath = EditorUtility.SaveFilePanel("Save training state as JSON",
                                                      "",
                                                      "training_state.json",
                                                      "json");
+#else
+        _saveStatePath = Application.persistentDataPath + "/stats_release.json";
+#endif
     }
 
     private void SaveTrainingState()
@@ -317,7 +325,11 @@ public class AITrainer : MonoBehaviour
 
     private void LoadTrainingStateCallback()
     {
+#if UNITY_EDITOR
         _loadStatePath = EditorUtility.OpenFilePanel("Load trading state", "", "json");
+#else
+        _loadStatePath = Application.persistentDataPath + "/stats_release.json";
+#endif
     }
 
     private void LoadTrainingState()

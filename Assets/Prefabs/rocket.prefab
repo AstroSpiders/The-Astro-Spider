@@ -102,7 +102,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   TargetPlanet: {fileID: 0}
   _sensorLayersCount: 6
-  _sensorsPerLayer: 8
+  _sensorsPerLayer: 4
   _sensorLength: 40
   _planetsLayerMask:
     serializedVersion: 2

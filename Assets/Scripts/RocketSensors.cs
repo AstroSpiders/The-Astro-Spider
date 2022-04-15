@@ -92,9 +92,10 @@ public class RocketSensors : MonoBehaviour
     private void UpdateSensors()
     {
         Quaternion layerBaseRotation  = transform.rotation;
-        float      angleBetweenLayers = 180.0f / (_sensorLayersCount - 1);
+        float      angleBetweenLayers = Mathf.PI / (_sensorLayersCount - 1);
 
         int        sensorIndex        = 0;
+        float      phi                = 0.0f;
 
         for (int layer = 0; layer < _sensorLayersCount; layer++)
         {
@@ -103,12 +104,16 @@ public class RocketSensors : MonoBehaviour
             if (layer == 0 || layer == _sensorLayersCount - 1)
                 sensorsPerLayer = 1;
 
-            Quaternion sensorsRotation     = layerBaseRotation;
-            float      angleBetweenSensors = 360.0f / sensorsPerLayer;
+            float angleBetweenSensors = (2.0f * Mathf.PI) / sensorsPerLayer;
+            float theta               = 0.0f;
 
             for (int sensor = 0; sensor < sensorsPerLayer; sensor++)
             {
-                Vector3 currentDirection = sensorsRotation * Vector3.forward;
+                Vector3 baseSensor       = new Vector3(Mathf.Cos(Mathf.PI * 0.5f - phi) * Mathf.Cos(theta),
+                                                       Mathf.Cos(Mathf.PI * 0.5f - phi) * Mathf.Sin(theta),
+                                                       Mathf.Sin(Mathf.PI * 0.5f - phi));
+
+                Vector3 currentDirection = layerBaseRotation * baseSensor;
 
                 SensorOutputs[sensorIndex].CurrentDirection = currentDirection;
                 SensorOutputs[sensorIndex].ObstacleDistance = -1.0f;
@@ -141,11 +146,11 @@ public class RocketSensors : MonoBehaviour
                     // Debug.Log("You must provide a target planet for the rocket to land on.");
                 }
 
-                sensorsRotation *= Quaternion.Euler(0.0f, angleBetweenSensors, 0.0f);
+                theta += angleBetweenSensors;
+
                 sensorIndex++;
             }
-
-            layerBaseRotation *= Quaternion.Euler(-angleBetweenLayers, 0.0f, 0.0f);
+            phi += angleBetweenLayers;
         }
     }
 }

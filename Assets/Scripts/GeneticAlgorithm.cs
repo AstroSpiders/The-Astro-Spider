@@ -262,10 +262,6 @@ public class GeneticAlgorithm
             }
         }
 
-        //foreach (var specie in Population)
-        //    foreach (var individual in specie.Individuals)
-        //        Debug.Log(individual.Fitness);
-
         int remaining = AlgorithmParameters.PopulationSize - addedCount;
 
         int prevGenCount = (int)(remaining * AlgorithmParameters.PreviousGenMutatePercentage);
@@ -585,7 +581,7 @@ public class GeneticAlgorithm
         {
             In      = inNode,
             Out     = outNode,
-            Weight  = (float)Random.NextDouble(),
+            Weight  = RandomClamped(),
             Enabled = true,
             Innov   = innovationNumber
         };
@@ -681,7 +677,7 @@ public class GeneticAlgorithm
             if ((float)Random.NextDouble() < AlgorithmParameters.PerturbWeightChance)
                 connect.Weight += RandomClamped() * AlgorithmParameters.MaxWeightPerturbation;
             else
-                connect.Weight = (float)Random.NextDouble();
+                connect.Weight = RandomClamped();
     }
 
     private int[] PotentialOutNodes(Genome individual, int inNode)
