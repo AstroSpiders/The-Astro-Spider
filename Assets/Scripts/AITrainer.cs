@@ -272,6 +272,8 @@ public class AITrainer : MonoBehaviour
         if (rocket.Dead || !rocket.HasFuel)
             fitness /= 2.0f;
 
+        fitness = Math.Max(0.0f, fitness);
+
         return fitness;
     }
 
