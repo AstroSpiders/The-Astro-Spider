@@ -21,6 +21,7 @@ public class RocketState : MonoBehaviour
         public float   InitialFuelLevel         { get; set; }
         public float   LandingDot               { get; set; } = 0.0f;
         public float   LandingImpact            { get; set; } = 1.0f;
+        public float   IdealLandingImpact       { get; set; } = 1.0f;
     }
 
     public WorldGenerator       WorldGenerator             = null;
@@ -155,6 +156,7 @@ public class RocketState : MonoBehaviour
             FuelConsumed             = 0.0f,
             LandingDot               = 0.0f,
             LandingImpact            = 1.0f,
+            IdealLandingImpact       = 1.0f,
             DistanceNavigated        = 0.0f,
             MaxDistanceNavigated     = 0.0f,
             DistanceFarFromPlanet    = 0.0f,
@@ -180,9 +182,10 @@ public class RocketState : MonoBehaviour
 
     private void FinalizeLandingStats(float landingDot, float landingImpact, bool landed)
     {
-        var stats               = PlanetsStats[PlanetsStats.Count - 1];
-            stats.Landed        = landed;
-            stats.LandingDot    = landingDot * 0.5f + 0.5f;
-            stats.LandingImpact = Mathf.Clamp(landingImpact / _maxLandingImpactTraining, 0.0f, 1.0f);
+        var stats                    = PlanetsStats[PlanetsStats.Count - 1];
+            stats.Landed             = landed;
+            stats.LandingDot         = landingDot * 0.5f + 0.5f;
+            stats.LandingImpact      = Mathf.Clamp(landingImpact / _maxLandingImpactTraining, 0.0f, 1.0f);
+            stats.IdealLandingImpact = Mathf.Clamp(_landingDotThreshold / _maxLandingImpact, 0.0f, 1.0f);
     }
 }

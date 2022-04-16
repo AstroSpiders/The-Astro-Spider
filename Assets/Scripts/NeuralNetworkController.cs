@@ -36,7 +36,11 @@ public class NeuralNetworkController : MonoBehaviour
 
         var outputs = _neuralNetwork.Forward(inputs, (int)RocketMovement.ThrusterTypes.Count);
 
-        for (int i = 0; i < (int)RocketMovement.ThrusterTypes.Count; i++)
-            _rocketMovement.ApplyAcceleration(outputs[i], (RocketMovement.ThrusterTypes)i);
+        _rocketMovement.ApplyAcceleration(outputs[0] * 0.5f + 0.5f, RocketMovement.ThrusterTypes.Main);
+        _rocketMovement.ApplyAcceleration(outputs[1] * 0.5f + 0.5f, RocketMovement.ThrusterTypes.ExhaustLeft);
+        _rocketMovement.ApplyAcceleration(outputs[2] * 0.5f + 0.5f, RocketMovement.ThrusterTypes.ExhaustRight);
+
+        //for (int i = 0; i < (int)RocketMovement.ThrusterTypes.Count; i++)
+        //    _rocketMovement.ApplyAcceleration(outputs[i], (RocketMovement.ThrusterTypes)i);
     }
 }

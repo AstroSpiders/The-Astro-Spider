@@ -124,7 +124,7 @@ public class NeuralNetwork
                         sum += otherNode.ActivationValue * connection.Item2;
                     }
 
-                    node.ActivationValue = node.NodeType == GeneticAlgorithm.NodeType.Output ? Sigmoid(sum) : (float)Math.Tanh(sum);
+                    node.ActivationValue = (float)Math.Tanh(sum);
                 }
 
                 if (node.NodeType == GeneticAlgorithm.NodeType.Output)

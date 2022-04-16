@@ -49,6 +49,9 @@ public class WorldGenerator : MonoBehaviour
     private float          _minAsteroidInitialImpulse              = 0.0f,
                            _maxAsteroidInitialImpulse              = 1000.0f;
 
+    [SerializeField]
+    private bool           _is2D                                   = false;
+
     private List<Asteroid> _asteroids                              = new List<Asteroid>();
 
     private Random         _random;
@@ -217,14 +220,23 @@ public class WorldGenerator : MonoBehaviour
     // https://datagenetics.com/blog/january32020/index.html
     private Vector3 RandomOnUnitSphere()
     {
-        float theta = RandomRange(0.0f, Mathf.PI * 2.0f);
-        float v     = (float)_random.NextDouble();
-        float phi   = Mathf.Acos((2 * v) - 1);
-        float r     = Mathf.Pow((float)_random.NextDouble(), 1.0f / 3.0f);
-        float x     = r * Mathf.Sin(phi) * Mathf.Cos(theta);
-        float y     = r * Mathf.Sin(phi) * Mathf.Sin(theta);
-        float z     = r * Mathf.Cos(phi);
+        if (_is2D)
+        {
+            float angle = (float)_random.NextDouble() * Mathf.PI * 2.0f;
+            return new Vector3(Mathf.Cos(angle), Mathf.Sin(angle), 0.0f);
+        }
+        else
+        {
 
-        return new Vector3(x, y, z);
+            float theta = RandomRange(0.0f, Mathf.PI * 2.0f);
+            float v = (float)_random.NextDouble();
+            float phi = Mathf.Acos((2 * v) - 1);
+            float r = Mathf.Pow((float)_random.NextDouble(), 1.0f / 3.0f);
+            float x = r * Mathf.Sin(phi) * Mathf.Cos(theta);
+            float y = r * Mathf.Sin(phi) * Mathf.Sin(theta);
+            float z = r * Mathf.Cos(phi);
+
+            return new Vector3(x, y, z);
+        }
     }
 }

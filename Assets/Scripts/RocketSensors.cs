@@ -31,10 +31,10 @@ public class RocketSensors : MonoBehaviour
 
     public SensorOutput[] SensorOutputs { get; private set; }
 
-    [SerializeField, Range(2, 10)]
+    [SerializeField, Range(1, 10)]
     private int           _sensorLayersCount              = 6;
                                                           
-    [SerializeField, Range(4, 20)]                        
+    [SerializeField, Range(1, 20)]                        
     private int           _sensorsPerLayer                = 8;
 
     [SerializeField, Range(0.0f, 100.0f)]

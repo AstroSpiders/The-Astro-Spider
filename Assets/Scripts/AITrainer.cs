@@ -101,7 +101,7 @@ public class AITrainer : MonoBehaviour
             EliteCount                       = _eliteCount,
             EliteCopies                      = _eliteCopies,
             InNodes                          = (prefabSensors.TotalSensorsCount * 3) + 1, // 3 inputs per sensor, 1 bias sensor
-            OutNodes                         = (int)RocketMovement.ThrusterTypes.Count,
+            OutNodes                         = 3, // there are 3 thrusters required for the 2D case (left, right, main)
             CrossoverDisableConnectionChance = _crossoverDisableConnectionChance,
             AddConnectionChance              = _addConnectionChance,
             AddNodeChance                    = _addNodeChance,
@@ -131,8 +131,8 @@ public class AITrainer : MonoBehaviour
 
         float fixedDeltaTime = Time.fixedDeltaTime;
 
-        //Time.timeScale = 2.0f;
-        //Time.fixedDeltaTime = fixedDeltaTime * Time.timeScale;
+        Time.timeScale = 2.0f;
+        Time.fixedDeltaTime = fixedDeltaTime * Time.timeScale;
     }
 
     private void Update()
@@ -258,8 +258,11 @@ public class AITrainer : MonoBehaviour
         {
             // TODO: take into account the speed, and punish the rocket for not going in the right direction.
             // Take into the time to get to the planet?
+
+            float landed = planetStats.Landed ? 1.0f : 0.0f;
+
             sum      += (planetStats.DistanceNavigated + planetStats.MaxDistanceNavigated) * (3.0f/2.0f) - (planetStats.FuelConsumed + planetStats.DistanceFarFromPlanet + planetStats.MaxDistanceFarFromPlanet) * 1.0f;
-            exponent += (planetStats.LandingDot + (1.0f - planetStats.LandingImpact)) * 0.5f + (planetStats.Landed ? 1 : 0);
+            exponent += planetStats.LandingDot * 2.0f + ((1.0f - planetStats.LandingImpact) + landed * (1.0f - planetStats.IdealLandingImpact));
         }
 
         //Debug.Log(sum + " " + exponent);

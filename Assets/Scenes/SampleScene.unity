@@ -290,9 +290,9 @@ MonoBehaviour:
   _planetPrefab: {fileID: 7180014405413669744, guid: 0b2b96b55251014498569294bf1fb136, type: 3}
   _asteroidPrefab: {fileID: 6454509588066999608, guid: 3e847b4a5d996b649a0ed7f0ff16b55a, type: 3}
   _randomSeed: 0
-  _planetsGenerateCount: 1
-  _minAsteroidsPerPlanetCount: 1
-  _maxAsteroidsPerPlanetCount: 50
+  _planetsGenerateCount: 5
+  _minAsteroidsPerPlanetCount: 0
+  _maxAsteroidsPerPlanetCount: 0
   _planetMinRadius: 40
   _planetMaxRadius: 50
   _asteroidMinRadius: 2.5
@@ -303,6 +303,7 @@ MonoBehaviour:
   _planetsGravityOuterFalloutRadiusMultip: 3
   _minAsteroidInitialImpulse: 0
   _maxAsteroidInitialImpulse: 100
+  _is2D: 1
 --- !u!1 &705507993
 GameObject:
   m_ObjectHideFlags: 0
