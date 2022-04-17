@@ -731,6 +731,9 @@ public class GeneticAlgorithm
 
             foreach (var connection in individual.Connections)
             {
+                //if (!connection.Enabled)
+                //    continue;
+
                 if (connection.In == currentNode && !visited.Contains(connection.Out))
                 {
                     visited.Add(connection.Out);

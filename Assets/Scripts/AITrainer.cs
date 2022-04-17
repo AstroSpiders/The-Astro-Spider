@@ -254,6 +254,8 @@ public class AITrainer : MonoBehaviour
         float sum      = 1.0f;
         float exponent = 1.0f;
 
+        int   index    = 1;
+
         foreach (var planetStats in rocket.PlanetsStats)
         {
             // TODO: take into account the speed, and punish the rocket for not going in the right direction.
@@ -262,7 +264,9 @@ public class AITrainer : MonoBehaviour
             float landed = planetStats.Landed ? 1.0f : 0.0f;
 
             sum      += (planetStats.DistanceNavigated + planetStats.MaxDistanceNavigated) * (3.0f/2.0f) - (planetStats.FuelConsumed + planetStats.DistanceFarFromPlanet + planetStats.MaxDistanceFarFromPlanet) * 1.0f;
-            exponent += planetStats.LandingDot * 2.0f + ((1.0f - planetStats.LandingImpact) + landed * (1.0f - planetStats.IdealLandingImpact));
+            exponent += (planetStats.LandingDot * 2.0f + ((1.0f - planetStats.LandingImpact) + landed * (1.0f - planetStats.IdealLandingImpact))) / index;
+
+            index++;
         }
 
         //Debug.Log(sum + " " + exponent);

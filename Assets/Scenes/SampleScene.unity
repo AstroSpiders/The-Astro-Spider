@@ -846,19 +846,19 @@ MonoBehaviour:
   _eliteCount: 3
   _eliteCopies: 2
   _crossoverDisableConnectionChance: 0.75
-  _addConnectionChance: 0.2
-  _addNodeChance: 0.12
-  _mutateWeightsChance: 0.8
+  _addConnectionChance: 0.1
+  _addNodeChance: 0.06
+  _mutateWeightsChance: 0.9
   _perturbWeightChance: 0.9
   _maxWeightPerturbation: 0.1
   _previousGenMutatePercentage: 0.25
   _c1: 1
   _c2: 1
-  _c3: 3
+  _c3: 4
   _n: 1
-  _compatibilityThreshold: 10
-  _interspeciesMatingRate: 0.1
-  _generationsToStagnate: 30
+  _compatibilityThreshold: 4
+  _interspeciesMatingRate: 0.2
+  _generationsToStagnate: 15
   _secondsPerEpoch: 120
   _rocketPrefab: {fileID: 5930579180306032157, guid: 8a436368efd6cb6478540782ca29b9a1, type: 3}
   _worldGenerator: {fileID: 235371912}
