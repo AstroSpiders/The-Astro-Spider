@@ -27,6 +27,16 @@ public class AITrainer : MonoBehaviour
         public List<EpochStats> EpochStats       { get; set; }
 
     }
+
+    public  WorldGenerator   WorldGenerator                   = null;
+    public  FocusCamera      FocusCamera                      = null;
+    public  Button           SaveTrainingStateButton          = null,
+                             LoadTrainingStateButton          = null;
+            
+    public  TMP_Text         EpochTextLabel                   = null,
+                             MaxFitnessTextLabel              = null,
+                             AverageFitnessLabel              = null;
+
     [SerializeField]
     private int              _populationSize                   = 150;
     [SerializeField]                                           
@@ -68,18 +78,6 @@ public class AITrainer : MonoBehaviour
     [SerializeField]
     private RocketState      _rocketPrefab                     = null;
     private float            _rocketFuelMultiplier             = 2.0f;
-    [SerializeField]
-    private WorldGenerator   _worldGenerator                   = null;
-    [SerializeField]
-    private FocusCamera      _focusCamera                      = null;
-    [SerializeField]
-    private Button           _saveTrainingStateButton          = null,
-                             _loadTrainingStateButton          = null;
-
-    [SerializeField]
-    private TMP_Text         _epochTextLabel                   = null,
-                             _maxFitnessTextLabel              = null,
-                             _averageFitnessLabel              = null;
 
     private GeneticAlgorithm _geneticAlgorithm                 = null;
 
@@ -127,8 +125,8 @@ public class AITrainer : MonoBehaviour
 
         SpawnRockets();
 
-        _saveTrainingStateButton.onClick.AddListener(SaveTrainingStateCallback);
-        _loadTrainingStateButton.onClick.AddListener(LoadTrainingStateCallback);
+        SaveTrainingStateButton.onClick.AddListener(SaveTrainingStateCallback);
+        LoadTrainingStateButton.onClick.AddListener(LoadTrainingStateCallback);
 
         float fixedDeltaTime = Time.fixedDeltaTime;
 
@@ -147,13 +145,13 @@ public class AITrainer : MonoBehaviour
             int index = 1;
             foreach (var stats in rocket.PlanetsStats)
             {
-                if (stats.Landed && index < _worldGenerator.Planets.Length - 1)
+                if (stats.Landed && index < WorldGenerator.Planets.Length - 1)
                     maxLanding = Mathf.Max(index, maxLanding);
                 index++;
             }
         }
 
-        _focusCamera.SetFocusPoint(averagePosition);
+        FocusCamera.SetFocusPoint(averagePosition);
 
         _epochElapsedSeconds += Time.deltaTime;
         float adjustedSecondsPerEpoch = _secondsPerEpoch + maxLanding * _secondsPerEpoch;
@@ -171,27 +169,27 @@ public class AITrainer : MonoBehaviour
     {
         if (_saveStatePath != string.Empty)
         {
-            _saveTrainingStateButton.GetComponentInChildren<TMP_Text>().text = "Saving training state...";
-            _saveTrainingStateButton.interactable                            = false;
+            SaveTrainingStateButton.GetComponentInChildren<TMP_Text>().text = "Saving training state...";
+            SaveTrainingStateButton.interactable                            = false;
         }
 
         if (_loadStatePath != string.Empty)
         {
-            _loadTrainingStateButton.GetComponentInChildren<TMP_Text>().text = "Loading training state...";
-            _loadTrainingStateButton.interactable                            = false;
+            LoadTrainingStateButton.GetComponentInChildren<TMP_Text>().text = "Loading training state...";
+            LoadTrainingStateButton.interactable                            = false;
         }
 
         if (_epochStats.Count >= 1)
         {
-            _epochTextLabel.text      = "Epoch: " + _epochStats.Count;
-            _maxFitnessTextLabel.text = "Max Fitness: " + _epochStats[_epochStats.Count - 1].MaxFitness;
-            _averageFitnessLabel.text = "Average Fitness: " + _epochStats[_epochStats.Count - 1].AverageFitness;
+            EpochTextLabel.text      = "Epoch: " + _epochStats.Count;
+            MaxFitnessTextLabel.text = "Max Fitness: " + _epochStats[_epochStats.Count - 1].MaxFitness;
+            AverageFitnessLabel.text = "Average Fitness: " + _epochStats[_epochStats.Count - 1].AverageFitness;
         }
         else
         {
-            _epochTextLabel.text      = string.Empty;
-            _maxFitnessTextLabel.text = string.Empty;
-            _averageFitnessLabel.text = string.Empty;
+            EpochTextLabel.text      = string.Empty;
+            MaxFitnessTextLabel.text = string.Empty;
+            AverageFitnessLabel.text = string.Empty;
         }
     }
 
@@ -234,7 +232,7 @@ public class AITrainer : MonoBehaviour
         }
 
         DestroyOldRockets();
-        _worldGenerator.ResetWorld();
+        WorldGenerator.ResetWorld();
         SpawnRockets();
     }
 
@@ -289,7 +287,7 @@ public class AITrainer : MonoBehaviour
             { 
                 var rocket                    = Instantiate(_rocketPrefab);
 
-                    rocket.WorldGenerator     = _worldGenerator;
+                    rocket.WorldGenerator     = WorldGenerator;
                     rocket.transform.position = Vector3.zero;
             
                 rocket.gameObject.AddComponent(typeof(NeuralNetworkController));
@@ -326,8 +324,8 @@ public class AITrainer : MonoBehaviour
 
         File.WriteAllText(_saveStatePath, json);
 
-        _saveTrainingStateButton.GetComponentInChildren<TMP_Text>().text = "Save training state";
-        _saveTrainingStateButton.interactable                            = true;
+        SaveTrainingStateButton.GetComponentInChildren<TMP_Text>().text = "Save training state";
+        SaveTrainingStateButton.interactable                            = true;
     }
 
     private void LoadTrainingStateCallback()
@@ -347,7 +345,7 @@ public class AITrainer : MonoBehaviour
             _geneticAlgorithm                                            = currentState.GeneticAlgorithm;
             _epochStats                                                  = currentState.EpochStats;
 
-           _loadTrainingStateButton.GetComponentInChildren<TMP_Text>().text = "Load training state";
-           _loadTrainingStateButton.interactable                            = true;
+           LoadTrainingStateButton.GetComponentInChildren<TMP_Text>().text = "Load training state";
+           LoadTrainingStateButton.interactable                            = true;
     }
 }

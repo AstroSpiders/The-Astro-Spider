@@ -1,0 +1,62 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &6741717528555249290
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6741717528555249291}
+  - component: {fileID: 6741717528555249284}
+  m_Layer: 0
+  m_Name: WorldGenerator
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6741717528555249291
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6741717528555249290}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &6741717528555249284
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6741717528555249290}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: da9cb7d6a4990244bb2d4e69c2c3d3a4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _planetPrefab: {fileID: 7180014405413669744, guid: 0b2b96b55251014498569294bf1fb136, type: 3}
+  _asteroidPrefab: {fileID: 6454509588066999608, guid: 3e847b4a5d996b649a0ed7f0ff16b55a, type: 3}
+  _randomSeed: 0
+  _planetsGenerateCount: 5
+  _minAsteroidsPerPlanetCount: 1
+  _maxAsteroidsPerPlanetCount: 100
+  _planetMinRadius: 40
+  _planetMaxRadius: 50
+  _asteroidMinRadius: 2.5
+  _asteroidMaxRadus: 5
+  _minDistanceBetweenPlanets: 10
+  _maxDistanceBetweenPlanets: 20
+  _planetsGravityOuterRadiusMultip: 2
+  _planetsGravityOuterFalloutRadiusMultip: 3
+  _minAsteroidInitialImpulse: 0
+  _maxAsteroidInitialImpulse: 100
+  _is2D: 0

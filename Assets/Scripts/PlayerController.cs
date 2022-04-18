@@ -7,12 +7,12 @@ using UnityEngine.InputSystem;
 [RequireComponent(typeof(ThrustersSound))]
 public class PlayerController : MonoBehaviour
 {
-    private const float _bias = 0.001f;
+    private const float              _bias = 0.001f;
 
-    [SerializeField] private Transform _playerInputSpace = default;
-
-    private PlayerInputActions _playerInputActions;
-    private RocketMovement _rocketMovement;
+    public        Transform          PlayerInputSpace = default;
+                  
+    private       PlayerInputActions _playerInputActions;
+    private       RocketMovement     _rocketMovement;
 
     private void Awake()
     {
@@ -30,8 +30,8 @@ public class PlayerController : MonoBehaviour
         var input = _playerInputActions.Player.Move.ReadValue<Vector2>();
 
         Vector3 desiredDirection;
-        if (_playerInputSpace && (Math.Abs(input.x) >= _bias || Math.Abs(input.y) >= _bias))
-            desiredDirection = _playerInputSpace.TransformDirection(input.x, 0.0f, input.y).normalized;
+        if (PlayerInputSpace && (Math.Abs(input.x) >= _bias || Math.Abs(input.y) >= _bias))
+            desiredDirection = PlayerInputSpace.TransformDirection(input.x, 0.0f, input.y).normalized;
         else
             desiredDirection = new Vector3(input.x, 0.0f, input.y);
 
