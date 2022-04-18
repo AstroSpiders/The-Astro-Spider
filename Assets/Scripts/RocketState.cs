@@ -27,6 +27,9 @@ public class RocketState : MonoBehaviour
     public WorldGenerator       WorldGenerator             = null;
     public List<StatsPerPlanet> PlanetsStats               = new List<StatsPerPlanet>();
 
+    [Range(0.0f, 100.0f)]
+    public float                FuelCapacity               = 100.0f;
+
     public        float         CurrentFuelLevel { get; set; }
     public        bool          HasFuel          { get => CurrentFuelLevel > _bias; }
     public        bool          Dead             { get; private set; } = false;
@@ -46,9 +49,6 @@ public class RocketState : MonoBehaviour
     [SerializeField]
     private       float         _maxLandingImpactTraining  = 10.0f;
 
-    [SerializeField, Range(0.0f, 100.0f)]
-    private       float         _fuelCapacity              = 100.0f;
-
     private       RocketSensors _sensors                   = null;
     private       Rigidbody     _body                      = null;
                                 
@@ -63,7 +63,7 @@ public class RocketState : MonoBehaviour
         }
 
 
-        CurrentFuelLevel = _fuelCapacity;
+        CurrentFuelLevel = FuelCapacity;
 
         _sensors         = GetComponent<RocketSensors>();
         _body            = GetComponent<Rigidbody>();
@@ -81,11 +81,16 @@ public class RocketState : MonoBehaviour
     {
         if (!Won)
             UpdateLatestStats();
+
+        //Debug.Log(Dead + " " + CurrentFuelLevel);
     }
 
     private void OnCollisionEnter(Collision collision)
     {
         var otherObject = collision.gameObject;
+
+        //Debug.Log("OnCollisionEnter");
+
         if (otherObject.CompareTag("Planet"))
         {
             var   planetToObject = (transform.position - otherObject.transform.position).normalized;
@@ -108,18 +113,23 @@ public class RocketState : MonoBehaviour
                 }
                 else
                 {
+                    Debug.Log(impact + " " + _maxLandingImpact);
                     Dead = true;
                 }
             }
             else if (dot < _deadDotThreshold)
             {
+                //Debug.Log("A picat in cas.");
                 Dead = true;
             }
         }
         else
         {
             if (otherObject.CompareTag("Obstacle"))
+            {
+                //Debug.Log("E un obstacol.");
                 Dead = true;
+            }
         }
     }
 
@@ -177,7 +187,7 @@ public class RocketState : MonoBehaviour
             stats.DistanceFarFromPlanet    = Mathf.Clamp((distanceToTarget / (stats.TargetPosition - stats.StartingPosition).magnitude) - 1.0f, 0.0f, 1.0f);
             stats.MaxDistanceFarFromPlanet = Mathf.Max(stats.MaxDistanceFarFromPlanet, stats.DistanceFarFromPlanet);
 
-            stats.FuelConsumed             = (stats.InitialFuelLevel - CurrentFuelLevel) / _fuelCapacity;
+            stats.FuelConsumed             = (stats.InitialFuelLevel - CurrentFuelLevel) / FuelCapacity;
     }
 
     private void FinalizeLandingStats(float landingDot, float landingImpact, bool landed)

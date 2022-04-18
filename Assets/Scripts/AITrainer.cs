@@ -67,6 +67,7 @@ public class AITrainer : MonoBehaviour
 
     [SerializeField]
     private RocketState      _rocketPrefab                     = null;
+    private float            _rocketFuelMultiplier             = 2.0f;
     [SerializeField]
     private WorldGenerator   _worldGenerator                   = null;
     [SerializeField]
@@ -131,8 +132,8 @@ public class AITrainer : MonoBehaviour
 
         float fixedDeltaTime = Time.fixedDeltaTime;
 
-        Time.timeScale = 2.0f;
-        Time.fixedDeltaTime = fixedDeltaTime * Time.timeScale;
+        //Time.timeScale = 2.0f;
+        //Time.fixedDeltaTime = fixedDeltaTime * Time.timeScale;
     }
 
     private void Update()
@@ -254,22 +255,18 @@ public class AITrainer : MonoBehaviour
         float sum      = 1.0f;
         float exponent = 1.0f;
 
-        int   index    = 1;
+        int   index    = 0;
 
         foreach (var planetStats in rocket.PlanetsStats)
         {
-            // TODO: take into account the speed, and punish the rocket for not going in the right direction.
-            // Take into the time to get to the planet?
-
             float landed = planetStats.Landed ? 1.0f : 0.0f;
 
-            sum      += (planetStats.DistanceNavigated + planetStats.MaxDistanceNavigated) * (3.0f/2.0f) - (planetStats.FuelConsumed + planetStats.DistanceFarFromPlanet + planetStats.MaxDistanceFarFromPlanet) * 1.0f;
-            exponent += (planetStats.LandingDot * 2.0f + ((1.0f - planetStats.LandingImpact) + landed * (1.0f - planetStats.IdealLandingImpact))) / index;
+            sum += (planetStats.DistanceNavigated + planetStats.MaxDistanceNavigated) * (3.0f/2.0f) - (planetStats.FuelConsumed + planetStats.DistanceFarFromPlanet + planetStats.MaxDistanceFarFromPlanet) * 1.0f;
+            exponent += (planetStats.LandingDot * 2.0f + ((1.0f - planetStats.LandingImpact) + landed * (1.0f - planetStats.IdealLandingImpact))) / (1 << index);
+
 
             index++;
         }
-
-        //Debug.Log(sum + " " + exponent);
 
         float fitness = Mathf.Pow(sum, exponent);
 
@@ -297,6 +294,7 @@ public class AITrainer : MonoBehaviour
             
                 rocket.gameObject.AddComponent(typeof(NeuralNetworkController));
                 rocket.GetComponent<NeuralNetworkController>().SetNeuralNetwork(_geneticAlgorithm, individual);
+                rocket.GetComponent<RocketState>().FuelCapacity *= _rocketFuelMultiplier;
 
                 _rockets[index] = rocket;
                 
