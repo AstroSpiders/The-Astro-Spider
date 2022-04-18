@@ -72,15 +72,14 @@ public class GameModeCreator : MonoBehaviour
     {
         var worldGenerator = Instantiate(_playWorldGenerator);
 
+        var player = Instantiate(_playRocketPrefab);
         _mainCamera.gameObject.AddComponent(typeof(OrbitCamera));
         var orbitCamera = _mainCamera.GetComponent<OrbitCamera>();
 
-        var player = Instantiate(_playRocketPrefab);
+        orbitCamera.enabled = true;
+        orbitCamera.Focus = player.transform;
 
         player.GetComponent<RocketState>().WorldGenerator        = worldGenerator;
         player.GetComponent<PlayerController>().PlayerInputSpace = orbitCamera.transform;
-
-        orbitCamera.enabled = true;
-        orbitCamera.Focus = player.transform;
     }
 }

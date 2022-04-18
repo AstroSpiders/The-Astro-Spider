@@ -54,7 +54,7 @@ public class OrbitCamera : MonoBehaviour
     {
         _camera                 = GetComponent<Camera>();
         _playerInputActions     = new PlayerInputActions();
-        _focusPoint             = Focus.position;
+        _focusPoint             = Vector3.zero;
         transform.localRotation = _orbitRotation = Quaternion.Euler(_orbitAngles);
     }
 
