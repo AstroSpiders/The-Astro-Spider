@@ -451,8 +451,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f50ddcaf580f963428457b0b2580c337, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _gameSettings: {fileID: 11400000, guid: 43dc7457807aec04f979be00cdc42c6b, type: 2}
+  _gameParams: {fileID: 11400000, guid: 43dc7457807aec04f979be00cdc42c6b, type: 2}
   _mainCamera: {fileID: 963194227}
+  _watchAIRocketPrefab: {fileID: 5689450947916351025, guid: faaa9db8b4936184bb634a0314f67942, type: 3}
   _trainWorldGenerator: {fileID: 4307495840037747016, guid: e006b9b8537b5ac4897d69e48cc5e115, type: 3}
   _aiTrainer: {fileID: 178193835631024143, guid: 15db06da218596541a67695493167b8a, type: 3}
   _trainInGameUI: {fileID: 5491576170252474519, guid: 843176302fc7426418c670b08cbd4e05, type: 3}

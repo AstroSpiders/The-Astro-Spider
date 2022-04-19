@@ -8,7 +8,8 @@ public enum GameModes
 }
 
 [CreateAssetMenu(fileName = "GameSettings", menuName = "ScriptableObjects/GameSettings")]
-public class GameSettings : ScriptableObject
+public class GameParams : ScriptableObject
 {
-    public GameModes GameMode = GameModes.Play;
+    public GameModes GameMode        = GameModes.Play;
+    public string    AIStateFilename = string.Empty;
 }

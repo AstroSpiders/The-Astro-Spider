@@ -1,3 +1,5 @@
+using Newtonsoft.Json;
+using System.IO;
 using System.Linq;
 using TMPro;
 using UnityEngine;
@@ -6,10 +8,13 @@ using UnityEngine.UI;
 public class GameModeCreator : MonoBehaviour
 {
     [SerializeField]
-    private GameSettings   _gameSettings;
+    private GameParams     _gameParams;
 
     [SerializeField]
     private Camera         _mainCamera;
+
+    [SerializeField]
+    private RocketState    _watchAIRocketPrefab;
 
     [SerializeField]
     private WorldGenerator _trainWorldGenerator;
@@ -26,9 +31,10 @@ public class GameModeCreator : MonoBehaviour
     private void Awake()
     {
 
-        switch (_gameSettings.GameMode)
+        switch (_gameParams.GameMode)
         {
             case GameModes.WatchAI:
+                CreateWatchAI();
                 break;
             case GameModes.TrainAI:
                 CreateTrainAI();
@@ -37,6 +43,44 @@ public class GameModeCreator : MonoBehaviour
                 CreatePlay();
                 break;
         }
+    }
+
+    private void CreateWatchAI()
+    {
+        var                     json           = File.ReadAllText(_gameParams.AIStateFilename);
+        var                     currentState   = JsonConvert.DeserializeObject<AITrainer.TrainingState>(json);
+
+        float                   bestFitness    = -1.0f;
+        GeneticAlgorithm.Genome bestIndividual = null;
+
+        foreach (var specie in currentState.GeneticAlgorithm.Population)
+        {
+            foreach (var individual in specie.Individuals)
+            {
+                if (individual.Fitness > bestFitness)
+                {
+                    bestIndividual = individual;
+                    bestFitness    = individual.Fitness;
+                }
+            }
+        }
+
+        if (bestIndividual is null)
+            return;
+
+        var worldGenerator = Instantiate(_trainWorldGenerator);
+        var player         = Instantiate(_watchAIRocketPrefab);
+
+        _mainCamera.gameObject.AddComponent(typeof(OrbitCamera));
+        var orbitCamera = _mainCamera.GetComponent<OrbitCamera>();
+
+        orbitCamera.enabled = true;
+        orbitCamera.Focus   = player.transform;
+
+        player.GetComponent<RocketState>().WorldGenerator = worldGenerator;
+        player.GetComponent<NeuralNetworkController>().SetNeuralNetwork(currentState.GeneticAlgorithm, bestIndividual);
+        player.GetComponent<RocketState>().FuelCapacity *= _aiTrainer.RocketFuelMultiplier;
+        player.MaxLandingImpact = player.MaxLandingImpact + player.MaxLandingImpact * 0.5f;
     }
 
     private void CreateTrainAI()

@@ -1,15 +1,24 @@
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class MainMenu : MonoBehaviour
 {
     [SerializeField]
-    private GameSettings _gameSettings;
+    private GameParams _gameSettings;
+
+    private string     _aiStateFilename = string.Empty;
 
     public void OnWatchAIButtonPressed()
     {
         _gameSettings.GameMode = GameModes.WatchAI;
-        ChangeScene();
+#if UNITY_EDITOR
+        _aiStateFilename = EditorUtility.OpenFilePanel("Load trading state", "", "json");
+#else
+        _aiStateFilename = Application.persistentDataPath + AITrainer.DefaultSaveFile;
+#endif
     }
 
     public void OnTrainAIButtonPressed()
@@ -21,6 +30,16 @@ public class MainMenu : MonoBehaviour
     public void OnPlayButtonPressed()
     {
         _gameSettings.GameMode = GameModes.Play;
+        ChangeScene();
+    }
+    private void Update()
+    {
+        if (_aiStateFilename == string.Empty)
+            return;
+
+        _gameSettings.AIStateFilename = _aiStateFilename;
+        _aiStateFilename = string.Empty;
+
         ChangeScene();
     }
 

@@ -13,7 +13,7 @@ using UnityEngine.UI;
 public class AITrainer : MonoBehaviour
 {
     [Serializable]
-    private class EpochStats
+    public class EpochStats
     {
         public int   Epoch          { get; set; }
         public float MaxFitness     { get; set; }
@@ -21,74 +21,77 @@ public class AITrainer : MonoBehaviour
     }
 
     [Serializable]
-    private class TrainingState
+    public class TrainingState
     {
         public GeneticAlgorithm GeneticAlgorithm { get; set; }
         public List<EpochStats> EpochStats       { get; set; }
 
     }
 
-    public  WorldGenerator   WorldGenerator                   = null;
-    public  FocusCamera      FocusCamera                      = null;
-    public  Button           SaveTrainingStateButton          = null,
-                             LoadTrainingStateButton          = null;
-            
-    public  TMP_Text         EpochTextLabel                   = null,
-                             MaxFitnessTextLabel              = null,
-                             AverageFitnessLabel              = null;
+    public const string           DefaultSaveFile                   = "/stats_release.json";
+                                                                    
+    public       WorldGenerator   WorldGenerator                    = null;
+    public       FocusCamera      FocusCamera                       = null;
+    public       Button           SaveTrainingStateButton           = null,
+                                  LoadTrainingStateButton           = null;
+                                                                    
+    public       TMP_Text         EpochTextLabel                    = null,
+                                  MaxFitnessTextLabel               = null,
+                                  AverageFitnessLabel               = null;
+                                                                    
+    public       float            RocketFuelMultiplier              = 2.0f;
 
     [SerializeField]
-    private int              _populationSize                   = 150;
+    private      int              _populationSize                   = 150;
     [SerializeField]                                           
-    private int              _eliteCount                       = 3;
+    private      int              _eliteCount                       = 3;
     [SerializeField]                                           
-    private int              _eliteCopies                      = 2;
+    private      int              _eliteCopies                      = 2;
     [SerializeField]
-    private float            _crossoverDisableConnectionChance = 0.75f;
+    private      float            _crossoverDisableConnectionChance = 0.75f;
     [SerializeField]
-    private float            _addConnectionChance              = 0.05f;
+    private      float            _addConnectionChance              = 0.05f;
     [SerializeField]
-    private float            _addNodeChance                    = 0.03f;
+    private      float            _addNodeChance                    = 0.03f;
     [SerializeField]
-    private float            _mutateWeightsChance              = 0.8f;
+    private      float            _mutateWeightsChance              = 0.8f;
     [SerializeField]
-    private float            _perturbWeightChance              = 0.9f;
+    private      float            _perturbWeightChance              = 0.9f;
     [SerializeField]
-    private float            _maxWeightPerturbation            = 0.1f;
+    private      float            _maxWeightPerturbation            = 0.1f;
     [SerializeField]
-    private float            _previousGenMutatePercentage      = 0.25f;
+    private      float            _previousGenMutatePercentage      = 0.25f;
     [SerializeField]
-    private float            _c1                               = 1.0f;
+    private      float            _c1                               = 1.0f;
     [SerializeField]
-    private float            _c2                               = 1.0f;
+    private      float            _c2                               = 1.0f;
     [SerializeField]
-    private float            _c3                               = 0.4f;
+    private      float            _c3                               = 0.4f;
     [SerializeField]
-    private float            _n                                = 1.0f;
+    private      float            _n                                = 1.0f;
     [SerializeField]
-    private float            _compatibilityThreshold           = 3.0f;
+    private      float            _compatibilityThreshold           = 3.0f;
     [SerializeField]
-    private float            _interspeciesMatingRate           = 0.001f;
+    private      float            _interspeciesMatingRate           = 0.001f;
     [SerializeField]
-    private int              _generationsToStagnate            = 15;
+    private      int              _generationsToStagnate            = 15;
 
     [SerializeField, Range(0.0f, 600.0f)]
-    private float            _secondsPerEpoch                  = 60.0f;
+    private      float            _secondsPerEpoch                  = 60.0f;
 
     [SerializeField]
-    private RocketState      _rocketPrefab                     = null;
-    private float            _rocketFuelMultiplier             = 2.0f;
-
-    private GeneticAlgorithm _geneticAlgorithm                 = null;
-
-    private RocketState[]    _rockets                          = null;
-
-    private float            _epochElapsedSeconds              = 0.0f;
-
-    private List<EpochStats> _epochStats                       = new List<EpochStats>();
-
-    private string           _saveStatePath                    = string.Empty;
-    private string           _loadStatePath                    = string.Empty;
+    private      RocketState      _rocketPrefab                     = null;
+                 
+    private      GeneticAlgorithm _geneticAlgorithm                 = null;
+                 
+    private      RocketState[]    _rockets                          = null;
+                 
+    private      float            _epochElapsedSeconds              = 0.0f;
+                 
+    private      List<EpochStats> _epochStats                       = new List<EpochStats>();
+                 
+    private      string           _saveStatePath                    = string.Empty;
+    private      string           _loadStatePath                    = string.Empty;
 
     private void Start()
     {
@@ -292,7 +295,7 @@ public class AITrainer : MonoBehaviour
             
                 rocket.gameObject.AddComponent(typeof(NeuralNetworkController));
                 rocket.GetComponent<NeuralNetworkController>().SetNeuralNetwork(_geneticAlgorithm, individual);
-                rocket.GetComponent<RocketState>().FuelCapacity *= _rocketFuelMultiplier;
+                rocket.GetComponent<RocketState>().FuelCapacity *= RocketFuelMultiplier;
 
                 _rockets[index] = rocket;
                 
@@ -308,7 +311,7 @@ public class AITrainer : MonoBehaviour
                                                      "training_state.json",
                                                      "json");
 #else
-        _saveStatePath = Application.persistentDataPath + "/stats_release.json";
+        _saveStatePath = Application.persistentDataPath + DefaultSaveFile;
 #endif
     }
 
@@ -333,7 +336,7 @@ public class AITrainer : MonoBehaviour
 #if UNITY_EDITOR
         _loadStatePath = EditorUtility.OpenFilePanel("Load trading state", "", "json");
 #else
-        _loadStatePath = Application.persistentDataPath + "/stats_release.json";
+        _loadStatePath = Application.persistentDataPath + DefaultSaveFile;
 #endif
     }
 

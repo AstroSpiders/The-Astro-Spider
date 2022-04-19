@@ -30,6 +30,8 @@ public class RocketState : MonoBehaviour
     [Range(0.0f, 100.0f)]
     public float                FuelCapacity               = 100.0f;
 
+    public float                MaxLandingImpact = 2.0f;
+
     public        float         CurrentFuelLevel { get; set; }
     public        bool          HasFuel          { get => CurrentFuelLevel > _bias; }
     public        bool          Dead             { get; private set; } = false;
@@ -42,10 +44,7 @@ public class RocketState : MonoBehaviour
                                 
     [SerializeField]            
     private       float         _deadDotThreshold          = 0.5f;
-                                
-    [SerializeField]            
-    private       float         _maxLandingImpact          = 1.0f;
-
+    
     [SerializeField]
     private       float         _maxLandingImpactTraining  = 10.0f;
 
@@ -106,14 +105,14 @@ public class RocketState : MonoBehaviour
 
             if (dot >= _landingDotThreshold)
             {
-                if (impact <= _maxLandingImpact)
+                if (impact <= MaxLandingImpact)
                 {
                     if (isTargetPlanet)
                         ProcessLanding(dot, impact);
                 }
                 else
                 {
-                    Debug.Log(impact + " " + _maxLandingImpact);
+                    Debug.Log(impact + " " + MaxLandingImpact);
                     Dead = true;
                 }
             }
@@ -196,6 +195,6 @@ public class RocketState : MonoBehaviour
             stats.Landed             = landed;
             stats.LandingDot         = landingDot * 0.5f + 0.5f;
             stats.LandingImpact      = Mathf.Clamp(landingImpact / _maxLandingImpactTraining, 0.0f, 1.0f);
-            stats.IdealLandingImpact = Mathf.Clamp(_landingDotThreshold / _maxLandingImpact, 0.0f, 1.0f);
+            stats.IdealLandingImpact = Mathf.Clamp(_landingDotThreshold / MaxLandingImpact, 0.0f, 1.0f);
     }
 }
