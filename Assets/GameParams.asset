@@ -13,3 +13,4 @@ MonoBehaviour:
   m_Name: GameParams
   m_EditorClassIdentifier: 
   GameMode: 2
+  AIStateFilename: E:/Workspace/Unity/PAS/15.04.2022_training_states/trainint antonio/training_state_multple_wins_6_meh_2.json
