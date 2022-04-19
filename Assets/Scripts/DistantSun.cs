@@ -16,12 +16,11 @@ public class DistantSun : MonoBehaviour
 
     private GameObject _sun;
     
-    void Start()
+    private void Start()
     {
         _sun = Instantiate(_sunPrefab);
         _sun.transform.localScale = _sunSize * Vector3.one;
     }
 
-    void Update() => _sun.transform.position = transform.position - _directionalLight.transform.forward * _sunDistance;
-    
+    private void Update() => _sun.transform.position = transform.position - _directionalLight.transform.forward * _sunDistance;
 }
