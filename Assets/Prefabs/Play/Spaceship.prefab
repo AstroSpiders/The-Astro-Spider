@@ -121,7 +121,7 @@ MonoBehaviour:
   _adjustVelocitySpeed: 100
   _adjustAngularVelocitySpeed: 10000
   _separationRadius: 60
-  _separationIntensity: 4000
+  _separationIntensity: 40000
   _alignmentRadius: 70
   _alignmentIntensity: 500
   _cohesionRadius: 70
