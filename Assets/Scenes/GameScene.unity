@@ -294,13 +294,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 963194225}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.03, z: -1.59}
+  m_LocalRotation: {x: 0.20492315, y: 0, z: 0, w: 0.97877806}
+  m_LocalPosition: {x: 0, y: 1.48, z: -2.38}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 1
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 23.65, y: 0, z: 0}
 --- !u!114 &963194229
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -470,6 +470,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _gameParams: {fileID: 11400000, guid: 43dc7457807aec04f979be00cdc42c6b, type: 2}
   _mainCamera: {fileID: 963194227}
+  _orbitCameraLayerMask:
+    serializedVersion: 2
+    m_Bits: 951
   _watchAIRocketPrefab: {fileID: 5689450947916351025, guid: faaa9db8b4936184bb634a0314f67942, type: 3}
   _trainWorldGenerator: {fileID: 4307495840037747016, guid: e006b9b8537b5ac4897d69e48cc5e115, type: 3}
   _aiTrainer: {fileID: 178193835631024143, guid: 15db06da218596541a67695493167b8a, type: 3}

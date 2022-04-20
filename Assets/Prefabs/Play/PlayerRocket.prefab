@@ -59,6 +59,10 @@ PrefabInstance:
       propertyPath: m_Constraints
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2429929018151850364, guid: 8a436368efd6cb6478540782ca29b9a1, type: 3}
+      propertyPath: m_Interpolate
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 2429929018151850366, guid: 8a436368efd6cb6478540782ca29b9a1, type: 3}
       propertyPath: _maxAngle
       value: 1
@@ -341,7 +345,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8589877277892351200, guid: 8a436368efd6cb6478540782ca29b9a1, type: 3}
       propertyPath: m_Name
-      value: rocket
+      value: PlayerRocket
       objectReference: {fileID: 0}
     - target: {fileID: 8589877277892351200, guid: 8a436368efd6cb6478540782ca29b9a1, type: 3}
       propertyPath: m_IsActive
@@ -400,7 +404,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1778d596110b90348b5411221169c095, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _playerInputSpace: {fileID: 0}
+  PlayerInputSpace: {fileID: 0}
 --- !u!114 &6236790931704263608
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -5,7 +5,7 @@ Shader "CustomShaders/Outline"
     Properties
     {
         _OutlineColor("Outline Color", Color) = (0, 0, 0, 1)
-        _Outline("Outline width", Range(0.002, 0.03)) = 0.005
+        _Outline("Outline width", Range(0.001, 100)) = 0.005
     }
 
     // The SubShader block containing the Shader code. 
@@ -35,6 +35,8 @@ Shader "CustomShaders/Outline"
             // This line defines the name of the fragment shader. 
             #pragma fragment frag
 
+            #pragma multi_compile_instancing
+
             // The Core.hlsl file contains definitions of frequently used HLSL
             // macros and functions, and also contains #include references to other
             // HLSL files (for example, Common.hlsl, SpaceTransforms.hlsl, etc.).
@@ -54,6 +56,7 @@ Shader "CustomShaders/Outline"
                 // space.
                 float4 positionOS   : POSITION;
                 float3 normalOS     : NORMAL;
+                UNITY_VERTEX_INPUT_INSTANCE_ID
             };
 
             struct Varyings
@@ -71,11 +74,14 @@ Shader "CustomShaders/Outline"
                 // Declaring the output object (OUT) with the Varyings struct.
                 Varyings OUT;
 
-                float3 newPosition = IN.positionOS.xyz + IN.normalOS.xyz * _Outline;
+                float3 modelViewSpaceNormal = normalize(mul(UNITY_MATRIX_IT_MV, float4(IN.normalOS, 0.0f)));
+                float3 modelViewSpacePosition = mul(UNITY_MATRIX_MV, IN.positionOS);
+
+                float3 newPosition = modelViewSpacePosition + modelViewSpaceNormal * _Outline;
 
                 // The TransformObjectToHClip function transforms vertex positions
                 // from object space to homogenous space
-                OUT.positionHCS = TransformObjectToHClip(newPosition);
+                OUT.positionHCS = mul(UNITY_MATRIX_P, float4(newPosition, 1.0f));
                 OUT.color = _OutlineColor;
                 // Returning the output.
                 return OUT;

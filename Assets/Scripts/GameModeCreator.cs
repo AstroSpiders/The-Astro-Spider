@@ -14,6 +14,9 @@ public class GameModeCreator : MonoBehaviour
     private Camera         _mainCamera;
 
     [SerializeField]
+    private LayerMask      _orbitCameraLayerMask;
+
+    [SerializeField]
     private RocketState    _watchAIRocketPrefab;
 
     [SerializeField]
@@ -74,8 +77,9 @@ public class GameModeCreator : MonoBehaviour
         _mainCamera.gameObject.AddComponent(typeof(OrbitCamera));
         var orbitCamera = _mainCamera.GetComponent<OrbitCamera>();
 
-        orbitCamera.enabled = true;
-        orbitCamera.Focus   = player.transform;
+        orbitCamera.enabled         = true;
+        orbitCamera.Focus           = player.transform;
+        orbitCamera.ObstructionMask = _orbitCameraLayerMask;
 
         player.GetComponent<RocketState>().WorldGenerator = worldGenerator;
         player.GetComponent<NeuralNetworkController>().SetNeuralNetwork(currentState.GeneticAlgorithm, bestIndividual);
@@ -120,8 +124,9 @@ public class GameModeCreator : MonoBehaviour
         _mainCamera.gameObject.AddComponent(typeof(OrbitCamera));
         var orbitCamera = _mainCamera.GetComponent<OrbitCamera>();
 
-        orbitCamera.enabled = true;
-        orbitCamera.Focus = player.transform;
+        orbitCamera.enabled         = true;
+        orbitCamera.Focus           = player.transform;
+        orbitCamera.ObstructionMask = _orbitCameraLayerMask;
 
         player.GetComponent<RocketState>().WorldGenerator        = worldGenerator;
         player.GetComponent<PlayerController>().PlayerInputSpace = orbitCamera.transform;

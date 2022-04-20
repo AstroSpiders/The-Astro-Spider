@@ -112,23 +112,18 @@ public class RocketState : MonoBehaviour
                 }
                 else
                 {
-                    Debug.Log(impact + " " + MaxLandingImpact);
                     Dead = true;
                 }
             }
             else if (dot < _deadDotThreshold)
             {
-                //Debug.Log("A picat in cas.");
                 Dead = true;
             }
         }
         else
         {
-            if (otherObject.CompareTag("Obstacle"))
-            {
-                //Debug.Log("E un obstacol.");
-                Dead = true;
-            }
+            if (otherObject.CompareTag("Obstacle") || otherObject.CompareTag("Spaceship"))
+                Dead = true;            
         }
     }
 

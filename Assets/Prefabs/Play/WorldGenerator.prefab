@@ -45,10 +45,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _planetPrefab: {fileID: 7180014405413669744, guid: 0b2b96b55251014498569294bf1fb136, type: 3}
   _asteroidPrefab: {fileID: 6454509588066999608, guid: 3e847b4a5d996b649a0ed7f0ff16b55a, type: 3}
+  _spaceshipPrefab: {fileID: 4632865355670583250, guid: bbcbdc7009c62cc45bb227cdb3f66a80, type: 3}
   _randomSeed: 0
   _planetsGenerateCount: 5
+  _spaceshipAvoidPlanetRadius: 10
   _minAsteroidsPerPlanetCount: 1
-  _maxAsteroidsPerPlanetCount: 100
+  _maxAsteroidsPerPlanetCount: 75
+  _spaceshipsCount: 100
   _planetMinRadius: 40
   _planetMaxRadius: 50
   _asteroidMinRadius: 2.5

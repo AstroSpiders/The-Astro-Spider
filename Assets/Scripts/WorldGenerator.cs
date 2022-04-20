@@ -8,53 +8,62 @@ using Random = System.Random;
 public class WorldGenerator : MonoBehaviour
 {
     // An array containing the planets that were generated.
-    public GravitySphere[] Planets { get; private set; }
+    public GravitySphere[]  Planets { get; private set; }
 
     // The prefab for a single planet. Maybe in the future it's gonna be an array of prefabs
     // but for now, it's ok.
     [SerializeField]
-    private GravitySphere  _planetPrefab;
+    private GravitySphere   _planetPrefab;
     [SerializeField]
-    private Asteroid       _asteroidPrefab;
+    private Asteroid        _asteroidPrefab;
+    [SerializeField]
+    private Spaceship       _spaceshipPrefab;
 
     [SerializeField]
-    private int            _randomSeed                             = 0;
+    private int             _randomSeed                             = 0;
 
     [SerializeField, Range(1, 10)]
-    private int            _planetsGenerateCount                   = 5;
+    private int             _planetsGenerateCount                   = 5;
+
+    [SerializeField]
+    private float           _spaceshipAvoidPlanetRadius             = 20.0f;
 
     [SerializeField, Range(0, 1000)]
-    private int            _minAsteroidsPerPlanetCount             = 1,
-                           _maxAsteroidsPerPlanetCount             = 50;
+    private int             _minAsteroidsPerPlanetCount             = 1,
+                            _maxAsteroidsPerPlanetCount             = 50;
+
+    [SerializeField]
+    private int             _spaceshipsCount                        = 0;
 
     // The minimum and maximum radius a planet can have.
     [SerializeField, Range(10.0f, 100.0f)]
-    private float          _planetMinRadius                        = 10.0f,
-                           _planetMaxRadius                        = 40.0f;
+    private float           _planetMinRadius                        = 10.0f,
+                            _planetMaxRadius                        = 40.0f;
 
     [SerializeField, Range(0.5f, 9.0f)]
-    private float          _asteroidMinRadius                      = 0.5f,
-                           _asteroidMaxRadus                       = 2.0f;
+    private float           _asteroidMinRadius                      = 0.5f,
+                            _asteroidMaxRadus                       = 2.0f;
 
     // The minimum and maximum distance between planets (excluding the gravity outer radiuses).
     [SerializeField, Min(0.0f)]
-    private float          _minDistanceBetweenPlanets              = 0.0f,
-                           _maxDistanceBetweenPlanets              = 10.0f;
+    private float           _minDistanceBetweenPlanets              = 0.0f,
+                            _maxDistanceBetweenPlanets              = 10.0f;
 
     [SerializeField, Min(1.0f)]
-    private float          _planetsGravityOuterRadiusMultip        = 2.0f,
-                           _planetsGravityOuterFalloutRadiusMultip = 3.0f;
+    private float           _planetsGravityOuterRadiusMultip        = 2.0f,
+                            _planetsGravityOuterFalloutRadiusMultip = 3.0f;
 
     [SerializeField, Range(0.0f, 1000.0f)]
-    private float          _minAsteroidInitialImpulse              = 0.0f,
-                           _maxAsteroidInitialImpulse              = 1000.0f;
+    private float           _minAsteroidInitialImpulse              = 0.0f,
+                            _maxAsteroidInitialImpulse              = 1000.0f;
+                            
+    [SerializeField]        
+    private bool            _is2D                                   = false;
+                            
+    private List<Asteroid>  _asteroids                              = new List<Asteroid>();
+    private List<Spaceship> _spaceships                             = new List<Spaceship>();
 
-    [SerializeField]
-    private bool           _is2D                                   = false;
-
-    private List<Asteroid> _asteroids                              = new List<Asteroid>();
-
-    private Random         _random;
+    private Random          _random;
 
     public void ResetWorld()
     {
@@ -66,7 +75,11 @@ public class WorldGenerator : MonoBehaviour
         foreach (var asteroid in _asteroids)
             Destroy(asteroid.gameObject);
 
-        _asteroids = new List<Asteroid>();
+        foreach (var spaceship in _spaceships)
+            Destroy(spaceship.gameObject);
+
+        _asteroids  = new List<Asteroid>();
+        _spaceships = new List<Spaceship>();
 
         CreateWorld();
     }
@@ -120,11 +133,17 @@ public class WorldGenerator : MonoBehaviour
 
     private void Update()
     {
-        var toDesotry = _asteroids.Where(asteroid => asteroid.HitPlanet).ToArray();
+        var toDesotryAsteroids = _asteroids.Where(asteroid => asteroid.HitPlanet).ToArray();
         _asteroids.RemoveAll(asteroid => asteroid.HitPlanet);
 
-        foreach (var asteroid in toDesotry)
+        foreach (var asteroid in toDesotryAsteroids)
             Destroy(asteroid.gameObject);
+
+        var toDesotrySpaceships = _spaceships.Where(spaceship => spaceship.HitPlanet).ToArray();
+        _spaceships.RemoveAll(spaceship => spaceship.HitPlanet);
+
+        foreach (var spaceship in toDesotrySpaceships)
+            Destroy(spaceship.gameObject);
     }
 
     private void CreateWorld()
@@ -163,6 +182,9 @@ public class WorldGenerator : MonoBehaviour
  
             i++;
         }
+
+        if (_spaceshipPrefab != null)
+            SpawnSpacehsips();
     }
 
     private bool ValidNewPlanetPosition(Vector3 newPosition, float newRadius, int lastPlanetIndex)
@@ -216,6 +238,39 @@ public class WorldGenerator : MonoBehaviour
         }
     }
 
+    private void SpawnSpacehsips()
+    {
+        Vector3 minCorner = Planets[0].transform.position;
+        Vector3 maxCorner = Planets[0].transform.position;
+
+        foreach (var planet in Planets)
+        {
+            minCorner = Vector3.Min(minCorner, planet.transform.position);
+            maxCorner = Vector3.Max(maxCorner, planet.transform.position);
+        }
+
+        for (int i = 0; i < _spaceshipsCount; i++)
+        {
+            Vector3 position = Vector3.zero;
+
+            do
+            {
+                position = new Vector3(minCorner.x + (float)_random.NextDouble() * (maxCorner.x - minCorner.x),
+                                       minCorner.y + (float)_random.NextDouble() * (maxCorner.y - minCorner.y),
+                                       minCorner.z + (float)_random.NextDouble() * (maxCorner.z - minCorner.z));
+
+            } while (!ValidSpaceshipPosition(position));
+
+            var spaceship = Instantiate(_spaceshipPrefab);
+            spaceship.transform.position = position;
+            spaceship.transform.rotation = UnityEngine.Random.rotation;
+            spaceship.MinBoxCorner = minCorner;
+            spaceship.MaxBoxCorner = maxCorner;
+
+            _spaceships.Add(spaceship);
+        }
+    }
+
     private float RandomRange(float minValue, float maxValue) => minValue + (float)_random.NextDouble() * maxValue;
     // https://datagenetics.com/blog/january32020/index.html
     private Vector3 RandomOnUnitSphere()
@@ -239,4 +294,6 @@ public class WorldGenerator : MonoBehaviour
             return new Vector3(x, y, z);
         }
     }
+
+    private bool ValidSpaceshipPosition(Vector3 position) => Planets.All(planet => Vector3.Distance(planet.transform.position, position) >= planet.transform.localScale.magnitude + _spaceshipAvoidPlanetRadius);
 }

@@ -135,7 +135,7 @@ public class RocketMovement : MonoBehaviour
         Quaternion toDesiredRotation = desiredRotation * Quaternion.Inverse(transform.rotation);
 
         Vector3 angularVelocity = _body.angularVelocity;
-        Vector3 desiredAngularVelocity = QuaternionToAngularVelocity(toDesiredRotation);
+        Vector3 desiredAngularVelocity = CustomPhysics.QuaternionToAngularVelocity(toDesiredRotation);
 
         // We move towards the target angular velocity (desiredAngularVelocity).
         angularVelocity = Vector3.MoveTowards(angularVelocity, desiredAngularVelocity,
@@ -230,16 +230,6 @@ public class RocketMovement : MonoBehaviour
         }
 
         return Quaternion.identity;
-    }
-
-    private Vector3 QuaternionToAngularVelocity(Quaternion rotation)
-    {
-        rotation.ToAngleAxis(out float angleInDegrees, out Vector3 rotationAxis);
-
-        if (angleInDegrees > 180f)
-            angleInDegrees -= 360f;
-
-        return angleInDegrees * rotationAxis.normalized * Mathf.Deg2Rad;
     }
 
     private void ResetThrusters()

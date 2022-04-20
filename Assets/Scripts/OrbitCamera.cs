@@ -5,6 +5,7 @@ using UnityEngine;
 public class OrbitCamera : MonoBehaviour
 {
     public  Transform          Focus;
+    public  LayerMask          ObstructionMask = -1;
 
     [SerializeField, Range(1.0f, 10.0f)] 
     private float              _distance          = 5.0f;
@@ -21,9 +22,6 @@ public class OrbitCamera : MonoBehaviour
     private float              _minVerticalAngle   = -89.0f;
     [SerializeField, Range(-89.0f, 89.0f)] 
     private float              _maxVerticalAngle   = 89.0f;
-
-    [SerializeField]
-    private LayerMask          _obstructionMask    = -1;
 
     private Vector3            _focusPoint;
     private Vector2            _orbitAngles         = new Vector2(0.0f, 0.0f);
@@ -82,7 +80,7 @@ public class OrbitCamera : MonoBehaviour
 
         if (Physics.BoxCast(
             castFrom, _cameraHalfExtends, castDirection, out RaycastHit hit,
-            lookRotation, castDistance, _obstructionMask))
+            lookRotation, castDistance, ObstructionMask))
         {
             rectPosition = castFrom + castDirection * hit.distance;
             lookPosition = rectPosition - rectOffset;
