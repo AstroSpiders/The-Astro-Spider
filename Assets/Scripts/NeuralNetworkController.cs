@@ -10,13 +10,15 @@ public class NeuralNetworkController : MonoBehaviour
     public void SetNeuralNetwork(GeneticAlgorithm geneticAlgorithm, GeneticAlgorithm.Genome genome) => 
         _neuralNetwork = new NeuralNetwork(geneticAlgorithm, genome);
 
-    void Awake()
+    public NeuralNetwork GetNeuralNetwork() => _neuralNetwork;
+
+    private void Awake()
     {
         _sensors        = GetComponent<RocketSensors>();
         _rocketMovement = GetComponent<RocketMovement>();
     }
 
-    void Update()
+    private void Update()
     {
         if (_neuralNetwork is null)
             return;

@@ -18,6 +18,8 @@ public class GameModeCreator : MonoBehaviour
 
     [SerializeField]
     private RocketState    _watchAIRocketPrefab;
+    [SerializeField]
+    private Canvas         _watchAIUI;
 
     [SerializeField]
     private WorldGenerator _trainWorldGenerator;
@@ -81,10 +83,17 @@ public class GameModeCreator : MonoBehaviour
         orbitCamera.Focus           = player.transform;
         orbitCamera.ObstructionMask = _orbitCameraLayerMask;
 
+        var neutalNetworkController = player.GetComponent<NeuralNetworkController>();
+
         player.GetComponent<RocketState>().WorldGenerator = worldGenerator;
-        player.GetComponent<NeuralNetworkController>().SetNeuralNetwork(currentState.GeneticAlgorithm, bestIndividual);
+        neutalNetworkController.SetNeuralNetwork(currentState.GeneticAlgorithm, bestIndividual);
         player.GetComponent<RocketState>().FuelCapacity *= _aiTrainer.RocketFuelMultiplier;
         player.MaxLandingImpact = player.MaxLandingImpact + player.MaxLandingImpact * 0.5f;
+
+        var canvas = Instantiate(_watchAIUI);
+
+        var uiNeuralNetwork = canvas.GetComponentInChildren<UINeuralNetwork>();
+        uiNeuralNetwork.NeuralNetwork = neutalNetworkController.GetNeuralNetwork();
     }
 
     private void CreateTrainAI()
