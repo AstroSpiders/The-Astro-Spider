@@ -104,9 +104,15 @@ public class UINeuralNetwork : Graphic
             }
 
             foreach (var connectionDetails in details.InverseAdjDetails)
-            {
-                float colorValue = NeuralNetwork.NeuronsGraph.Nodes[connectionDetails.InNode].ActivationValue * 0.5f + 0.5f;
-                Vector3 baseColor = new Vector3(connectionDetails.BaseColor.r, connectionDetails.BaseColor.g, connectionDetails.BaseColor.b) * colorValue;
+            {   
+                float sign = connectionDetails.BaseColor.r > 0.01f ? -1.0f : 1.0f;
+                sign *= Mathf.Sign(NeuralNetwork.NeuronsGraph.Nodes[connectionDetails.InNode].ActivationValue);
+
+                var color = Color.green;
+                if (sign < 0.0f)
+                    color = Color.red;
+
+                Vector3 baseColor = new Vector3(color.r, color.g, color.b) * Mathf.Abs(NeuralNetwork.NeuronsGraph.Nodes[connectionDetails.InNode].ActivationValue);
                 foreach (var vertexIndex in connectionDetails.VerticesIndices)
                 {
                     UIVertex vertex = UIVertex.simpleVert;
