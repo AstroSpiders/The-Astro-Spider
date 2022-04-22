@@ -7,37 +7,39 @@ public class UINeuralNetwork : Graphic
 {
     private class ConnectionDetails
     {
-        public Color     BaseColor       { get; set; } = Color.black;
+        public Color BaseColor { get; set; } = Color.black;
         public List<int> VerticesIndices { get; set; } = new List<int>();
-        public int       InNode          { get; set; } = 0;
+        public int InNode { get; set; } = 0;
     }
     private class NodeDetails
     {
-        public List<int>               VerticesIndices   { get; set; } = new List<int>();
+        public List<int> VerticesIndices { get; set; } = new List<int>();
         public List<ConnectionDetails> InverseAdjDetails { get; set; } = new List<ConnectionDetails>();
-        public Vector2                 Position          { get; set; } = Vector2.zero;
+        public Vector2 Position { get; set; } = Vector2.zero;
     }
-    public  NeuralNetwork                NeuralNetwork { get; set; }
-                                         
-    [SerializeField]                     
+    public NeuralNetwork NeuralNetwork { get; set; }
+
+    [SerializeField]
     private float                        _lineThickness       = 0.01f;
-    [SerializeField]                                          
+    [SerializeField]
     private float                        _neuronRadius        = 0.01f;
-    [SerializeField]                     
+    [SerializeField]
     private int                          _neuronVerticesCount = 10;
-                                         
+
     private float                        _width;
     private float                        _height;
 
-    private Dictionary<int, NodeDetails> _nodesDetails = new Dictionary<int, NodeDetails>();
-    private VertexHelper                 _vertexHelper = null; 
+    private Dictionary<int, NodeDetails> _nodesDetails         = new Dictionary<int, NodeDetails>();
+    private VertexHelper                 _vertexHelper         = null;
+
+    private bool                         _toUpdateStructure    = true;
 
     protected override void OnPopulateMesh(VertexHelper vh)
     {
         if (NeuralNetwork is null)
             return;
 
-        if (vh.currentVertCount > 0)
+        if (!_toUpdateStructure)
             return;
 
         vh.Clear();
@@ -81,6 +83,10 @@ public class UINeuralNetwork : Graphic
 
         foreach (var details in _nodesDetails)
             AddNeuron(details.Value.Position, vh, details.Value.VerticesIndices);
+
+        UpdateColors();
+
+        _toUpdateStructure = false;
     }
 
     private void Update()
@@ -88,6 +94,12 @@ public class UINeuralNetwork : Graphic
         if (NeuralNetwork is null)
             return;
 
+        UpdateColors();
+        SetVerticesDirty();
+    }
+
+    private void UpdateColors()
+    {
         foreach (var node in NeuralNetwork.NeuronsGraph.TopologicalSort)
         {
             if (!_nodesDetails.ContainsKey(node.Innov))
@@ -104,7 +116,7 @@ public class UINeuralNetwork : Graphic
             }
 
             foreach (var connectionDetails in details.InverseAdjDetails)
-            {   
+            {
                 float sign = connectionDetails.BaseColor.r > 0.01f ? -1.0f : 1.0f;
                 sign *= Mathf.Sign(NeuralNetwork.NeuronsGraph.Nodes[connectionDetails.InNode].ActivationValue);
 
@@ -122,8 +134,6 @@ public class UINeuralNetwork : Graphic
                 }
             }
         }
-
-        SetVerticesDirty();
     }
 
     private void AddNeuron(Vector2 position, VertexHelper vh, List<int> verticesIndices)
@@ -191,5 +201,11 @@ public class UINeuralNetwork : Graphic
         verticesIndices.Add(currentVertCount + 1);
         verticesIndices.Add(currentVertCount + 2);
         verticesIndices.Add(currentVertCount + 3);
+    }
+
+    protected override void OnEnable()
+    {
+        _toUpdateStructure = true;
+        base.OnEnable();
     }
 }

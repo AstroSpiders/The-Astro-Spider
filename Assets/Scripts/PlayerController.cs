@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -21,8 +20,6 @@ public class PlayerController : MonoBehaviour
 
         _playerInputActions.Player.Enable();
         _playerInputActions.Player.Fire.performed += Fire;
-
-        Cursor.lockState = CursorLockMode.Locked;
     }
 
     private void Update()

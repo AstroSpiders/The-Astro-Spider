@@ -3,38 +3,72 @@ using System.IO;
 using System.Linq;
 using TMPro;
 using UnityEngine;
+using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class GameModeCreator : MonoBehaviour
 {
-    [SerializeField]
-    private GameParams     _gameParams;
+    private enum GameState
+    {
+        Playing,
+        Paused
+    }
 
     [SerializeField]
-    private Camera         _mainCamera;
+    private GameParams       _gameParams;
+                             
+    [SerializeField]         
+    private Camera           _mainCamera;
+                             
+    [SerializeField]         
+    private LayerMask        _orbitCameraLayerMask;
+                             
+    [SerializeField]         
+    private RocketState      _watchAIRocketPrefab;
+    [SerializeField]         
+    private Canvas           _watchAIUI;
+                             
+    [SerializeField]         
+    private WorldGenerator   _trainWorldGenerator;
+    [SerializeField]         
+    private AITrainer        _aiTrainer;
+    [SerializeField]         
+    private Canvas           _trainInGameUI;
+                             
+    [SerializeField]         
+    private WorldGenerator   _playWorldGenerator;
+    [SerializeField]         
+    private RocketState      _playRocketPrefab;
+                             
+    [SerializeField]         
+    private Canvas           _pauseMenu;
 
-    [SerializeField]
-    private LayerMask      _orbitCameraLayerMask;
+    private Canvas           _gameCanvas       = null;
+    private PlayerController _playerController = null;
+    private OrbitCamera      _orbitCamera      = null;
+    private GameState        _gameState;
 
-    [SerializeField]
-    private RocketState    _watchAIRocketPrefab;
-    [SerializeField]
-    private Canvas         _watchAIUI;
+    public void OnResumeButtonPressed()
+    {
+        _gameState = GameState.Playing;
+        _pauseMenu.gameObject.SetActive(false);
+        
+        if (_gameCanvas != null)
+            _gameCanvas.gameObject.SetActive(true);
+        if (_playerController != null)
+            _playerController.enabled = true;
+        if (_orbitCamera != null)
+            _orbitCamera.enabled = true;
 
-    [SerializeField]
-    private WorldGenerator _trainWorldGenerator;
-    [SerializeField]
-    private AITrainer      _aiTrainer;
-    [SerializeField]
-    private Canvas         _trainInGameUI;
+        Time.timeScale = 1.0f;
+    }
 
-    [SerializeField]
-    private WorldGenerator _playWorldGenerator;
-    [SerializeField]
-    private RocketState    _playRocketPrefab;
-
+    public void OnMainMenuButtonPressed() => SceneManager.LoadScene(0);
+    
     private void Awake()
     {
+        _gameState = GameState.Playing;
 
         switch (_gameParams.GameMode)
         {
@@ -47,6 +81,31 @@ public class GameModeCreator : MonoBehaviour
             case GameModes.Play:
                 CreatePlay();
                 break;
+        }
+    }
+
+    private void Update()
+    {
+        if (Keyboard.current.escapeKey.wasPressedThisFrame)
+        { 
+            switch (_gameState)
+            {
+                case GameState.Playing:
+                    _gameState = GameState.Paused;
+                    if (_gameCanvas != null)
+                        _gameCanvas.gameObject.SetActive(false);
+                    if (_playerController != null)
+                        _playerController.enabled = false;
+                    if (_orbitCamera != null)
+                        _orbitCamera.enabled = false;
+
+                    _pauseMenu.gameObject.SetActive(true);
+                    Time.timeScale = 0.0f;
+                    break;
+                case GameState.Paused:
+                    OnResumeButtonPressed();
+                    break;
+            }
         }
     }
 
@@ -94,6 +153,9 @@ public class GameModeCreator : MonoBehaviour
 
         var uiNeuralNetwork = canvas.GetComponentInChildren<UINeuralNetwork>();
         uiNeuralNetwork.NeuralNetwork = neutalNetworkController.GetNeuralNetwork();
+
+        _gameCanvas = canvas;
+        _orbitCamera = orbitCamera;
     }
 
     private void CreateTrainAI()
@@ -123,6 +185,8 @@ public class GameModeCreator : MonoBehaviour
         aiTrainer.EpochTextLabel          = epochTextLabel;
         aiTrainer.MaxFitnessTextLabel     = maxFitnessTextLabel;
         aiTrainer.AverageFitnessLabel     = averageFitnessTextLabel;
+
+        _gameCanvas = canvas;
     }
 
     void CreatePlay()
@@ -137,7 +201,12 @@ public class GameModeCreator : MonoBehaviour
         orbitCamera.Focus           = player.transform;
         orbitCamera.ObstructionMask = _orbitCameraLayerMask;
 
+        var playerController = player.GetComponent<PlayerController>();
+
         player.GetComponent<RocketState>().WorldGenerator        = worldGenerator;
-        player.GetComponent<PlayerController>().PlayerInputSpace = orbitCamera.transform;
+        playerController.PlayerInputSpace = orbitCamera.transform;
+
+        _orbitCamera = orbitCamera;
+        _playerController = playerController;
     }
 }

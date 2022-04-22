@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ef13793e1fd6b9242a13c5a7c6a83f6e, type: 3}
   m_Name: GameParams
   m_EditorClassIdentifier: 
-  GameMode: 2
+  GameMode: 0
   AIStateFilename: D:/Workspace/Unity/The-Astro-Spider/Training Results/5_planets_2D.json

@@ -136,10 +136,16 @@ public class OrbitCamera : MonoBehaviour
             _orbitAngles.y -= 360.0f;
     }
 
-    private void OnEnable() => _playerInputActions.Camera.Enable();
-
-    private void OnDisable() => _playerInputActions.Camera.Disable();
-
+    private void OnEnable()
+    {
+        _playerInputActions.Camera.Enable();
+        Cursor.lockState = CursorLockMode.Locked;
+    }
+    private void OnDisable()
+    {
+        _playerInputActions.Camera.Disable();
+        Cursor.lockState = CursorLockMode.None;
+    }
     private void OnValidate()
     {
         if (_maxVerticalAngle < _minVerticalAngle)
