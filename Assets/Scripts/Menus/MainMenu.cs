@@ -32,6 +32,9 @@ public class MainMenu : MonoBehaviour
         _gameSettings.GameMode = GameModes.Play;
         ChangeScene();
     }
+
+    public void OnQuitButtonPressed() => Application.Quit();
+
     private void Update()
     {
         if (_aiStateFilename == string.Empty)

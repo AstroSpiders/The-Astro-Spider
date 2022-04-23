@@ -12,7 +12,8 @@ public class GameModeCreator : MonoBehaviour
     private enum GameState
     {
         Playing,
-        Paused
+        Paused,
+        Ending
     }
 
     [SerializeField]
@@ -43,9 +44,12 @@ public class GameModeCreator : MonoBehaviour
                              
     [SerializeField]         
     private Canvas           _pauseMenu;
+    [SerializeField]
+    private Canvas           _endingMenu;
 
     private Canvas           _gameCanvas       = null;
     private PlayerController _playerController = null;
+    private RocketState      _rocketState      = null;
     private OrbitCamera      _orbitCamera      = null;
     private GameState        _gameState;
 
@@ -64,8 +68,16 @@ public class GameModeCreator : MonoBehaviour
         Time.timeScale = 1.0f;
     }
 
-    public void OnMainMenuButtonPressed() => SceneManager.LoadScene(0);
-    
+    public void OnRespawnButtonPressed()
+    {
+        Time.timeScale = 1.0f;
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+    }
+    public void OnMainMenuButtonPressed()
+    {
+        Time.timeScale = 1.0f;
+        SceneManager.LoadScene(0);
+    }
     private void Awake()
     {
         _gameState = GameState.Playing;
@@ -87,7 +99,7 @@ public class GameModeCreator : MonoBehaviour
     private void Update()
     {
         if (Keyboard.current.escapeKey.wasPressedThisFrame)
-        { 
+        {
             switch (_gameState)
             {
                 case GameState.Playing:
@@ -105,8 +117,42 @@ public class GameModeCreator : MonoBehaviour
                 case GameState.Paused:
                     OnResumeButtonPressed();
                     break;
+                case GameState.Ending:
+                    OnMainMenuButtonPressed();
+                    break;
             }
         }
+
+        if (_rocketState != null)
+        {
+            if (_gameState == GameState.Playing)
+            {
+                if (!_rocketState.HasFuel)
+                    EndGame("Out of fuel");
+                else if (_rocketState.Dead)
+                    EndGame("Player died");
+                else if (_rocketState.Won)
+                    EndGame("Player won");
+            }
+        }
+    }
+
+    private void EndGame(string endingMessage)
+    {
+        _gameState = GameState.Ending;
+
+        if (_gameCanvas != null)
+            _gameCanvas.gameObject.SetActive(false);
+        if (_playerController != null)
+            _playerController.enabled = false;
+        if (_orbitCamera != null)
+            _orbitCamera.enabled = false;
+
+        _endingMenu.gameObject.SetActive(true);
+
+        _endingMenu.GetComponentInChildren<TMP_Text>().text = endingMessage;
+
+        Time.timeScale = 0.0f;
     }
 
     private void CreateWatchAI()
@@ -154,8 +200,9 @@ public class GameModeCreator : MonoBehaviour
         var uiNeuralNetwork = canvas.GetComponentInChildren<UINeuralNetwork>();
         uiNeuralNetwork.NeuralNetwork = neutalNetworkController.GetNeuralNetwork();
 
-        _gameCanvas = canvas;
+        _gameCanvas  = canvas;
         _orbitCamera = orbitCamera;
+        _rocketState = player;
     }
 
     private void CreateTrainAI()
@@ -208,5 +255,6 @@ public class GameModeCreator : MonoBehaviour
 
         _orbitCamera = orbitCamera;
         _playerController = playerController;
+        _rocketState = player;
     }
 }
