@@ -29,23 +29,23 @@ public class AITrainer : MonoBehaviour
     }
 
     public const string           DefaultSaveFile                   = "/stats_release.json";
-                                                                    
+
     public       WorldGenerator   WorldGenerator                    = null;
     public       FocusCamera      FocusCamera                       = null;
     public       Button           SaveTrainingStateButton           = null,
                                   LoadTrainingStateButton           = null;
-                                                                    
+
     public       TMP_Text         EpochTextLabel                    = null,
                                   MaxFitnessTextLabel               = null,
                                   AverageFitnessLabel               = null;
-                                                                    
+
     public       float            RocketFuelMultiplier              = 2.0f;
 
     [SerializeField]
     private      int              _populationSize                   = 150;
-    [SerializeField]                                           
+    [SerializeField]
     private      int              _eliteCount                       = 3;
-    [SerializeField]                                           
+    [SerializeField]
     private      int              _eliteCopies                      = 2;
     [SerializeField]
     private      float            _crossoverDisableConnectionChance = 0.75f;
@@ -81,15 +81,15 @@ public class AITrainer : MonoBehaviour
 
     [SerializeField]
     private      RocketState      _rocketPrefab                     = null;
-                 
+
     private      GeneticAlgorithm _geneticAlgorithm                 = null;
-                 
+
     private      RocketState[]    _rockets                          = null;
-                 
+
     private      float            _epochElapsedSeconds              = 0.0f;
-                 
+
     private      List<EpochStats> _epochStats                       = new List<EpochStats>();
-                 
+
     private      string           _saveStatePath                    = string.Empty;
     private      string           _loadStatePath                    = string.Empty;
 
@@ -139,12 +139,19 @@ public class AITrainer : MonoBehaviour
 
     private void Update()
     {
-        Vector3 averagePosition = Vector3.zero;
+        int     maxLanding    = 0;
+        float   maxFitness    = 0.0f;
+        Vector3 focusPosition = Vector3.zero;
 
-        int maxLanding = 0;
         foreach (var rocket in _rockets)
         {
-            averagePosition += rocket.transform.position / _rockets.Length;
+            float fitness = CalculateFitness(rocket);
+            if (fitness > maxFitness)
+            {
+                maxFitness = fitness;
+                focusPosition = rocket.transform.position;
+            }
+
             int index = 1;
             foreach (var stats in rocket.PlanetsStats)
             {
@@ -154,7 +161,8 @@ public class AITrainer : MonoBehaviour
             }
         }
 
-        FocusCamera.SetFocusPoint(averagePosition);
+
+        FocusCamera.SetFocusPoint(focusPosition);
 
         _epochElapsedSeconds += Time.deltaTime;
         float adjustedSecondsPerEpoch = _secondsPerEpoch + maxLanding * _secondsPerEpoch;
@@ -217,7 +225,7 @@ public class AITrainer : MonoBehaviour
                 index++;
             }
         }
-        
+
         _epochStats.Add(epochStats);
 
         if (_saveStatePath != string.Empty)
@@ -287,18 +295,18 @@ public class AITrainer : MonoBehaviour
         foreach (var specie in _geneticAlgorithm.Population)
         {
             foreach (var individual in specie.Individuals)
-            { 
+            {
                 var rocket                    = Instantiate(_rocketPrefab);
 
                     rocket.WorldGenerator     = WorldGenerator;
                     rocket.transform.position = Vector3.zero;
-            
+
                 rocket.gameObject.AddComponent(typeof(NeuralNetworkController));
                 rocket.GetComponent<NeuralNetworkController>().SetNeuralNetwork(_geneticAlgorithm, individual);
                 rocket.GetComponent<RocketState>().FuelCapacity *= RocketFuelMultiplier;
 
                 _rockets[index] = rocket;
-                
+
                 index++;
             }
         }
@@ -317,10 +325,10 @@ public class AITrainer : MonoBehaviour
 
     private void SaveTrainingState()
     {
-        var currentState = new TrainingState 
+        var currentState = new TrainingState
         {
-            GeneticAlgorithm = _geneticAlgorithm, 
-            EpochStats       = _epochStats 
+            GeneticAlgorithm = _geneticAlgorithm,
+            EpochStats       = _epochStats
         };
 
         string json = JsonConvert.SerializeObject(currentState);
