@@ -18,39 +18,43 @@ public class GameModeCreator : MonoBehaviour
 
     [SerializeField]
     private GameParams       _gameParams;
-                             
+
     [SerializeField]         
     private Camera           _mainCamera;
-                             
+
     [SerializeField]         
     private LayerMask        _orbitCameraLayerMask;
-                             
+
     [SerializeField]         
     private RocketState      _watchAIRocketPrefab;
     [SerializeField]         
     private Canvas           _watchAIUI;
-                             
+
     [SerializeField]         
     private WorldGenerator   _trainWorldGenerator;
     [SerializeField]         
     private AITrainer        _aiTrainer;
     [SerializeField]         
     private Canvas           _trainInGameUI;
-                             
+
     [SerializeField]         
     private WorldGenerator   _playWorldGenerator;
     [SerializeField]         
     private RocketState      _playRocketPrefab;
-                             
+    [SerializeField] 
+    private Canvas           _playGameUI;
+
+    [SerializeField] private GameObject _fuelIndicatorPrefab;
+
     [SerializeField]         
     private Canvas           _pauseMenu;
     [SerializeField]
     private Canvas           _endingMenu;
 
-    private Canvas           _gameCanvas       = null;
-    private PlayerController _playerController = null;
-    private RocketState      _rocketState      = null;
-    private OrbitCamera      _orbitCamera      = null;
+    private Canvas           _gameCanvas;
+    private PlayerController _playerController;
+    private RocketState      _rocketState;
+    private OrbitCamera      _orbitCamera;
     private GameState        _gameState;
 
     public void OnResumeButtonPressed()
@@ -157,7 +161,7 @@ public class GameModeCreator : MonoBehaviour
 
     private void CreateWatchAI()
     {
-        var                     json           = File.ReadAllText(_gameParams.AIStateFilename);
+        var                     json      = File.ReadAllText(_gameParams.AIStateFilename);
         var                     currentState   = JsonConvert.DeserializeObject<AITrainer.TrainingState>(json);
 
         float                   bestFitness    = -1.0f;
@@ -178,7 +182,7 @@ public class GameModeCreator : MonoBehaviour
         if (bestIndividual is null)
             return;
 
-        var worldGenerator = Instantiate(_trainWorldGenerator);
+        var worldGenerator          = Instantiate(_trainWorldGenerator);
         var player         = Instantiate(_watchAIRocketPrefab);
 
         _mainCamera.gameObject.AddComponent(typeof(OrbitCamera));
@@ -196,6 +200,10 @@ public class GameModeCreator : MonoBehaviour
         player.MaxLandingImpact = player.MaxLandingImpact + player.MaxLandingImpact * 0.5f;
 
         var canvas = Instantiate(_watchAIUI);
+        
+        var fuelIndicator = canvas.GetComponentsInChildren<FuelIndicator>()[0];
+        fuelIndicator.PlayerRocketState = player;
+        fuelIndicator.PlayerRocketMovement = player.GetComponent<RocketMovement>();
 
         var uiNeuralNetwork = canvas.GetComponentInChildren<UINeuralNetwork>();
         uiNeuralNetwork.NeuralNetwork = neutalNetworkController.GetNeuralNetwork();
@@ -216,7 +224,7 @@ public class GameModeCreator : MonoBehaviour
         var saveTrainingButton = canvasButtons[0];
         var loadTrainingButton = canvasButtons[1];
 
-        var canvasTextLabels        = canvas.GetComponentsInChildren<TMP_Text>().Where(x => x.GetComponentInParent<Button>() == null).ToArray();
+        var canvasTextLabels= canvas.GetComponentsInChildren<TMP_Text>().Where(x => x.GetComponentInParent<Button>() == null).ToArray();
 
         var epochTextLabel          = canvasTextLabels[0];
         var maxFitnessTextLabel     = canvasTextLabels[1];
@@ -252,7 +260,14 @@ public class GameModeCreator : MonoBehaviour
 
         player.GetComponent<RocketState>().WorldGenerator        = worldGenerator;
         playerController.PlayerInputSpace = orbitCamera.transform;
+        
+        var canvas = Instantiate(_playGameUI);
 
+        var fuelIndicator = canvas.GetComponentsInChildren<FuelIndicator>()[0];
+        fuelIndicator.PlayerRocketState = player;
+        fuelIndicator.PlayerRocketMovement = player.GetComponent<RocketMovement>();
+
+        _gameCanvas = canvas;
         _orbitCamera = orbitCamera;
         _playerController = playerController;
         _rocketState = player;

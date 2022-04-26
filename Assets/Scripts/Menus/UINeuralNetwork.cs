@@ -93,8 +93,8 @@ public class UINeuralNetwork : Graphic
     {
         if (NeuralNetwork is null)
             return;
-
-        UpdateColors();
+        
+        // UpdateColors();
         SetVerticesDirty();
     }
 

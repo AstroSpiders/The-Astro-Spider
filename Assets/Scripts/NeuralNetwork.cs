@@ -95,7 +95,7 @@ public class NeuralNetwork
 
             foreach (var node in TopologicalSort)
                 if (node.Layer != LayersCount - 1 || (node.Layer == LayersCount - 1 && node.NodeType == GeneticAlgorithm.NodeType.Output))
-                NodesPerLayer[node.Layer]++;
+                    NodesPerLayer[node.Layer]++;
         }
     }
     public  Graph            NeuronsGraph { get; private set; } = new Graph();

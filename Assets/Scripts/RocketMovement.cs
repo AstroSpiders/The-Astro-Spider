@@ -235,7 +235,7 @@ public class RocketMovement : MonoBehaviour
     private void ResetThrusters()
     {
         // Reset the acceleration to 0 for each thruster.
-        for (int i = 0; i < Thrusters.Length; i++)
+        for (var i = 0; i < Thrusters.Length; i++)
             Thrusters[i].Acceleration = 0.0f;
     }
 
@@ -252,5 +252,20 @@ public class RocketMovement : MonoBehaviour
         newVelocity += CustomPhysics.GetDrag(newVelocity) * deltaTime;
 
         return newVelocity;
+    }
+
+    public bool IsMoving()
+    {
+        var isMoving = false;
+        foreach (var thruster in Thrusters)
+        {
+            if (thruster.Acceleration > 0.0001f)
+            {
+                isMoving = true;
+                break;
+            }
+        }
+
+        return isMoving;
     }
 }
