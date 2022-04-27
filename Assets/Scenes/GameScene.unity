@@ -1784,6 +1784,8 @@ MonoBehaviour:
   _trainInGameUI: {fileID: 5491576170252474519, guid: 843176302fc7426418c670b08cbd4e05, type: 3}
   _playWorldGenerator: {fileID: 6741717528555249284, guid: c9f0c8a2d3984a1418f507d2bc927bef, type: 3}
   _playRocketPrefab: {fileID: 5877306043853642960, guid: b26c79ad6db984e4185f58efd323fa16, type: 3}
+  _playGameUI: {fileID: 5491576170252474519, guid: 7c6c4aa50b02f5e4fa2bf71f53a8ee5f, type: 3}
+  _fuelIndicatorPrefab: {fileID: 8670046833372366334, guid: 95a658f9ffabf444494b4e6c6b8e85f0, type: 3}
   _pauseMenu: {fileID: 1902542537}
   _endingMenu: {fileID: 1725741814}
 --- !u!1 &1902542534

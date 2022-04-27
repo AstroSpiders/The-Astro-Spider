@@ -18,12 +18,12 @@ public class RocketMovement : MonoBehaviour
 
     public class Thruster
     {
-        public float      Acceleration    { get; set; } = 0.0f;
+        public float      Acceleration    { get; set; }
         public float      FuelConsumption { get; set; } = 1.0f;
 
         // We keep a reference to the GameObject so we can later use it for animation,
         // or improve the GetThrusterRotation method.
-        public GameObject GameObject      { get; set; } = null;
+        public GameObject GameObject      { get; set; }
     }
 
     public        Thruster[]  Thrusters        { get; private set; } = new Thruster[(int)ThrusterTypes.Count];
@@ -181,14 +181,16 @@ public class RocketMovement : MonoBehaviour
             thrustersAcceleration += dot * acceleration * _accelerationMultiplier;
         }
 
+        var position = transform.position;
+
         //Runge - Kutta Order 4: https://www.youtube.com/watch?v=hGCP6I2WisM&list=PLW3Zl3wyJwWOpdhYedlD-yCB7WQoHf-My&index=111
-        Vector3 k1 = VelocityField(transform.position, velocity, thrustersDirection, thrustersAcceleration,
+        Vector3 k1 = VelocityField(position, velocity, thrustersDirection, thrustersAcceleration,
             Time.deltaTime);
-        Vector3 k2 = VelocityField(transform.position + Time.deltaTime / 2.0f * k1, velocity, thrustersDirection,
+        Vector3 k2 = VelocityField(position + Time.deltaTime / 2.0f * k1, velocity, thrustersDirection,
             thrustersAcceleration, Time.deltaTime);
-        Vector3 k3 = VelocityField(transform.position + Time.deltaTime / 2.0f * k2, velocity, thrustersDirection,
+        Vector3 k3 = VelocityField(position + Time.deltaTime / 2.0f * k2, velocity, thrustersDirection,
             thrustersAcceleration, Time.deltaTime);
-        Vector3 k4 = VelocityField(transform.position + Time.deltaTime * k3, velocity, thrustersDirection,
+        Vector3 k4 = VelocityField(position + Time.deltaTime * k3, velocity, thrustersDirection,
             thrustersAcceleration, Time.deltaTime);
 
         _body.velocity = (k1 + 2.0f * k2 + 2.0f * k3 + k4) / 6.0f;
@@ -235,7 +237,7 @@ public class RocketMovement : MonoBehaviour
     private void ResetThrusters()
     {
         // Reset the acceleration to 0 for each thruster.
-        for (int i = 0; i < Thrusters.Length; i++)
+        for (var i = 0; i < Thrusters.Length; i++)
             Thrusters[i].Acceleration = 0.0f;
     }
 
@@ -253,4 +255,5 @@ public class RocketMovement : MonoBehaviour
 
         return newVelocity;
     }
+
 }

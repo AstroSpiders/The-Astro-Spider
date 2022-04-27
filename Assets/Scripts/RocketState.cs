@@ -10,21 +10,21 @@ public class RocketState : MonoBehaviour
 {
     public class StatsPerPlanet
     {
-        public float   DistanceNavigated        { get; set; } = 0.0f;
-        public float   MaxDistanceNavigated     { get; set; } = 0.0f;
-        public float   DistanceFarFromPlanet    { get; set; } = 0.0f;
-        public float   MaxDistanceFarFromPlanet { get; set; } = 0.0f;
+        public float   DistanceNavigated        { get; set; }
+        public float   MaxDistanceNavigated     { get; set; }
+        public float   DistanceFarFromPlanet    { get; set; }
+        public float   MaxDistanceFarFromPlanet { get; set; }
         public Vector3 StartingPosition         { get; set; }
         public Vector3 TargetPosition           { get; set; }
-        public bool    Landed                   { get; set; } = false;
-        public float   FuelConsumed             { get; set; } = 0.0f;
+        public bool    Landed                   { get; set; }
+        public float   FuelConsumed             { get; set; }
         public float   InitialFuelLevel         { get; set; }
-        public float   LandingDot               { get; set; } = 0.0f;
+        public float   LandingDot               { get; set; }
         public float   LandingImpact            { get; set; } = 1.0f;
         public float   IdealLandingImpact       { get; set; } = 1.0f;
     }
 
-    public WorldGenerator       WorldGenerator             = null;
+    public WorldGenerator       WorldGenerator;
     public List<StatsPerPlanet> PlanetsStats               = new List<StatsPerPlanet>();
 
     [Range(0.0f, 100.0f)]
@@ -34,8 +34,8 @@ public class RocketState : MonoBehaviour
 
     public        float         CurrentFuelLevel { get; set; }
     public        bool          HasFuel          { get => CurrentFuelLevel > _bias; }
-    public        bool          Dead             { get; private set; } = false;
-    public        bool          Won                                    = false;
+    public        bool          Dead             { get; private set; }
+    public        bool          Won;
                                 
     private const float         _bias                      = 0.01f;
 
@@ -48,10 +48,10 @@ public class RocketState : MonoBehaviour
     [SerializeField]
     private       float         _maxLandingImpactTraining  = 10.0f;
 
-    private       RocketSensors _sensors                   = null;
-    private       Rigidbody     _body                      = null;
+    private       RocketSensors _sensors;
+    private       Rigidbody     _body;
                                 
-    private       int           _currentPlanetIndex        = 0;
+    private       int           _currentPlanetIndex;
 
     private void Start()
     {
@@ -94,8 +94,8 @@ public class RocketState : MonoBehaviour
         {
             var   planetToObject = (transform.position - otherObject.transform.position).normalized;
             var   forward        = transform.forward.normalized;
-            var   dot            = Vector3.Dot(planetToObject, forward);
-            float impact         = _body.velocity.magnitude;
+            var   dot              = Vector3.Dot(planetToObject, forward);
+            float impact               = _body.velocity.magnitude;
 
             bool isTargetPlanet = WorldGenerator.Planets[_currentPlanetIndex].gameObject == otherObject;
 

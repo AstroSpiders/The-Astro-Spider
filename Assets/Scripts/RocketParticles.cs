@@ -17,7 +17,7 @@ public class RocketParticles : MonoBehaviour
     private       float            _secondaryThrustersHeightOffset = 0.3f;
 
     [SerializeField]
-    private float                  _mainThrusterLeftOffset         = 0.0f;
+    private float                  _mainThrusterLeftOffset;
     [SerializeField]
     private       float            _secondaryThrusterLeftOffset    = 0.2f;
 
@@ -55,7 +55,7 @@ public class RocketParticles : MonoBehaviour
                 leftOffset           = _secondaryThrusterLeftOffset;
             }
 
-            var particleSystem       = Instantiate(particleSystemPrefab);
+            var particle             = Instantiate(particleSystemPrefab);
 
             if (_rocketMovement.Thrusters[i].GameObject is null)
             {
@@ -63,16 +63,18 @@ public class RocketParticles : MonoBehaviour
                 continue;
             }
 
-            particleSystem.transform.parent        = _rocketMovement.Thrusters[i].GameObject.transform;
-            particleSystem.transform.localRotation = Quaternion.Euler(-90.0f, 0.0f, 0.0f);
-            particleSystem.transform.localPosition = Vector3.left * leftOffset;
+            var particleTransform = particle.transform;
 
-            particleSystem.transform.Rotate(new Vector3(particleSystem.transform.localEulerAngles.z, 0.0f, 0.0f));
-            particleSystem.transform.Translate(Vector3.up * heightOffset);
+            particleTransform.parent         = _rocketMovement.Thrusters[i].GameObject.transform;
+            particle.transform.localRotation = Quaternion.Euler(-90.0f, 0.0f, 0.0f);
+            particleTransform.localPosition  = Vector3.left * leftOffset;
 
-            particleSystem.gameObject.SetActive(false);
+            particle.transform.Rotate(new Vector3(particleTransform.localEulerAngles.z, 0.0f, 0.0f));
+            particle.transform.Translate(Vector3.up * heightOffset);
+
+            particle.gameObject.SetActive(false);
             
-            _particleSystems[i] = particleSystem;
+            _particleSystems[i] = particle;
         }
     }
 
@@ -81,21 +83,36 @@ public class RocketParticles : MonoBehaviour
         for (int i = 0; i < _rocketMovement.Thrusters.Length; i++)
         {
             var thruster       = _rocketMovement.Thrusters[i];
-            var particleSystem = _particleSystems[i];
+            var particle       = _particleSystems[i];
 
             if (thruster.Acceleration >= _bias && 
                 _state.HasFuel                 && 
                 !_state.Dead)
             {
-                particleSystem.gameObject.SetActive(true);
-                particleSystem.transform.localScale = Vector3.one           * 
-                                                      thruster.Acceleration * 
-                                                      (i == (int)RocketMovement.ThrusterTypes.Main ? _mainParticlesScale : _secondaryParticlesScale);
+                particle.gameObject.SetActive(true);
+                particle.transform.localScale = thruster.Acceleration * 
+                                                (i == (int) RocketMovement.ThrusterTypes.Main
+                                                    ? _mainParticlesScale
+                                                    : _secondaryParticlesScale) *
+                                                Vector3.one;
             }
             else
             {
-                particleSystem.gameObject.SetActive(false);
+                particle.gameObject.SetActive(false);
             }
         }
+    }
+
+    public bool IsParticleSystemActive()
+    {
+        foreach (var p in _particleSystems)
+        {
+            if (p.gameObject.activeSelf)
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 }
