@@ -49,6 +49,9 @@ public class GameModeCreator : MonoBehaviour
     [SerializeField]
     private Canvas           _endingMenu;
 
+    [SerializeField] 
+    private UIWatchAI        _watchAiUiUpdater;
+
     private Canvas           _gameCanvas;
     private PlayerController _playerController;
     private RocketState      _rocketState;
@@ -205,6 +208,11 @@ public class GameModeCreator : MonoBehaviour
 
         var uiNeuralNetwork = canvas.GetComponentInChildren<UINeuralNetwork>();
         uiNeuralNetwork.NeuralNetwork = neutalNetworkController.GetNeuralNetwork();
+
+        var watchUI = Instantiate(_watchAiUiUpdater);
+
+        watchUI.PlanetIndexTextLabel = canvas.GetComponentsInChildren<TMP_Text>()[0];
+        watchUI.RocketState = player.GetComponent<RocketState>();
 
         _gameCanvas  = canvas;
         _orbitCamera = orbitCamera;
