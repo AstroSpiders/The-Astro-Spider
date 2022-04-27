@@ -14,7 +14,7 @@ public class FuelIndicator : MonoBehaviour
     private const float             _maxUv                   = 0.0f;
 
     public        RocketState       PlayerRocketState;
-    public        RocketParticles   PlayerRocketParticles;
+    public        RocketMovement    PlayerRocketMovement;
     
     private void Awake()
     {
@@ -47,7 +47,10 @@ public class FuelIndicator : MonoBehaviour
 
         var deltaAnchorX = _barMaskRectTransform.anchoredPosition.x + _edgeRectTransform.rect.width / 3;
         _edgeRectTransform.anchoredPosition = new Vector2(barValue + deltaAnchorX, _edgeRectTransform.anchoredPosition.y);
-        
-        _edgeRectTransform.gameObject.SetActive(PlayerRocketParticles.IsParticleSystemActive());
+    }
+
+    private void LateUpdate()
+    {
+        _edgeRectTransform.gameObject.SetActive(PlayerRocketMovement.IsMoving());
     }
 }

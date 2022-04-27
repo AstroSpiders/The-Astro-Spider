@@ -102,17 +102,4 @@ public class RocketParticles : MonoBehaviour
             }
         }
     }
-
-    public bool IsParticleSystemActive()
-    {
-        foreach (var p in _particleSystems)
-        {
-            if (p.gameObject.activeSelf)
-            {
-                return true;
-            }
-        }
-
-        return false;
-    }
 }
