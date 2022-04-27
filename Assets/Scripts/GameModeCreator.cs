@@ -180,8 +180,9 @@ public class GameModeCreator : MonoBehaviour
         if (bestIndividual is null)
             return;
 
+        _trainWorldGenerator.Camera = _mainCamera;
         var worldGenerator          = Instantiate(_trainWorldGenerator);
-        var player         = Instantiate(_watchAIRocketPrefab);
+        var player                  = Instantiate(_watchAIRocketPrefab);
 
         _mainCamera.gameObject.AddComponent(typeof(OrbitCamera));
         var orbitCamera = _mainCamera.GetComponent<OrbitCamera>();
@@ -213,7 +214,8 @@ public class GameModeCreator : MonoBehaviour
 
     private void CreateTrainAI()
     {
-        var worldGenerator = Instantiate(_trainWorldGenerator);
+        _trainWorldGenerator.Camera = _mainCamera;
+        var worldGenerator          = Instantiate(_trainWorldGenerator);
         _mainCamera.gameObject.AddComponent(typeof(FocusCamera));
         var canvas = Instantiate(_trainInGameUI);
 
@@ -244,7 +246,8 @@ public class GameModeCreator : MonoBehaviour
 
     void CreatePlay()
     {
-        var worldGenerator = Instantiate(_playWorldGenerator);
+        _playWorldGenerator.Camera  = _mainCamera;
+        var worldGenerator          = Instantiate(_playWorldGenerator);
 
         var player = Instantiate(_playRocketPrefab);
         _mainCamera.gameObject.AddComponent(typeof(OrbitCamera));

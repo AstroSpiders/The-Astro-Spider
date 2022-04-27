@@ -10,6 +10,7 @@ public class WorldGenerator : MonoBehaviour
     // An array containing the planets that were generated.
     public GravitySphere[]  Planets { get; private set; }
 
+    public Camera           Camera;
     // The prefab for a single planet. Maybe in the future it's gonna be an array of prefabs
     // but for now, it's ok.
     [SerializeField]
@@ -168,7 +169,7 @@ public class WorldGenerator : MonoBehaviour
             if (!ValidNewPlanetPosition(newPosition, radius, i - 1))
                 continue;
 
-            var planet = SpawnPlanet(newPosition, radius);
+            var planet = SpawnPlanet(newPosition, radius, i);
 
             SpawnAsteroids(planet);
 
@@ -200,14 +201,17 @@ public class WorldGenerator : MonoBehaviour
         return true;
     }
 
-    private GravitySphere SpawnPlanet(Vector3 position, float radius)
+    private GravitySphere SpawnPlanet(Vector3 position, float radius, int index)
     {
         var planet                      = Instantiate(_planetPrefab);
+        var planetText                  = planet.GetComponent<PlanetText>();
 
             planet.transform.position   = position;
             planet.transform.localScale = Vector3.one * radius;
             planet.OuterRadius          = radius * _planetsGravityOuterRadiusMultip;
             planet.OuterFalloffRadius   = radius * _planetsGravityOuterFalloutRadiusMultip;
+            planetText.Camera           = Camera;
+            planetText.PlanetIndex      = index;
 
         return planet;
     }
