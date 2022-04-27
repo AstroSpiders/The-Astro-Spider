@@ -20,29 +20,29 @@ public class UINeuralNetwork : Graphic
     public NeuralNetwork NeuralNetwork { get; set; }
 
     [SerializeField]
-    private float                        _lineThickness       = 0.01f;
+    private float                        _lineThickness         = 0.01f;
+    [SerializeField]                                            
+    private float                        _neuronRadius          = 0.01f;
+    [SerializeField]                                            
+    private int                          _neuronVerticesCount   = 10;
     [SerializeField]
-    private float                        _neuronRadius        = 0.01f;
-    [SerializeField]
-    private int                          _neuronVerticesCount = 10;
+    private float                        _intervalToUpdate      = 0.1f;
 
     private float                        _width;
     private float                        _height;
 
-    private Dictionary<int, NodeDetails> _nodesDetails         = new Dictionary<int, NodeDetails>();
-    private VertexHelper                 _vertexHelper         = null;
+    private float                        _accumulatedUpdateTime = 0.0f;
 
-    private bool                         _toUpdateStructure    = true;
+    private Dictionary<int, NodeDetails> _nodesDetails          = new Dictionary<int, NodeDetails>();
+    private VertexHelper                 _vertexHelper          = null;
 
     protected override void OnPopulateMesh(VertexHelper vh)
     {
         if (NeuralNetwork is null)
             return;
 
-        if (!_toUpdateStructure)
-            return;
-
         vh.Clear();
+        _nodesDetails.Clear();
 
         _width = rectTransform.rect.width;
         _height = rectTransform.rect.height;
@@ -83,19 +83,21 @@ public class UINeuralNetwork : Graphic
 
         foreach (var details in _nodesDetails)
             AddNeuron(details.Value.Position, vh, details.Value.VerticesIndices);
-
+        
         UpdateColors();
-
-        _toUpdateStructure = false;
     }
 
     private void Update()
     {
         if (NeuralNetwork is null)
             return;
-        
-        // UpdateColors();
-        SetVerticesDirty();
+
+        _accumulatedUpdateTime += Time.deltaTime;
+        if (_accumulatedUpdateTime >= _intervalToUpdate)
+        {
+            SetVerticesDirty();
+            _accumulatedUpdateTime -= _intervalToUpdate;
+        }
     }
 
     private void UpdateColors()
@@ -201,11 +203,5 @@ public class UINeuralNetwork : Graphic
         verticesIndices.Add(currentVertCount + 1);
         verticesIndices.Add(currentVertCount + 2);
         verticesIndices.Add(currentVertCount + 3);
-    }
-
-    protected override void OnEnable()
-    {
-        _toUpdateStructure = true;
-        base.OnEnable();
     }
 }
