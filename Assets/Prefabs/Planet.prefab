@@ -298,3 +298,5 @@ MonoBehaviour:
   Camera: {fileID: 0}
   PlanetIndex: 0
   _distanceToCamera: 0
+  _fadingDistanceStart: 150
+  _fadingDistanceEnd: 100
