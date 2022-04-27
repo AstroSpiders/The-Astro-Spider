@@ -201,7 +201,7 @@ public class GameModeCreator : MonoBehaviour
         
         var fuelIndicator = canvas.GetComponentsInChildren<FuelIndicator>()[0];
         fuelIndicator.PlayerRocketState = player;
-        fuelIndicator.PlayerRocketParticles = player.GetComponent<RocketParticles>();
+        fuelIndicator.PlayerRocketMovement = player.GetComponent<RocketMovement>();
 
         var uiNeuralNetwork = canvas.GetComponentInChildren<UINeuralNetwork>();
         uiNeuralNetwork.NeuralNetwork = neutalNetworkController.GetNeuralNetwork();
@@ -263,7 +263,7 @@ public class GameModeCreator : MonoBehaviour
 
         var fuelIndicator = canvas.GetComponentsInChildren<FuelIndicator>()[0];
         fuelIndicator.PlayerRocketState = player;
-        fuelIndicator.PlayerRocketParticles = player.GetComponent<RocketParticles>();
+        fuelIndicator.PlayerRocketMovement = player.GetComponent<RocketMovement>();
 
         _gameCanvas = canvas;
         _orbitCamera = orbitCamera;

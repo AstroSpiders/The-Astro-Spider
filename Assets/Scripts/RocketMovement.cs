@@ -57,6 +57,7 @@ public class RocketMovement : MonoBehaviour
     
     private       Rigidbody   _body;
     private       RocketState _state;
+    private const float       _bias                        = 0.0001f;
 
     public void ApplyAcceleration(float acceleration,
         ThrusterTypes thruster)
@@ -255,5 +256,17 @@ public class RocketMovement : MonoBehaviour
 
         return newVelocity;
     }
+    
+    public bool IsMoving()
+    {
+        foreach (var thruster in Thrusters)
+        {
+            if (thruster.Acceleration > _bias)
+            {
+                return true;
+            }
+        }
 
+        return false;
+    }
 }
