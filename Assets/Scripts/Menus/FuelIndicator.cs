@@ -3,14 +3,18 @@ using UnityEngine.UI;
 
 public class FuelIndicator : MonoBehaviour
 {
-    private RectTransform _barMaskRectTransform;
-    private RawImage _barRawImage;
-    private float _barMaskWidth;
-    private Transform _edge;
-    private RectTransform _edgeRectTransform;
+    private       RectTransform     _barMaskRectTransform;
+    private       RawImage          _barRawImage;
+    private       float             _barMaskWidth;
+    private       Transform         _edge;
+    private       RectTransform     _edgeRectTransform;
     
-    public RocketState PlayerRocketState;
-    public RocketMovement PlayerRocketMovement;
+    private const float             _speed                   = 0.5f;
+    private const float             _minUv                   = -1.0f;
+    private const float             _maxUv                   = 0.0f;
+
+    public        RocketState       PlayerRocketState;
+    public        RocketParticles   PlayerRocketParticles;
     
     private void Awake()
     {
@@ -25,7 +29,11 @@ public class FuelIndicator : MonoBehaviour
     private void Update()
     {
         var uvRect = _barRawImage.uvRect;
-        uvRect.x -= 0.5f * Time.deltaTime;
+        uvRect.x -= _speed * Time.deltaTime;
+        if (uvRect.x <= _minUv)
+        {
+            uvRect.x = _maxUv;
+        }
         _barRawImage.uvRect = uvRect;
 
         if (!PlayerRocketState)
@@ -40,6 +48,6 @@ public class FuelIndicator : MonoBehaviour
         var deltaAnchorX = _barMaskRectTransform.anchoredPosition.x + _edgeRectTransform.rect.width / 3;
         _edgeRectTransform.anchoredPosition = new Vector2(barValue + deltaAnchorX, _edgeRectTransform.anchoredPosition.y);
         
-        _edgeRectTransform.gameObject.SetActive(PlayerRocketMovement.IsMoving());
+        _edgeRectTransform.gameObject.SetActive(PlayerRocketParticles.IsParticleSystemActive());
     }
 }
