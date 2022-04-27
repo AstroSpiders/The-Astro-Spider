@@ -21,7 +21,7 @@ public class FuelIndicator : MonoBehaviour
         var fill = transform.GetChild(1);
         _barRawImage = fill.GetComponentInChildren<RawImage>();
         _barMaskRectTransform = fill.GetComponent<RectTransform>();
-        _edge = transform.GetChild(4);
+        _edge = transform.GetChild(3);
         _edgeRectTransform = _edge.GetComponent<RectTransform>();
         _barMaskWidth = _barMaskRectTransform.sizeDelta.x;
     }
