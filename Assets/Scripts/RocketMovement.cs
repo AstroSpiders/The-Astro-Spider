@@ -1,3 +1,4 @@
+using System.Linq;
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody))]
@@ -257,16 +258,5 @@ public class RocketMovement : MonoBehaviour
         return newVelocity;
     }
     
-    public bool IsMoving()
-    {
-        foreach (var thruster in Thrusters)
-        {
-            if (thruster.Acceleration > _bias)
-            {
-                return true;
-            }
-        }
-
-        return false;
-    }
+    public bool IsMoving() => Thrusters.Any(thruster => thruster.Acceleration > _bias);
 }

@@ -51,7 +51,7 @@ public class RocketState : MonoBehaviour
     private       RocketSensors _sensors;
     private       Rigidbody     _body;
                                 
-    private       int           _currentPlanetIndex;
+    public       int           CurrentPlanetIndex { get; private set; }
 
     private void Start()
     {
@@ -67,9 +67,9 @@ public class RocketState : MonoBehaviour
         _sensors         = GetComponent<RocketSensors>();
         _body            = GetComponent<Rigidbody>();
 
-        if (_currentPlanetIndex < WorldGenerator.Planets.Length)
+        if (CurrentPlanetIndex < WorldGenerator.Planets.Length)
         { 
-            _sensors.TargetPlanet = WorldGenerator.Planets[_currentPlanetIndex].transform;
+            _sensors.TargetPlanet = WorldGenerator.Planets[CurrentPlanetIndex].transform;
             _sensors.enabled      = true;
         }
 
@@ -97,7 +97,7 @@ public class RocketState : MonoBehaviour
             var   dot              = Vector3.Dot(planetToObject, forward);
             float impact               = _body.velocity.magnitude;
 
-            bool isTargetPlanet = WorldGenerator.Planets[_currentPlanetIndex].gameObject == otherObject;
+            bool isTargetPlanet = WorldGenerator.Planets[CurrentPlanetIndex].gameObject == otherObject;
 
             if (!PlanetsStats[PlanetsStats.Count - 1].Landed)
                 if (isTargetPlanet)
@@ -135,11 +135,11 @@ public class RocketState : MonoBehaviour
             FinalizeLandingStats(landingDot, landingImpact, true);
         }
 
-        if (_currentPlanetIndex + 1 < WorldGenerator.Planets.Length)
+        if (CurrentPlanetIndex + 1 < WorldGenerator.Planets.Length)
         {
-            Debug.Log("Landed on planet " + _currentPlanetIndex.ToString());
-            _currentPlanetIndex++;
-            _sensors.TargetPlanet = WorldGenerator.Planets[_currentPlanetIndex].transform;
+            Debug.Log("Landed on planet " + CurrentPlanetIndex);
+            CurrentPlanetIndex++;
+            _sensors.TargetPlanet = WorldGenerator.Planets[CurrentPlanetIndex].transform;
             AddNewPlanetStats();
         }
         else
@@ -154,7 +154,7 @@ public class RocketState : MonoBehaviour
         var stats = new StatsPerPlanet()
         {
             StartingPosition         = transform.position,
-            TargetPosition           = WorldGenerator.Planets[_currentPlanetIndex].transform.position,
+            TargetPosition           = WorldGenerator.Planets[CurrentPlanetIndex].transform.position,
             Landed                   = false,
             InitialFuelLevel         = CurrentFuelLevel,
             FuelConsumed             = 0.0f,

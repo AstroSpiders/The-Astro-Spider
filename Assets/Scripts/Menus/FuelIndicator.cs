@@ -30,10 +30,10 @@ public class FuelIndicator : MonoBehaviour
     {
         var uvRect = _barRawImage.uvRect;
         uvRect.x -= _speed * Time.deltaTime;
+        
         if (uvRect.x <= _minUv)
-        {
             uvRect.x = _maxUv;
-        }
+        
         _barRawImage.uvRect = uvRect;
 
         if (!PlayerRocketState)
