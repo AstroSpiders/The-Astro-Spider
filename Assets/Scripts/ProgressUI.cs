@@ -1,7 +1,7 @@
 ﻿using TMPro;
 using UnityEngine;
 
-public class UIWatchAI : MonoBehaviour
+public class ProgressUI : MonoBehaviour
 {
     public TMP_Text PlanetIndexTextLabel;
     public RocketState RocketState;

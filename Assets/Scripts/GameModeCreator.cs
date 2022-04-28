@@ -50,7 +50,7 @@ public class GameModeCreator : MonoBehaviour
     private Canvas           _endingMenu;
 
     [SerializeField] 
-    private UIWatchAI        _watchAiUiUpdater;
+    private ProgressUI        _progressUI;
 
     private Canvas           _gameCanvas;
     private PlayerController _playerController;
@@ -209,10 +209,10 @@ public class GameModeCreator : MonoBehaviour
         var uiNeuralNetwork = canvas.GetComponentInChildren<UINeuralNetwork>();
         uiNeuralNetwork.NeuralNetwork = neutalNetworkController.GetNeuralNetwork();
 
-        var watchUI = Instantiate(_watchAiUiUpdater);
+        var progressUI = Instantiate(_progressUI);
 
-        watchUI.PlanetIndexTextLabel = canvas.GetComponentsInChildren<TMP_Text>()[0];
-        watchUI.RocketState = player.GetComponent<RocketState>();
+        progressUI.PlanetIndexTextLabel = canvas.GetComponentsInChildren<TMP_Text>()[0];
+        progressUI.RocketState = player.GetComponent<RocketState>();
 
         _gameCanvas  = canvas;
         _orbitCamera = orbitCamera;
@@ -272,6 +272,11 @@ public class GameModeCreator : MonoBehaviour
         var fuelIndicator = canvas.GetComponentsInChildren<FuelIndicator>()[0];
         fuelIndicator.PlayerRocketState = player;
         fuelIndicator.PlayerRocketMovement = player.GetComponent<RocketMovement>();
+        
+        var progressUI = Instantiate(_progressUI);
+
+        progressUI.PlanetIndexTextLabel = canvas.GetComponentsInChildren<TMP_Text>()[0];
+        progressUI.RocketState = player.GetComponent<RocketState>();
 
         _gameCanvas = canvas;
         _orbitCamera = orbitCamera;

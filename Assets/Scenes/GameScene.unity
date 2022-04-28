@@ -1787,7 +1787,7 @@ MonoBehaviour:
   _playGameUI: {fileID: 5491576170252474519, guid: 7c6c4aa50b02f5e4fa2bf71f53a8ee5f, type: 3}
   _pauseMenu: {fileID: 1902542537}
   _endingMenu: {fileID: 1725741814}
-  _watchAiUiUpdater: {fileID: 8308400117325833221, guid: 06141c179d530014886552ea9072e794, type: 3}
+  _progressUI: {fileID: 8308400117325833221, guid: 06141c179d530014886552ea9072e794, type: 3}
 --- !u!1 &1902542534
 GameObject:
   m_ObjectHideFlags: 0

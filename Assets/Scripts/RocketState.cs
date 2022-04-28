@@ -137,7 +137,7 @@ public class RocketState : MonoBehaviour
 
         if (CurrentPlanetIndex + 1 < WorldGenerator.Planets.Length)
         {
-            Debug.Log("Landed on planet " + CurrentPlanetIndex.ToString());
+            Debug.Log("Landed on planet " + CurrentPlanetIndex);
             CurrentPlanetIndex++;
             _sensors.TargetPlanet = WorldGenerator.Planets[CurrentPlanetIndex].transform;
             AddNewPlanetStats();

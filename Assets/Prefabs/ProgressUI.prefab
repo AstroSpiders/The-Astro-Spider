@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 4852366169795116138}
   - component: {fileID: 8308400117325833221}
   m_Layer: 0
-  m_Name: UIUpdater
+  m_Name: ProgressUI
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -44,3 +44,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   PlanetIndexTextLabel: {fileID: 0}
+  RocketState: {fileID: 0}
