@@ -6,7 +6,8 @@ using UnityEngine.InputSystem;
 [RequireComponent(typeof(ThrustersSound))]
 public class PlayerController : MonoBehaviour
 {
-    private const float              _bias = 0.001f;
+    private const float              _bias           = 0.001f;
+    private const float              _fireCooldown   = 0.2f;
 
     public Transform                 PlayerInputSpace;
 
@@ -18,6 +19,7 @@ public class PlayerController : MonoBehaviour
     private PlayerInputActions       _playerInputActions;
     private RocketMovement           _rocketMovement;
     private Vector3                  _initialRotation;
+    private float                    _fireTimestamp;
 
     private void Awake()
     {
@@ -73,9 +75,13 @@ public class PlayerController : MonoBehaviour
         if (_projectilePrefab == null || _firePoint == null)
             return;
 
+        if (_fireTimestamp > Time.time)
+            return;
+
         var rocketTransform = transform;
         var projectile = Instantiate(_projectilePrefab, _firePoint.position, rocketTransform.rotation);
         projectile.Rotate(-_initialRotation);
+        _fireTimestamp = Time.time + _fireCooldown;
     }
 
     private void OnEnable() => _playerInputActions.Player.Enable();
