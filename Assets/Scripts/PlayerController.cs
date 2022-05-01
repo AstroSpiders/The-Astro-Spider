@@ -8,10 +8,16 @@ public class PlayerController : MonoBehaviour
 {
     private const float              _bias = 0.001f;
 
-    public        Transform          PlayerInputSpace = default;
+    public Transform                 PlayerInputSpace;
+
+    [SerializeField] 
+    private Transform                _projectilePrefab;
+    [SerializeField] 
+    private Transform                _firePoint;
                   
-    private       PlayerInputActions _playerInputActions;
-    private       RocketMovement     _rocketMovement;
+    private PlayerInputActions       _playerInputActions;
+    private RocketMovement           _rocketMovement;
+    private Vector3                  _initialRotation;
 
     private void Awake()
     {
@@ -20,6 +26,8 @@ public class PlayerController : MonoBehaviour
 
         _playerInputActions.Player.Enable();
         _playerInputActions.Player.Fire.performed += Fire;
+
+        _initialRotation = transform.rotation.eulerAngles;
     }
 
     private void Update()
@@ -57,13 +65,17 @@ public class PlayerController : MonoBehaviour
             _rocketMovement.ApplyAcceleration(space, RocketMovement.ThrusterTypes.Main);
     }
 
-    // TODO: implement the Fire function
     private void Fire(InputAction.CallbackContext context)
     {
-        if (context.performed)
-        {
-            Debug.Log("FIRE!!");
-        }
+        if (!context.performed)
+            return;
+
+        if (_projectilePrefab == null || _firePoint == null)
+            return;
+
+        var rocketTransform = transform;
+        var projectile = Instantiate(_projectilePrefab, _firePoint.position, rocketTransform.rotation);
+        projectile.Rotate(-_initialRotation);
     }
 
     private void OnEnable() => _playerInputActions.Player.Enable();
