@@ -27,11 +27,11 @@ public class Projectile : MonoBehaviour
         if (other == null)
             return;
 
-        if (other.gameObject.GetComponent<Asteroid>() != null)
+        if (other.gameObject.CompareTag("Obstacle") || other.gameObject.CompareTag("Spaceship"))
         {
             Destroy(other.gameObject);
             
-            var explosionParticles = other.gameObject.GetComponent<AsteroidExplosionParticles>();
+            var explosionParticles = other.gameObject.GetComponent<ExplosionParticles>();
             if (explosionParticles != null)
             {
                 explosionParticles.RocketPosition = _initialPosition;

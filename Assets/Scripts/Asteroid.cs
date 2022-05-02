@@ -20,7 +20,7 @@ public class Asteroid : MonoBehaviour
 
     private void Start()
     {
-        var asteroidExplosionParticles = GetComponent<AsteroidExplosionParticles>();
+        var asteroidExplosionParticles = GetComponent<ExplosionParticles>();
         
         if (asteroidExplosionParticles != null)
             asteroidExplosionParticles.enabled = false;

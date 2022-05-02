@@ -68,7 +68,18 @@ public class PlayerController : MonoBehaviour
             _rocketMovement.ApplyAcceleration(space, RocketMovement.ThrusterTypes.Main);
 
         if (_fireButtonPressed)
-            Fire();
+        {
+            _fireTimestamp += Time.deltaTime;
+            if (_fireTimestamp >= _fireCooldown)
+            {
+                Fire();
+                _fireTimestamp -= _fireCooldown;
+            }
+        }
+        else
+        {
+            _fireTimestamp = _fireCooldown;
+        }
     }
 
     private void Fire()
@@ -82,7 +93,6 @@ public class PlayerController : MonoBehaviour
         var rocketTransform = transform;
         var projectile = Instantiate(_projectilePrefab, _firePoint.position, rocketTransform.rotation);
         projectile.Rotate(-_initialRotation);
-        _fireTimestamp = Time.time + _fireCooldown;
     }
 
     private void OnEnable() => _playerInputActions.Player.Enable();

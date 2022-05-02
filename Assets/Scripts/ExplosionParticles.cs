@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class AsteroidExplosionParticles : MonoBehaviour
+public class ExplosionParticles : MonoBehaviour
 {
     [SerializeField] 
     private ParticleSystem        _explosionParticleSystem;
@@ -19,10 +19,9 @@ public class AsteroidExplosionParticles : MonoBehaviour
         var particleSound = particle.GetComponent<SimpleSound>();
         if (particleSound != null)
         {
-            var dist = Distance(RocketPosition, SpawnPosition);
+            var dist = Vector3.Distance(RocketPosition, SpawnPosition);
             particleSound.SoundToPlay = dist < _farDistance ? 0 : 1;
+            particleSound.IsExplosionSound = true;
         }
     }
-    
-    private float Distance(Vector3 p1, Vector3 p2) => Vector3.Distance(p1, p2);
 }
