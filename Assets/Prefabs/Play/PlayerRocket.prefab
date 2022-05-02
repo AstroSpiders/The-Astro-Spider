@@ -489,7 +489,7 @@ MonoBehaviour:
   _thrusterSound: {fileID: 8300000, guid: 4699c8325cf1a5140bd352b90139556b, type: 3}
   _mainThrusterPitch: 0.75
   _secondaryThrusterPitch: 1.25
-  _mainThrusterVolume: 0.2
-  _secondaryThrusterVolume: 0.2
+  _mainThrusterVolume: 0.1
+  _secondaryThrusterVolume: 0.1
   _decreaseVolumeBy: 5
   _increaseVolumeBy: 5

@@ -1,6 +1,5 @@
 using System;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 [RequireComponent(typeof(RocketMovement))]
 [RequireComponent(typeof(ThrustersSound))]
@@ -20,6 +19,7 @@ public class PlayerController : MonoBehaviour
     private RocketMovement           _rocketMovement;
     private Vector3                  _initialRotation;
     private float                    _fireTimestamp;
+    private bool                     _fireButtonPressed;
 
     private void Awake()
     {
@@ -27,7 +27,8 @@ public class PlayerController : MonoBehaviour
         _rocketMovement = GetComponent<RocketMovement>();
 
         _playerInputActions.Player.Enable();
-        _playerInputActions.Player.Fire.performed += Fire;
+        _playerInputActions.Player.Fire.performed += _ => _fireButtonPressed = true;
+        _playerInputActions.Player.Fire.canceled += _ => _fireButtonPressed = false;
 
         _initialRotation = transform.rotation.eulerAngles;
     }
@@ -65,13 +66,13 @@ public class PlayerController : MonoBehaviour
 
         if (Math.Abs(space) >= _bias)
             _rocketMovement.ApplyAcceleration(space, RocketMovement.ThrusterTypes.Main);
+
+        if (_fireButtonPressed)
+            Fire();
     }
 
-    private void Fire(InputAction.CallbackContext context)
+    private void Fire()
     {
-        if (!context.performed)
-            return;
-
         if (_projectilePrefab == null || _firePoint == null)
             return;
 

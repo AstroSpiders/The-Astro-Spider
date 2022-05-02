@@ -5,7 +5,7 @@ public class Projectile : MonoBehaviour
     private Rigidbody     _projectileRigidbody;
     private Vector3       _initialPosition;
     
-    private const float   _speed                  = 50.0f;
+    private const float   _speed                  = 40.0f;
     private const float   _lifespan               = 5.0f;
     
     private void Start()
@@ -14,9 +14,11 @@ public class Projectile : MonoBehaviour
 
         if (_projectileRigidbody == null)
             return;
+
+        var projectileTransform = transform;
+        _projectileRigidbody.velocity = projectileTransform.up * _speed;
+        _initialPosition = projectileTransform.position;
         
-        _projectileRigidbody.velocity = transform.up * _speed;
-        _initialPosition = transform.position;
         Destroy(gameObject, _lifespan);
     }
 
