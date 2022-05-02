@@ -3,10 +3,11 @@ using UnityEngine;
 public class Projectile : MonoBehaviour
 {
     private Rigidbody     _projectileRigidbody;
+    private Vector3       _initialPosition;
     
     private const float   _speed                  = 50.0f;
     private const float   _lifespan               = 5.0f;
-
+    
     private void Start()
     {
         _projectileRigidbody = GetComponent<Rigidbody>();
@@ -15,6 +16,7 @@ public class Projectile : MonoBehaviour
             return;
         
         _projectileRigidbody.velocity = transform.up * _speed;
+        _initialPosition = transform.position;
         Destroy(gameObject, _lifespan);
     }
 
@@ -25,14 +27,13 @@ public class Projectile : MonoBehaviour
 
         if (other.gameObject.GetComponent<Asteroid>() != null)
         {
-            var asteroidPosition = other.transform.position;
-            
             Destroy(other.gameObject);
             
             var explosionParticles = other.gameObject.GetComponent<AsteroidExplosionParticles>();
             if (explosionParticles != null)
             {
-                explosionParticles.SpawnPosition = asteroidPosition;
+                explosionParticles.RocketPosition = _initialPosition;
+                explosionParticles.SpawnPosition = other.transform.position;
                 explosionParticles.enabled = true;
             }
         }

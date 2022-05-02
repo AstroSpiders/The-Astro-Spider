@@ -159,5 +159,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 337264c6377f60d4ebe4bc06954a6851, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _projectileSound: {fileID: 8300000, guid: 103356d2597c1e741a21b5dff27ce112, type: 3}
-  _projectileSoundVolume: 1
+  _sound1: {fileID: 8300000, guid: 103356d2597c1e741a21b5dff27ce112, type: 3}
+  _sound2: {fileID: 8300000, guid: 103356d2597c1e741a21b5dff27ce112, type: 3}
+  _soundVolume: 1
+  SoundToPlay: 0
