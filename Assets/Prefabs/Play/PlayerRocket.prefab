@@ -452,7 +452,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   PlayerInputSpace: {fileID: 0}
-  _projectilePrefab: {fileID: 436056, guid: 66e0018a9e63c4348b7a340890e5b30c, type: 3}
+  _projectilePrefab: {fileID: 5693929233228028460, guid: 0d56a547d1a5b3f4ab826a2ee03fc9c1, type: 3}
   _firePoint: {fileID: 4992397382279497817}
 --- !u!114 &6236790931704263608
 MonoBehaviour:
