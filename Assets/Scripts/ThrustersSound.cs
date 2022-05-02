@@ -29,12 +29,12 @@ public class ThrustersSound : MonoBehaviour
         _state          = GetComponent<RocketState>();
         _rocketMovement = GetComponent<RocketMovement>();
         
-        for (int i = 0; i < _rocketMovement.Thrusters.Length; i++)
+        for (var i = 0; i < _rocketMovement.Thrusters.Length; i++)
             gameObject.AddComponent(typeof(AudioSource));
 
         _audioSources = gameObject.GetComponents<AudioSource>();
 
-        for (int i = 0; i < _rocketMovement.Thrusters.Length; i++)
+        for (var i = 0; i < _rocketMovement.Thrusters.Length; i++)
         {
             var audioSource        = _audioSources[i];
                 audioSource.clip   = _thrusterSound;
@@ -48,20 +48,21 @@ public class ThrustersSound : MonoBehaviour
 
     private void LateUpdate()
     {
-        for (int i = 0; i < _rocketMovement.Thrusters.Length; i++)
+        for (var i = 0; i < _rocketMovement.Thrusters.Length; i++)
         {
-            var   thruster           = _rocketMovement.Thrusters[i];
-            var   audioSource        = _audioSources[i];
-            float acceleration       = thruster.Acceleration;
+            var   thruster               = _rocketMovement.Thrusters[i];
+            var   audioSource            = _audioSources[i];
+            var   acceleration       = thruster.Acceleration;
 
-            float targetVolume       = ((i == (int)RocketMovement.ThrusterTypes.Main) ? _mainThrusterVolume : _secondaryThrusterVolume) * acceleration;
+            var   targetVolume       = (i == (int)RocketMovement.ThrusterTypes.Main ? _mainThrusterVolume : _secondaryThrusterVolume) * acceleration;
 
             if (_state.Dead || !_state.HasFuel)
                 targetVolume = 0.0f;
 
-            audioSource.volume = Mathf.MoveTowards(audioSource.volume,
+            var audioVolume = audioSource.volume;
+            audioSource.volume = Mathf.MoveTowards(audioVolume,
                                                    targetVolume,
-                                                   (audioSource.volume < targetVolume) ? _increaseVolumeBy : _decreaseVolumeBy * Time.deltaTime);
+                                                   audioVolume < targetVolume ? _increaseVolumeBy : _decreaseVolumeBy * Time.deltaTime);
         }
     }
 }

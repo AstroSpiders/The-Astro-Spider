@@ -2,10 +2,10 @@ using UnityEngine;
 
 public class Projectile : MonoBehaviour
 {
-    private Rigidbody _projectileRigidbody;
+    private Rigidbody     _projectileRigidbody;
     
-    private const float _speed = 50.0f;
-    private const float _lifespan = 5.0f;
+    private const float   _speed                  = 50.0f;
+    private const float   _lifespan               = 5.0f;
 
     private void Start()
     {
@@ -28,6 +28,10 @@ public class Projectile : MonoBehaviour
             Destroy(other.gameObject);
         }
         
-        Destroy(gameObject);
+        if (!(other.gameObject.GetComponent<RocketState>() != null ||
+            other.gameObject.GetComponent<RocketMovement>() != null))
+        {
+            Destroy(gameObject);
+        }
     }
 }
