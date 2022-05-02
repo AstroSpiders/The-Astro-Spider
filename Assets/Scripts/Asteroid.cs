@@ -5,7 +5,7 @@ public class Asteroid : MonoBehaviour
 {
     public  float     InitialImpulseForce { get;         set; } = 1.0f;
             
-    public  bool      HitPlanet           { get; private set; } = false;
+    public  bool      HitPlanet           { get; private set; }
 
     private Rigidbody _body;
 
@@ -16,6 +16,14 @@ public class Asteroid : MonoBehaviour
         Vector3 tangent      = ArbitraryOrthogonal(gravity).normalized * gravityForce;
 
         _body.AddForce(tangent * InitialImpulseForce, ForceMode.Acceleration);
+    }
+
+    private void Start()
+    {
+        var asteroidExplosionParticles = GetComponent<AsteroidExplosionParticles>();
+        
+        if (asteroidExplosionParticles != null)
+            asteroidExplosionParticles.enabled = false;
     }
 
     private void Awake() => _body = GetComponent<Rigidbody>();

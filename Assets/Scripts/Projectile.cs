@@ -25,7 +25,16 @@ public class Projectile : MonoBehaviour
 
         if (other.gameObject.GetComponent<Asteroid>() != null)
         {
+            var asteroidPosition = other.transform.position;
+            
             Destroy(other.gameObject);
+            
+            var explosionParticles = other.gameObject.GetComponent<AsteroidExplosionParticles>();
+            if (explosionParticles != null)
+            {
+                explosionParticles.SpawnPosition = asteroidPosition;
+                explosionParticles.enabled = true;
+            }
         }
         
         if (!(other.gameObject.GetComponent<RocketState>() != null ||
