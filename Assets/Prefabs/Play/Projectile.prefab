@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: -1210474150583416811}
   - component: {fileID: -9172673071618658644}
   - component: {fileID: -8602847405714227412}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Projectile
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -63,6 +63,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 74dba4abce94caa44af127ca2a7932bb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Direction: {x: 0, y: 0, z: 0}
 --- !u!114 &-8602847405714227412
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -92,7 +93,7 @@ GameObject:
   - component: {fileID: 813169673872735871}
   - component: {fileID: 4973480440318451447}
   - component: {fileID: 5917972084987817596}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Sphere
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -128,7 +129,7 @@ MeshRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3719597573409316097}
-  m_Enabled: 1
+  m_Enabled: 0
   m_CastShadows: 1
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
@@ -171,7 +172,7 @@ SphereCollider:
   m_GameObject: {fileID: 3719597573409316097}
   m_Material: {fileID: 0}
   m_IsTrigger: 0
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 2
   m_Radius: 0.5
   m_Center: {x: 0, y: 0, z: 0}
@@ -185,6 +186,22 @@ PrefabInstance:
     - target: {fileID: 100000, guid: b36dc12bf54db8c4982504c8c9d1edb8, type: 3}
       propertyPath: m_Name
       value: ParticlePrefab MysticPool
+      objectReference: {fileID: 0}
+    - target: {fileID: 100000, guid: b36dc12bf54db8c4982504c8c9d1edb8, type: 3}
+      propertyPath: m_Layer
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 100002, guid: b36dc12bf54db8c4982504c8c9d1edb8, type: 3}
+      propertyPath: m_Layer
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 100004, guid: b36dc12bf54db8c4982504c8c9d1edb8, type: 3}
+      propertyPath: m_Layer
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 100006, guid: b36dc12bf54db8c4982504c8c9d1edb8, type: 3}
+      propertyPath: m_Layer
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: b36dc12bf54db8c4982504c8c9d1edb8, type: 3}
       propertyPath: m_RootOrder

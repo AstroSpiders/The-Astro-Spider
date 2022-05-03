@@ -14,12 +14,14 @@ public class PlayerController : MonoBehaviour
     private Transform                _projectilePrefab;
     [SerializeField] 
     private Transform                _firePoint;
-                  
+    [SerializeField] 
+    private Animator                 _spiderAnimator;
+
     private PlayerInputActions       _playerInputActions;
     private RocketMovement           _rocketMovement;
-    private Vector3                  _initialRotation;
     private float                    _fireTimestamp;
     private bool                     _fireButtonPressed;
+    private Camera                   _mainCamera;
 
     private void Awake()
     {
@@ -29,8 +31,8 @@ public class PlayerController : MonoBehaviour
         _playerInputActions.Player.Enable();
         _playerInputActions.Player.Fire.performed += _ => _fireButtonPressed = true;
         _playerInputActions.Player.Fire.canceled += _ => _fireButtonPressed = false;
-
-        _initialRotation = transform.rotation.eulerAngles;
+        
+        _mainCamera = Camera.main;
     }
 
     private void Update()
@@ -89,10 +91,13 @@ public class PlayerController : MonoBehaviour
 
         if (_fireTimestamp > Time.time)
             return;
+        
+        if (_spiderAnimator != null)
+            _spiderAnimator.SetTrigger("Attack");
 
         var rocketTransform = transform;
         var projectile = Instantiate(_projectilePrefab, _firePoint.position, rocketTransform.rotation);
-        projectile.Rotate(-_initialRotation);
+        // projectile.transform.forward = _mainCamera.transform.up;
     }
 
     private void OnEnable() => _playerInputActions.Player.Enable();

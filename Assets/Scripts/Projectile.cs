@@ -16,7 +16,7 @@ public class Projectile : MonoBehaviour
             return;
 
         var projectileTransform = transform;
-        _projectileRigidbody.velocity = projectileTransform.up * _speed;
+        _projectileRigidbody.velocity = projectileTransform.forward * _speed;
         _initialPosition = projectileTransform.position;
         
         Destroy(gameObject, _lifespan);
