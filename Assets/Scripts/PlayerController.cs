@@ -16,6 +16,8 @@ public class PlayerController : MonoBehaviour
     private Transform                _firePoint;
     [SerializeField] 
     private Animator                 _spiderAnimator;
+    [SerializeField] 
+    private Transform                _weaponHead;
 
     private PlayerInputActions       _playerInputActions;
     private RocketMovement           _rocketMovement;
@@ -69,6 +71,12 @@ public class PlayerController : MonoBehaviour
         if (Math.Abs(space) >= _bias)
             _rocketMovement.ApplyAcceleration(space, RocketMovement.ThrusterTypes.Main);
 
+        if (_weaponHead != null)
+        {
+            var cameraForward = _mainCamera.transform.forward;
+            _weaponHead.forward = Vector3.Lerp(_weaponHead.forward, cameraForward, Time.deltaTime * 20f);
+        }
+
         if (_fireButtonPressed)
         {
             _fireTimestamp += Time.deltaTime;
@@ -97,7 +105,7 @@ public class PlayerController : MonoBehaviour
 
         var rocketTransform = transform;
         var projectile = Instantiate(_projectilePrefab, _firePoint.position, rocketTransform.rotation);
-        // projectile.transform.forward = _mainCamera.transform.up;
+        projectile.transform.forward = _mainCamera.transform.forward;
     }
 
     private void OnEnable() => _playerInputActions.Player.Enable();
