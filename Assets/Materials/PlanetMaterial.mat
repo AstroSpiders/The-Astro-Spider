@@ -88,7 +88,7 @@ Material:
     - _Disurbance: 0.1
     - _DstBlend: 0
     - _EnvironmentReflections: 1
-    - _FrequencyX: 1
+    - _FrequencyX: 0.25
     - _FrequencyY: 1
     - _FrequencyZ: 1
     - _GlossMapScale: 0
@@ -96,7 +96,7 @@ Material:
     - _GlossyReflections: 0
     - _Metallic: 0
     - _OcclusionStrength: 1
-    - _OctavesX: 1
+    - _OctavesX: 5
     - _OctavesY: 1
     - _OctavesZ: 1
     - _Parallax: 0.005

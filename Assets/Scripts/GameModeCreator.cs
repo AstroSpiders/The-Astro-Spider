@@ -95,6 +95,7 @@ public class GameModeCreator : MonoBehaviour
     private void Awake()
     {
         CurrentGameState = GameState.Playing;
+        _defaultFixedDeltaTime = Time.fixedDeltaTime;
 
         switch (_gameParams.GameMode)
         {
