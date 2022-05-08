@@ -8,7 +8,7 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: PlanetMaterial
-  m_Shader: {fileID: 4800000, guid: 21e66fc0fdffcea4389a5e5e06d7b6da, type: 3}
+  m_Shader: {fileID: 4800000, guid: 49c090e1a4d525d4b894fe1c71cd01a9, type: 3}
   m_ShaderKeywords: 
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
@@ -85,13 +85,20 @@ Material:
     - _Cutoff: 0.5
     - _DetailAlbedoMapScale: 1
     - _DetailNormalMapScale: 1
+    - _Disurbance: 0.1
     - _DstBlend: 0
     - _EnvironmentReflections: 1
+    - _FrequencyX: 1
+    - _FrequencyY: 1
+    - _FrequencyZ: 1
     - _GlossMapScale: 0
     - _Glossiness: 32
     - _GlossyReflections: 0
     - _Metallic: 0
     - _OcclusionStrength: 1
+    - _OctavesX: 1
+    - _OctavesY: 1
+    - _OctavesZ: 1
     - _Parallax: 0.005
     - _QueueOffset: 0
     - _ReceiveShadows: 1
