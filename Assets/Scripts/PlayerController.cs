@@ -73,8 +73,8 @@ public class PlayerController : MonoBehaviour
 
         if (_weaponHead != null)
         {
-            var cameraForward = _mainCamera.transform.forward;
-            _weaponHead.forward = Vector3.Lerp(_weaponHead.forward, cameraForward, Time.deltaTime * 20f);
+            var rotation = _mainCamera.transform.rotation;
+            _weaponHead.rotation = rotation * Quaternion.Euler(90.0f, 0.0f, 0.0f);
         }
 
         if (_fireButtonPressed)
