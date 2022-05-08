@@ -28,70 +28,69 @@ public class AITrainer : MonoBehaviour
 
     }
 
-    public const string           DefaultSaveFile                   = "/stats_release.json";
-
-    public       WorldGenerator   WorldGenerator                    = null;
-    public       FocusCamera      FocusCamera                       = null;
-    public       Button           SaveTrainingStateButton           = null,
-                                  LoadTrainingStateButton           = null;
-
-    public       TMP_Text         EpochTextLabel                    = null,
-                                  MaxFitnessTextLabel               = null,
-                                  AverageFitnessLabel               = null;
-
-    public       float            RocketFuelMultiplier              = 2.0f;
-
-    [SerializeField]
-    private      int              _populationSize                   = 150;
-    [SerializeField]
-    private      int              _eliteCount                       = 3;
-    [SerializeField]
-    private      int              _eliteCopies                      = 2;
-    [SerializeField]
-    private      float            _crossoverDisableConnectionChance = 0.75f;
-    [SerializeField]
-    private      float            _addConnectionChance              = 0.05f;
-    [SerializeField]
-    private      float            _addNodeChance                    = 0.03f;
-    [SerializeField]
-    private      float            _mutateWeightsChance              = 0.8f;
-    [SerializeField]
-    private      float            _perturbWeightChance              = 0.9f;
-    [SerializeField]
-    private      float            _maxWeightPerturbation            = 0.1f;
-    [SerializeField]
-    private      float            _previousGenMutatePercentage      = 0.25f;
-    [SerializeField]
-    private      float            _c1                               = 1.0f;
-    [SerializeField]
-    private      float            _c2                               = 1.0f;
-    [SerializeField]
-    private      float            _c3                               = 0.4f;
-    [SerializeField]
-    private      float            _n                                = 1.0f;
-    [SerializeField]
-    private      float            _compatibilityThreshold           = 3.0f;
-    [SerializeField]
-    private      float            _interspeciesMatingRate           = 0.001f;
-    [SerializeField]
-    private      int              _generationsToStagnate            = 15;
-
-    [SerializeField, Range(0.0f, 600.0f)]
-    private      float            _secondsPerEpoch                  = 60.0f;
+    public const string           DefaultSaveFile                      = "/stats_release.json";
+                                                                       
+    public       WorldGenerator   WorldGenerator                       = null;
+    public       FocusCamera      FocusCamera                          = null;
+    public       Button           SaveTrainingStateButton              = null,
+                                  LoadTrainingStateButton              = null;
+                                                                       
+    public       TMP_Text         EpochTextLabel                       = null,
+                                  MaxFitnessTextLabel                  = null,
+                                  AverageFitnessLabel                  = null;
+                                                                       
+    public       float            RocketFuelMultiplier                 = 2.0f;
+    public       List<EpochStats> EpochStatsList { get; private set; } = new List<EpochStats>();
 
     [SerializeField]
-    private      RocketState      _rocketPrefab                     = null;
-
-    private      GeneticAlgorithm _geneticAlgorithm                 = null;
-
-    private      RocketState[]    _rockets                          = null;
-
-    private      float            _epochElapsedSeconds              = 0.0f;
-
-    private      List<EpochStats> _epochStats                       = new List<EpochStats>();
-
-    private      string           _saveStatePath                    = string.Empty;
-    private      string           _loadStatePath                    = string.Empty;
+    private      int              _populationSize                      = 150;
+    [SerializeField]                                                   
+    private      int              _eliteCount                          = 3;
+    [SerializeField]                                                   
+    private      int              _eliteCopies                         = 2;
+    [SerializeField]                                                   
+    private      float            _crossoverDisableConnectionChance    = 0.75f;
+    [SerializeField]                                                   
+    private      float            _addConnectionChance                 = 0.05f;
+    [SerializeField]                                                   
+    private      float            _addNodeChance                       = 0.03f;
+    [SerializeField]                                                   
+    private      float            _mutateWeightsChance                 = 0.8f;
+    [SerializeField]                                                   
+    private      float            _perturbWeightChance                 = 0.9f;
+    [SerializeField]                                                   
+    private      float            _maxWeightPerturbation               = 0.1f;
+    [SerializeField]                                                   
+    private      float            _previousGenMutatePercentage         = 0.25f;
+    [SerializeField]                                                   
+    private      float            _c1                                  = 1.0f;
+    [SerializeField]                                                   
+    private      float            _c2                                  = 1.0f;
+    [SerializeField]                                                   
+    private      float            _c3                                  = 0.4f;
+    [SerializeField]                                                   
+    private      float            _n                                   = 1.0f;
+    [SerializeField]                                                   
+    private      float            _compatibilityThreshold              = 3.0f;
+    [SerializeField]                                                   
+    private      float            _interspeciesMatingRate              = 0.001f;
+    [SerializeField]                                                   
+    private      int              _generationsToStagnate               = 15;
+                                                                       
+    [SerializeField, Range(0.0f, 600.0f)]                              
+    private      float            _secondsPerEpoch                     = 60.0f;
+                                                                       
+    [SerializeField]                                                   
+    private      RocketState      _rocketPrefab                        = null;
+                                                                       
+    private      GeneticAlgorithm _geneticAlgorithm                    = null;
+                                                                       
+    private      RocketState[]    _rockets                             = null;
+                                                                       
+    private      float            _epochElapsedSeconds                 = 0.0f;
+                                                                       
+    private      string           _saveStatePath                       = string.Empty;
+    private      string           _loadStatePath                       = string.Empty;
 
     private void Start()
     {
@@ -133,7 +132,7 @@ public class AITrainer : MonoBehaviour
 
         float fixedDeltaTime = Time.fixedDeltaTime;
 
-        //Time.timeScale = 2.0f;
+        //Time.timeScale = 20.0f;
         //Time.fixedDeltaTime = fixedDeltaTime * Time.timeScale;
     }
 
@@ -190,11 +189,11 @@ public class AITrainer : MonoBehaviour
             LoadTrainingStateButton.interactable                            = false;
         }
 
-        if (_epochStats.Count >= 1)
+        if (EpochStatsList.Count >= 1)
         {
-            EpochTextLabel.text      = "Epoch: " + _epochStats.Count;
-            MaxFitnessTextLabel.text = "Max Fitness: " + _epochStats[_epochStats.Count - 1].MaxFitness;
-            AverageFitnessLabel.text = "Average Fitness: " + _epochStats[_epochStats.Count - 1].AverageFitness;
+            EpochTextLabel.text      = "Epoch: " + EpochStatsList.Count;
+            MaxFitnessTextLabel.text = "Max Fitness: " + EpochStatsList[EpochStatsList.Count - 1].MaxFitness;
+            AverageFitnessLabel.text = "Average Fitness: " + EpochStatsList[EpochStatsList.Count - 1].AverageFitness;
         }
         else
         {
@@ -209,7 +208,7 @@ public class AITrainer : MonoBehaviour
         int index      = 0;
         var epochStats = new EpochStats
         {
-            Epoch          = _epochStats.Count,
+            Epoch          = EpochStatsList.Count,
             MaxFitness     = 0.0f,
             AverageFitness = 0.0f
         };
@@ -226,7 +225,7 @@ public class AITrainer : MonoBehaviour
             }
         }
 
-        _epochStats.Add(epochStats);
+        EpochStatsList.Add(epochStats);
 
         if (_saveStatePath != string.Empty)
         {
@@ -328,7 +327,7 @@ public class AITrainer : MonoBehaviour
         var currentState = new TrainingState
         {
             GeneticAlgorithm = _geneticAlgorithm,
-            EpochStats       = _epochStats
+            EpochStats       = EpochStatsList
         };
 
         string json = JsonConvert.SerializeObject(currentState);
@@ -354,7 +353,7 @@ public class AITrainer : MonoBehaviour
         var currentState                                                 = JsonConvert.DeserializeObject<TrainingState>(json);
 
             _geneticAlgorithm                                            = currentState.GeneticAlgorithm;
-            _epochStats                                                  = currentState.EpochStats;
+            EpochStatsList                                                  = currentState.EpochStats;
 
            LoadTrainingStateButton.GetComponentInChildren<TMP_Text>().text = "Load training state";
            LoadTrainingStateButton.interactable                            = true;

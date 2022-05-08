@@ -72,7 +72,7 @@ public class UINeuralNetwork : Graphic
                     ConnectionDetails connectionDetails = new ConnectionDetails();
                     connectionDetails.BaseColor = connection.Item2 > 0.0f ? Color.green : Color.red;
                     connectionDetails.InNode = connection.Item1;
-                    AddLine(currentPosition, _nodesDetails[connection.Item1].Position, connectionDetails.BaseColor, vh, connectionDetails.VerticesIndices);
+                    CustomUIHelper.AddLine(currentPosition, _nodesDetails[connection.Item1].Position, connectionDetails.BaseColor, _lineThickness, rectTransform, vh, connectionDetails.VerticesIndices);
                     _nodesDetails[connection.Item1].InverseAdjDetails.Add(connectionDetails);
                 }
             }
@@ -172,36 +172,5 @@ public class UINeuralNetwork : Graphic
         }
     }
 
-    private void AddLine(Vector2 pos1, Vector2 pos2, Color color, VertexHelper vh, List<int> verticesIndices)
-    {
-        Vector2 widthHeight = new Vector2(_width, _height);
 
-        Vector2 dir = pos2 - pos1;
-        Vector2 normal = new Vector2(-dir.y, dir.x).normalized;
-
-        UIVertex vertex = UIVertex.simpleVert;
-        vertex.color = color;
-
-        int currentVertCount = vh.currentVertCount;
-
-        vertex.position = (pos1 - normal * _lineThickness - rectTransform.pivot) * widthHeight;
-        vh.AddVert(vertex);
-
-        vertex.position = (pos1 + normal * _lineThickness - rectTransform.pivot) * widthHeight;
-        vh.AddVert(vertex);
-
-        vertex.position = (pos2 + normal * _lineThickness - rectTransform.pivot) * widthHeight;
-        vh.AddVert(vertex);
-
-        vertex.position = (pos2 - normal * _lineThickness - rectTransform.pivot) * widthHeight;
-        vh.AddVert(vertex);
-
-        vh.AddTriangle(currentVertCount + 0, currentVertCount + 1, currentVertCount + 2);
-        vh.AddTriangle(currentVertCount + 2, currentVertCount + 3, currentVertCount + 0);
-
-        verticesIndices.Add(currentVertCount);
-        verticesIndices.Add(currentVertCount + 1);
-        verticesIndices.Add(currentVertCount + 2);
-        verticesIndices.Add(currentVertCount + 3);
-    }
 }

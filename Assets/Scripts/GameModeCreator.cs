@@ -249,6 +249,8 @@ public class GameModeCreator : MonoBehaviour
         aiTrainer.MaxFitnessTextLabel     = maxFitnessTextLabel;
         aiTrainer.AverageFitnessLabel     = averageFitnessTextLabel;
 
+        canvas.GetComponentInChildren<UITrainingStats>().AITrainer = aiTrainer;
+
         _gameCanvas = canvas;
     }
 
