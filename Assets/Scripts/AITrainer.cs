@@ -32,12 +32,16 @@ public class AITrainer : MonoBehaviour
                                                                        
     public       WorldGenerator   WorldGenerator                       = null;
     public       FocusCamera      FocusCamera                          = null;
+    public       GameModeCreator  GameModeCreator                      = null;
     public       Button           SaveTrainingStateButton              = null,
                                   LoadTrainingStateButton              = null;
                                                                        
     public       TMP_Text         EpochTextLabel                       = null,
                                   MaxFitnessTextLabel                  = null,
-                                  AverageFitnessLabel                  = null;
+                                  AverageFitnessLabel                  = null,
+                                  TimeScaleLabel                       = null;
+
+    public       Slider           TimeScaleSlider                      = null;
                                                                        
     public       float            RocketFuelMultiplier                 = 2.0f;
     public       List<EpochStats> EpochStatsList { get; private set; } = new List<EpochStats>();
@@ -88,6 +92,7 @@ public class AITrainer : MonoBehaviour
     private      RocketState[]    _rockets                             = null;
                                                                        
     private      float            _epochElapsedSeconds                 = 0.0f;
+    private      float            _defaultFixedDeltaTime;
                                                                        
     private      string           _saveStatePath                       = string.Empty;
     private      string           _loadStatePath                       = string.Empty;
@@ -130,10 +135,7 @@ public class AITrainer : MonoBehaviour
         SaveTrainingStateButton.onClick.AddListener(SaveTrainingStateCallback);
         LoadTrainingStateButton.onClick.AddListener(LoadTrainingStateCallback);
 
-        float fixedDeltaTime = Time.fixedDeltaTime;
-
-        //Time.timeScale = 20.0f;
-        //Time.fixedDeltaTime = fixedDeltaTime * Time.timeScale;
+        _defaultFixedDeltaTime = Time.fixedDeltaTime;
     }
 
     private void Update()
@@ -160,7 +162,6 @@ public class AITrainer : MonoBehaviour
             }
         }
 
-
         FocusCamera.SetFocusPoint(focusPosition);
 
         _epochElapsedSeconds += Time.deltaTime;
@@ -170,6 +171,13 @@ public class AITrainer : MonoBehaviour
         {
             Epoch();
             _epochElapsedSeconds -= adjustedSecondsPerEpoch;
+        }
+
+        if (TimeScaleSlider != null && GameModeCreator.CurrentGameState == GameModeCreator.GameState.Playing)
+        {
+            Time.timeScale      = TimeScaleSlider.value;
+            Time.fixedDeltaTime = _defaultFixedDeltaTime * Time.timeScale;
+            TimeScaleLabel.text = "Time Scale: " + Time.timeScale.ToString("0.##");
         }
 
         UpdateUI();
