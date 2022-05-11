@@ -9,12 +9,14 @@ using UnityEngine.UI;
 
 public class GameModeCreator : MonoBehaviour
 {
-    private enum GameState
+    public enum GameState
     {
         Playing,
         Paused,
         Ending
     }
+
+    public  GameState        CurrentGameState { get; private set; }
 
     [SerializeField]
     private GameParams       _gameParams;
@@ -50,17 +52,21 @@ public class GameModeCreator : MonoBehaviour
     private Canvas           _endingMenu;
 
     [SerializeField] 
-    private ProgressUI        _progressUI;
+    private ProgressUI       _progressUI;
 
     private Canvas           _gameCanvas;
     private PlayerController _playerController;
     private RocketState      _rocketState;
     private OrbitCamera      _orbitCamera;
-    private GameState        _gameState;
+
+    private float            _defaultFixedDeltaTime;
+
+    private float            _beforePauseTimeScale;
+    private float            _beforePauseFixedDeltaTime;
 
     public void OnResumeButtonPressed()
     {
-        _gameState = GameState.Playing;
+        CurrentGameState = GameState.Playing;
         _pauseMenu.gameObject.SetActive(false);
         
         if (_gameCanvas != null)
@@ -70,22 +76,26 @@ public class GameModeCreator : MonoBehaviour
         if (_orbitCamera != null)
             _orbitCamera.enabled = true;
 
-        Time.timeScale = 1.0f;
+        Time.timeScale      = _beforePauseTimeScale;
+        Time.fixedDeltaTime = _beforePauseFixedDeltaTime;
     }
 
     public void OnRespawnButtonPressed()
     {
         Time.timeScale = 1.0f;
+        Time.fixedDeltaTime = _defaultFixedDeltaTime;
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
     public void OnMainMenuButtonPressed()
     {
         Time.timeScale = 1.0f;
+        Time.fixedDeltaTime = _defaultFixedDeltaTime;
         SceneManager.LoadScene(0);
     }
     private void Awake()
     {
-        _gameState = GameState.Playing;
+        CurrentGameState = GameState.Playing;
+        _defaultFixedDeltaTime = Time.fixedDeltaTime;
 
         switch (_gameParams.GameMode)
         {
@@ -105,10 +115,10 @@ public class GameModeCreator : MonoBehaviour
     {
         if (Keyboard.current.escapeKey.wasPressedThisFrame)
         {
-            switch (_gameState)
+            switch (CurrentGameState)
             {
                 case GameState.Playing:
-                    _gameState = GameState.Paused;
+                    CurrentGameState = GameState.Paused;
                     if (_gameCanvas != null)
                         _gameCanvas.gameObject.SetActive(false);
                     if (_playerController != null)
@@ -117,7 +127,12 @@ public class GameModeCreator : MonoBehaviour
                         _orbitCamera.enabled = false;
 
                     _pauseMenu.gameObject.SetActive(true);
-                    Time.timeScale = 0.0f;
+
+                    _beforePauseTimeScale      = Time.timeScale;
+                    _beforePauseFixedDeltaTime = Time.fixedDeltaTime;
+
+                    Time.timeScale      = 0.0f;
+                    Time.fixedDeltaTime = 0.0f;
                     break;
                 case GameState.Paused:
                     OnResumeButtonPressed();
@@ -130,7 +145,7 @@ public class GameModeCreator : MonoBehaviour
 
         if (_rocketState != null)
         {
-            if (_gameState == GameState.Playing)
+            if (CurrentGameState == GameState.Playing)
             {
                 if (!_rocketState.HasFuel)
                     EndGame("Out of fuel");
@@ -144,7 +159,7 @@ public class GameModeCreator : MonoBehaviour
 
     private void EndGame(string endingMessage)
     {
-        _gameState = GameState.Ending;
+        CurrentGameState = GameState.Ending;
 
         if (_gameCanvas != null)
             _gameCanvas.gameObject.SetActive(false);
@@ -238,16 +253,23 @@ public class GameModeCreator : MonoBehaviour
         var maxFitnessTextLabel     = canvasTextLabels[1];
         var averageFitnessTextLabel = canvasTextLabels[2];
 
+        var timeScaleTextLabel      = canvasTextLabels[3];
+
         var aiTrainer = Instantiate(_aiTrainer);
 
         aiTrainer.WorldGenerator          = worldGenerator;
         aiTrainer.FocusCamera             = _mainCamera.GetComponent<FocusCamera>();
+        aiTrainer.GameModeCreator         = this;
 
         aiTrainer.SaveTrainingStateButton = saveTrainingButton;
         aiTrainer.LoadTrainingStateButton = loadTrainingButton;
         aiTrainer.EpochTextLabel          = epochTextLabel;
         aiTrainer.MaxFitnessTextLabel     = maxFitnessTextLabel;
         aiTrainer.AverageFitnessLabel     = averageFitnessTextLabel;
+        aiTrainer.TimeScaleLabel          = timeScaleTextLabel;
+        aiTrainer.TimeScaleSlider         = canvas.GetComponentInChildren<Slider>();
+
+        canvas.GetComponentInChildren<UITrainingStats>().AITrainer = aiTrainer;
 
         _gameCanvas = canvas;
     }
