@@ -1,17 +1,29 @@
 using System;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 [RequireComponent(typeof(RocketMovement))]
 [RequireComponent(typeof(ThrustersSound))]
 public class PlayerController : MonoBehaviour
 {
-    private const float              _bias = 0.001f;
+    private const float              _bias           = 0.001f;
+    private const float              _fireCooldown   = 0.2f;
 
-    public        Transform          PlayerInputSpace = default;
-                  
-    private       PlayerInputActions _playerInputActions;
-    private       RocketMovement     _rocketMovement;
+    public Transform                 PlayerInputSpace;
+
+    [SerializeField] 
+    private Transform                _projectilePrefab;
+    [SerializeField] 
+    private Transform                _firePoint;
+    [SerializeField] 
+    private Animator                 _spiderAnimator;
+    [SerializeField] 
+    private Transform                _weaponHead;
+
+    private PlayerInputActions       _playerInputActions;
+    private RocketMovement           _rocketMovement;
+    private float                    _fireTimestamp;
+    private bool                     _fireButtonPressed;
+    private Camera                   _mainCamera;
 
     private void Awake()
     {
@@ -19,7 +31,10 @@ public class PlayerController : MonoBehaviour
         _rocketMovement = GetComponent<RocketMovement>();
 
         _playerInputActions.Player.Enable();
-        _playerInputActions.Player.Fire.performed += Fire;
+        _playerInputActions.Player.Fire.performed += _ => _fireButtonPressed = true;
+        _playerInputActions.Player.Fire.canceled += _ => _fireButtonPressed = false;
+        
+        _mainCamera = Camera.main;
     }
 
     private void Update()
@@ -55,15 +70,42 @@ public class PlayerController : MonoBehaviour
 
         if (Math.Abs(space) >= _bias)
             _rocketMovement.ApplyAcceleration(space, RocketMovement.ThrusterTypes.Main);
+
+        if (_weaponHead != null)
+        {
+            var rotation = _mainCamera.transform.rotation;
+            _weaponHead.rotation = rotation * Quaternion.Euler(90.0f, 0.0f, 0.0f);
+        }
+
+        if (_fireButtonPressed)
+        {
+            _fireTimestamp += Time.deltaTime;
+            if (_fireTimestamp >= _fireCooldown)
+            {
+                Fire();
+                _fireTimestamp -= _fireCooldown;
+            }
+        }
+        else
+        {
+            _fireTimestamp = _fireCooldown;
+        }
     }
 
-    // TODO: implement the Fire function
-    private void Fire(InputAction.CallbackContext context)
+    private void Fire()
     {
-        if (context.performed)
-        {
-            Debug.Log("FIRE!!");
-        }
+        if (_projectilePrefab == null || _firePoint == null)
+            return;
+
+        if (_fireTimestamp > Time.time)
+            return;
+        
+        if (_spiderAnimator != null)
+            _spiderAnimator.SetTrigger("Attack");
+
+        var rocketTransform = transform;
+        var projectile = Instantiate(_projectilePrefab, _firePoint.position, rocketTransform.rotation);
+        projectile.transform.forward = _mainCamera.transform.forward;
     }
 
     private void OnEnable() => _playerInputActions.Player.Enable();
