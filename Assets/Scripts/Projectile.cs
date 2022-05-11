@@ -20,10 +20,6 @@ public class Projectile : MonoBehaviour
         _initialPosition = projectileTransform.position;
         
         Destroy(gameObject, _lifespan);
-
-        const int rocketLayerId     = 6;
-        const int projectileLayerId = 10;
-        Physics.IgnoreLayerCollision(rocketLayerId, projectileLayerId);
     }
 
     private void OnCollisionEnter(Collision other)
