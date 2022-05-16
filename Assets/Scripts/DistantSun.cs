@@ -6,7 +6,7 @@ public class DistantSun : MonoBehaviour
     private GameObject _sunPrefab;
 
     [SerializeField]
-    private Light      _directionalLight;
+    private Transform  _directionalLight;
 
     [SerializeField, Min(1.0f)]
     private float      _sunSize;

@@ -80,17 +80,13 @@ public class RocketState : MonoBehaviour
     {
         if (!Won)
             UpdateLatestStats();
-
-        //Debug.Log(Dead + " " + CurrentFuelLevel);
     }
 
     private void OnCollisionEnter(Collision collision)
     {
         var otherObject = collision.gameObject;
 
-        //Debug.Log("OnCollisionEnter");
-
-        if (otherObject.CompareTag("Planet"))
+        if (otherObject.CompareTag("PlanetHolder"))
         {
             var   planetToObject = (transform.position - otherObject.transform.position).normalized;
             var   forward        = transform.forward.normalized;
@@ -137,7 +133,6 @@ public class RocketState : MonoBehaviour
 
         if (CurrentPlanetIndex + 1 < WorldGenerator.Planets.Length)
         {
-            Debug.Log("Landed on planet " + CurrentPlanetIndex);
             CurrentPlanetIndex++;
             _sensors.TargetPlanet = WorldGenerator.Planets[CurrentPlanetIndex].transform;
             AddNewPlanetStats();
@@ -145,7 +140,6 @@ public class RocketState : MonoBehaviour
         else
         {
             Won = true;
-            Debug.Log("You won!!!");
         }
     }
 

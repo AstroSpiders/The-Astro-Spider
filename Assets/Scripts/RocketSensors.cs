@@ -141,10 +141,6 @@ public class RocketSensors : MonoBehaviour
                     Vector3 toTargetPlanet = (TargetPlanet.position - transform.position).normalized;
                     SensorOutputs[sensorIndex].TargetDirection = Vector3.Dot(currentDirection, toTargetPlanet);
                 }
-                else
-                {
-                    // Debug.Log("You must provide a target planet for the rocket to land on.");
-                }
 
                 theta += angleBetweenSensors;
 

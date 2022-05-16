@@ -310,10 +310,12 @@ public class AITrainer : MonoBehaviour
 
                 rocket.gameObject.AddComponent(typeof(NeuralNetworkController));
                 rocket.GetComponent<NeuralNetworkController>().SetNeuralNetwork(_geneticAlgorithm, individual);
-                rocket.GetComponent<RocketState>().FuelCapacity *= RocketFuelMultiplier;
+
+                var player = rocket.GetComponent<RocketState>();
+                player.FuelCapacity *= RocketFuelMultiplier;
+                player.MaxLandingImpact = player.MaxLandingImpact + player.MaxLandingImpact * 0.5f;
 
                 _rockets[index] = rocket;
-
                 index++;
             }
         }

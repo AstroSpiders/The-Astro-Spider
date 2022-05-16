@@ -8,6 +8,7 @@ TagManager:
   - Planet
   - Obstacle
   - Spaceship
+  - PlanetHolder
   layers:
   - Default
   - TransparentFX
@@ -20,7 +21,7 @@ TagManager:
   - Obstacles
   - Spaceships
   - Projectiles
-  - 
+  - PlanetHolders
   - 
   - 
   - 

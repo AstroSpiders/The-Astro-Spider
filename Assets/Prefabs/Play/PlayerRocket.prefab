@@ -55,6 +55,10 @@ PrefabInstance:
       propertyPath: _targetPlanet
       value: 
       objectReference: {fileID: 0}
+    - target: {fileID: 2429929018151850362, guid: 8a436368efd6cb6478540782ca29b9a1, type: 3}
+      propertyPath: _planetsLayerMask.m_Bits
+      value: 2048
+      objectReference: {fileID: 0}
     - target: {fileID: 2429929018151850364, guid: 8a436368efd6cb6478540782ca29b9a1, type: 3}
       propertyPath: m_Constraints
       value: 0

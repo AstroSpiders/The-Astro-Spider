@@ -43,7 +43,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: da9cb7d6a4990244bb2d4e69c2c3d3a4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _planetPrefab: {fileID: 7180014405413669744, guid: 0b2b96b55251014498569294bf1fb136, type: 3}
+  Camera: {fileID: 0}
+  _planetPrefab: {fileID: 5571092028449781040, guid: 793d9672cfae0d54f8effaffcaa0adb9, type: 3}
   _asteroidPrefab: {fileID: 6454509588066999608, guid: 3e847b4a5d996b649a0ed7f0ff16b55a, type: 3}
   _spaceshipPrefab: {fileID: 4632865355670583250, guid: bbcbdc7009c62cc45bb227cdb3f66a80, type: 3}
   _randomSeed: 0

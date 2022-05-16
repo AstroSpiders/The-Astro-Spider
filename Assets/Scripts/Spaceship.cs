@@ -60,7 +60,7 @@ public class Spaceship : MonoBehaviour
     }
     private void OnCollisionEnter(Collision collision)
     {
-        if (collision.gameObject.CompareTag("Planet"))
+        if (collision.gameObject.CompareTag("PlanetHolder"))
             HitPlanet = true;
     }
 
