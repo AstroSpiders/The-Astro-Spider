@@ -115,3 +115,32 @@ Although we implemented an accurate gravity simulation system, this made the gam
 In addition to all of those physics & collisions systems, we also added animations. We used particle systems for the thrusters and we are playing an animation whenever the spider on top of the rocket shoots something. We also used partcle systems when asteroids are being shot.
 
 ![asteroids_gif](https://github.com/AstroSpiders/The-Astro-Spider/blob/main/Readme%20Resources/ShootGif.gif)
+
+# Graphics programming
+
+We've implemented multiple visual effects. 
+
+The first one we implemented was a cartoonish shader. It makes the light fall onto surfaces with an equal intensity (a part of a surface is either lit or not lit, there is not much inbetween). Of course, there were some things that were added so it looks a little prettier, for example rim lighting. Our implementation is based on 
+[this excellent article](http://vodacek.zvb.cz/archiv/750.html). The code is not identical as the synatx for writing shaders using URP (without using shadergraph) is not the same as the legacy syntax.
+
+![toon_shdader](https://github.com/AstroSpiders/The-Astro-Spider/blob/main/Readme%20Resources/ToonShader.png)
+
+On top of this shader, we've added a render pass that draws a black outline behind the objects being rendered. The way this shader work is by just scaling up the object a bit, making it black, and rendering it behind the actual object. Our implementation is based on [this tutorial](https://learn.unity.com/tutorial/custom-render-passes-with-urp#5ff8d886edbc2a001fd0b4d0). Although the technique is not ideal, and there are other better techniques for achieving the same effect, it seemed to be good enough for this project.
+
+![outline_shader](https://github.com/AstroSpiders/The-Astro-Spider/blob/main/Readme%20Resources/OutlineShader.png)
+
+The planets seemed a bit boring, that's why we created a new shader for them that just displaced the normals a little bit. This makes the surface seem a bit rough because of the lighting, even though the surface is flat. The way we displace the the normals is by using Simplex Noise (our implementation of Simplex noise was not written by us. You can find details about the author at the beginning of [the source file](https://github.com/AstroSpiders/The-Astro-Spider/blob/main/Assets/Scripts/Shaders/SimplexNoise.hlsl).). We combined noise values at different frequencies/ ampltudes (we can call them octaves as we iteratively multiply the frequency by 2 but decrease the amplitude by 2) to obtain some pleasing results.
+
+![planet_shader](https://github.com/AstroSpiders/The-Astro-Spider/blob/main/Readme%20Resources/PlanetShader.png)
+
+We've also added a bloom post-processing effect. The effect was implemented from scratch using render features (the only way to do post-processing while using the Scriptable Rendering Pipeline in Unity). The algorithm is the standard one:
+
+Extract the bright parts of the image -> Perform Horizontal Blur on this image -> Perform Vertical Blur on this image -> Combine the blurred extract with the initial image to obtain the Bloom effect.
+
+![bloom_shader](https://github.com/AstroSpiders/The-Astro-Spider/blob/main/Readme%20Resources/BloomRocket.png)
+
+Another minor thing we implemented with regards to graphics programming are some of the UI elements. More specifically, the visualizer for the nerual network and the fitness evolution chart. The only to create custom UI elements is by defining the geometry manually, so the vertices and indices for these elements are created and updated manually.
+
+![nn_display](https://github.com/AstroSpiders/The-Astro-Spider/blob/main/Readme%20Resources/NNDisplay.png)
+
+![fitness_display](https://github.com/AstroSpiders/The-Astro-Spider/blob/main/Readme%20Resources/FitnessChart.png)
