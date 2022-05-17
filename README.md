@@ -100,3 +100,18 @@ The Rocket contains a component called RocketMovement. This component is respons
 
 This component contains a method called ApplyAcceleration() which takes as arguments the thruster that we wish to use, and a number representing how "accelerated" the thruster is. The more accelerated it is, the more force it applies onto the rocket and the more fuel it consumes. This method is called by the PlayerController component in the case of rockets that are controlled by a human player, and it's called by the NeuralNetworkController in the case of AI controlled agents.
 
+![thrusters_gif](https://github.com/AstroSpiders/The-Astro-Spider/blob/main/Readme%20Resources/ThrustersGif.gif)
+
+We also implemented custom gravity. Each planet has a gravity field. The gravity fields of each planets consist of two regions. One region where the gravity force is a constant value (the yellow region), and one where the gravity force start so fade away until it reaches 0 (the blue region).
+
+![fields_image](https://github.com/AstroSpiders/The-Astro-Spider/blob/main/Readme%20Resources/GravityFields.png)
+
+We can have colliding gravity fields when two planets are too close to eachother, and the objects (asteroids or spaceships) between them have an accurate behaviour. We used Ruge-Kutta Order 4 to query the gravity force at one given point.
+
+![asteroids_gif](https://github.com/AstroSpiders/The-Astro-Spider/blob/main/Readme%20Resources/AsteroidsGif.gif)
+
+Although we implemented an accurate gravity simulation system, this made the game very hard, so for the player rocket we also added drag force so that it doesn't mentain it's speed indefinitely. This made the game much more playable.
+
+In addition to all of those physics & collisions systems, we also added animations. We used particle systems for the thrusters and we are playing an animation whenever the spider on top of the rocket shoots something. We also used partcle systems when asteroids are being shot.
+
+![asteroids_gif](https://github.com/AstroSpiders/The-Astro-Spider/blob/main/Readme%20Resources/ShootGif.gif)
