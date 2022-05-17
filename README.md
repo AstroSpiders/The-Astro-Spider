@@ -87,3 +87,9 @@ The individuals percieve the environment through a set of sensors. There are sen
 Here's the AI landing on planets:
 
 ![watch_ai_gif](https://github.com/AstroSpiders/The-Astro-Spider/blob/main/Readme%20Resources/WatchAIGif.gif)
+
+Besides this planet lander AI, we also implemented boids for the enemy spaceships in the "gamemode" where the rocket is being controlled by a human player.
+
+![boids_gif](https://github.com/AstroSpiders/The-Astro-Spider/blob/main/Readme%20Resources/BoidsGif.gif)
+
+They work by the standard rules for boids.
