@@ -87,3 +87,16 @@ The individuals percieve the environment through a set of sensors. There are sen
 Here's the AI landing on planets:
 
 ![watch_ai_gif](https://github.com/AstroSpiders/The-Astro-Spider/blob/main/Readme%20Resources/WatchAIGif.gif)
+
+Besides this planet lander AI, we also implemented boids for the enemy spaceships in the "gamemode" where the rocket is being controlled by a human player.
+
+![boids_gif](https://github.com/AstroSpiders/The-Astro-Spider/blob/main/Readme%20Resources/BoidsGif.gif)
+
+They work by the standard rules for boids.
+
+# Physical simulation & Animation
+
+The Rocket contains a component called RocketMovement. This component is responsible for handling how the rocket reacts when the thrusters are being "accelerated". The rocket had 4 weak side thrusters and 1 big main thruster. The side thrusters are mainly used to tilt the rocket, while the big thruster is for going forward.
+
+This component contains a method called ApplyAcceleration() which takes as arguments the thruster that we wish to use, and a number representing how "accelerated" the thruster is. The more accelerated it is, the more force it applies onto the rocket and the more fuel it consumes. This method is called by the PlayerController component in the case of rockets that are controlled by a human player, and it's called by the NeuralNetworkController in the case of AI controlled agents.
+
