@@ -86,3 +86,4 @@ The individuals percieve the environment through a set of sensors. There are sen
 
 Here's the AI landing on planets:
 
+![watch_ai_gif](https://github.com/AstroSpiders/The-Astro-Spider/blob/main/Readme%20Resources/WatchAIGif.gif)
