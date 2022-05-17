@@ -82,3 +82,7 @@ The individuals percieve the environment through a set of sensors. There are sen
 
 * A number between -1 and 1 representing the cos value of the angle between the sensor and the target planet (calculated using the dot product). Has a value of 1 when the sensor faces the direction of the planet, and -1 when it faces the opposite direction. 
 
+![sensors_gif](https://github.com/AstroSpiders/The-Astro-Spider/blob/main/Readme%20Resources/SensorsGif.gif)
+
+Here's the AI landing on planets:
+
