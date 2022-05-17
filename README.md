@@ -74,4 +74,11 @@ These charts use a logarithmic scale, because the fitness values grow exponentia
 
 Even though the game is 3D, the AI for Planet Landing operates in 2D, as training it for 3D was much more complicated. We also removed the obstacles in the world while training the AI.
 
-more coming soon...... I'm tired of writing this.......
+The individuals percieve the environment through a set of sensors. There are sensors surroundng the rockets, each giving 3 inputs for the neural networks:
+
+* A number between 0 and 1 when the target planet is in sight of the sensor. The closer the planet is, the smaller this number is. When the target planet is not in sight, this input has a value of -1.
+
+* A number between 0 and 1 when an obstacle is in sight of the sensor. The closer the obstacle is, the smaller this number is. When no obstacle is in sight, the input has a value of -1.
+
+* A number between -1 and 1 representing the cos value of the angle between the sensor and the target planet (calculated using the dot product). Has a value of 1 when the sensor faces the direction of the planet, and -1 when it faces the opposite direction. 
+
