@@ -26,7 +26,7 @@ The packages we used are the new Input System for Unity, and the Universal Rende
 
 We used machine learning to train an agent to learn how to land on 5 planets. The goal of the agent was to learn how to land on planets with very little impact.
 
-In order to train the AI we implemented the Neuroevolution of Augmenting Topologies algorithm (NEAT). We didn't use any existing implementation for the algorithm, it was written from scratch.
+In order to train the AI we implemented the [Neuroevolution of Augmenting Topologies algorithm (NEAT)](http://nn.cs.utexas.edu/downloads/papers/stanley.ec02.pdf). We didn't use any existing implementation for the algorithm, it was written from scratch.
 
 Finding the right fitness function was a rather hard task. We ended up with the following formula:
 ```f=s^e``` if the rocket was alive at the end of the epoch and it still had fuel and ```f=(s^e)/2``` otherwise.
@@ -87,6 +87,12 @@ The individuals percieve the environment through a set of sensors. There are sen
 Here's the AI landing on planets:
 
 ![watch_ai_gif](https://github.com/AstroSpiders/The-Astro-Spider/blob/main/Readme%20Resources/WatchAIGif.gif)
+
+And here's how the training process looks like:
+
+![train_ai_gif](https://github.com/AstroSpiders/The-Astro-Spider/blob/main/Readme%20Resources/TrainingGif.gif)
+
+This scene does the training for the rockets by simulating every individual in the population in order to calculate their fitness scores. Each epoch has a timeout of ```2 * n``` minutes, where ```n``` is the index of the farthest planet a rocket has landed on. At the end of the epoch, you have the option to save the current training state to sa .json file, or restore a previous training state by loading a different .json file. There is also a slider which controls the simulation speed, although, unless simulation is beng run on an extremely good computer, higher simulation speeds result in less accurate results, and this may actually harm the training process.
 
 Besides this planet lander AI, we also implemented boids for the enemy spaceships in the "gamemode" where the rocket is being controlled by a human player.
 
